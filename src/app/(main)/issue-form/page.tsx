@@ -215,7 +215,7 @@ export default function ScriptsIssueFormPage() {
     const totalScripts = filtered.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
     const totalMissing = filtered.reduce((acc, issue) => acc + (issue.noOfMissing || 0), 0);
     const totalExtra = filtered.reduce((acc, issue) => acc + (issue.extraSheets || 0), 0);
-    const totalEvaluatedScripts = filtered.filter(issue => issue.received).reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
+    const totalEvaluatedScripts = filtered.filter(issue => issue.received).reduce((acc, issue) => acc + (issue.noOfScripts || 0) + (issue.extraSheets || 0), 0);
 
     return { filteredIssues: filtered, totalScripts, totalMissing, totalExtra, totalEvaluatedScripts };
   }, [issues, searchTerm, filters]);
@@ -784,5 +784,7 @@ export default function ScriptsIssueFormPage() {
     </div>
   );
 }
+
+    
 
     
