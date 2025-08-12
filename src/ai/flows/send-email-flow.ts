@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow for sending emails.
@@ -12,7 +13,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const SendEmailInputSchema = z.object({
+const SendEmailInputSchema = z.object({
   to: z.string().email().describe('The email address of the recipient.'),
   subject: z.string().describe('The subject of the email.'),
   body: z.string().describe('The HTML body of the email.'),
