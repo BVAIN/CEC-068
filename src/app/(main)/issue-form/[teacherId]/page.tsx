@@ -94,7 +94,7 @@ export default function IssueViewPage() {
                 <CardTitle>Packet-wise Information</CardTitle>
                 {teacherIssues.length > 0 && (
                     <CardDescription>
-                        Teacher: {teacherIssues[0].teacherName} | Campus: {teacherIssues[0].campus}
+                        Teacher: {teacherIssues[0].teacherName}
                     </CardDescription>
                 )}
             </CardHeader>
@@ -104,7 +104,7 @@ export default function IssueViewPage() {
                         <TableRow>
                             <TableHead>Packet No.</TableHead>
                             <TableHead>Date of Issue</TableHead>
-                            <TableHead>Range</TableHead>
+                            <TableHead>Range & Campus</TableHead>
                             <TableHead>No. of Scripts</TableHead>
                             <TableHead>No. of Absent</TableHead>
                             <TableHead>Received</TableHead>
@@ -115,7 +115,7 @@ export default function IssueViewPage() {
                              <TableRow key={issue.packetNo}>
                                 <TableCell>{issue.packetNo}</TableCell>
                                 <TableCell>{issue.dateOfIssue}</TableCell>
-                                <TableCell>{issue.packetFrom} - {issue.packetTo}</TableCell>
+                                <TableCell>{issue.packetFrom} - {issue.packetTo} ({issue.campus})</TableCell>
                                 <TableCell>{issue.noOfScripts}</TableCell>
                                 <TableCell>
                                     <Input 

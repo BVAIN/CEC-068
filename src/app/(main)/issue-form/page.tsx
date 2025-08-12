@@ -43,6 +43,20 @@ export type IssueFormValues = z.infer<typeof issueFormSchema>;
 
 const ISSUES_STORAGE_KEY = 'cec068_issues';
 const TRASH_STORAGE_KEY = 'cec068_trash';
+const QP_UPC_MAP_KEY = 'cec068_qp_upc_map';
+
+// Populate with some initial data for demonstration
+const seedQpUpcMap = () => {
+    if (typeof window !== 'undefined' && !localStorage.getItem(QP_UPC_MAP_KEY)) {
+        const initialMap = {
+            'QP123': 'UPC_A',
+            'QP456': 'UPC_B',
+            'QP789': 'UPC_C',
+        };
+        localStorage.setItem(QP_UPC_MAP_KEY, JSON.stringify(initialMap));
+    }
+};
+
 
 export default function IssueFormPage() {
   const { toast } = useToast();
@@ -51,11 +65,18 @@ export default function IssueFormPage() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIssues, setSelectedIssues] = useState<number[]>([]);
+  const [qpUpcMap, setQpUpcMap] = useState<Record<string, string>>({});
+
 
   useEffect(() => {
+    seedQpUpcMap();
     const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
     if (storedIssues) {
-      setIssues(JSON.parse(storedIssues));
+      setIssues(JSON.parse(storedIssues).sort((a: IssueFormValues, b: IssueFormValues) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime()));
+    }
+    const storedMap = localStorage.getItem(QP_UPC_MAP_KEY);
+    if (storedMap) {
+        setQpUpcMap(JSON.parse(storedMap));
     }
   }, []);
 
@@ -66,7 +87,7 @@ export default function IssueFormPage() {
       packetNo: "",
       packetFrom: "",
       packetTo: "",
-      noOfScripts: 0,
+      noOfScripts: undefined,
       qpNo: "",
       upc: "",
       teacherName: "",
@@ -83,6 +104,7 @@ export default function IssueFormPage() {
 
   const { watch, setValue } = form;
   const watchedTeacherId = watch('teacherId');
+  const watchedQpNo = watch('qpNo');
 
   useEffect(() => {
     if (watchedTeacherId && editingIndex === null) {
@@ -95,34 +117,50 @@ export default function IssueFormPage() {
       }
     }
   }, [watchedTeacherId, issues, setValue, editingIndex]);
+
+  useEffect(() => {
+      if (watchedQpNo && qpUpcMap[watchedQpNo]) {
+          setValue('upc', qpUpcMap[watchedQpNo]);
+      }
+  }, [watchedQpNo, qpUpcMap, setValue]);
   
   const filteredIssues = issues.filter(issue => 
     issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase())
+    issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    issue.mobileNo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const updateIssuesStateAndLocalStorage = (newIssues: IssueFormValues[]) => {
-    setIssues(newIssues);
-    localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(newIssues));
+    const sortedIssues = newIssues.sort((a, b) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime());
+    setIssues(sortedIssues);
+    localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(sortedIssues));
   };
   
   function onSubmit(data: IssueFormValues) {
     let newIssues;
-    if (editingIndex !== null) {
+    const isUpdating = editingIndex !== null;
+
+    if (isUpdating) {
       newIssues = [...issues];
       const existingIssue = newIssues[editingIndex];
-      // When updating, we preserve the received status and noOfAbsent count
       newIssues[editingIndex] = {...data, received: existingIssue.received, noOfAbsent: existingIssue.noOfAbsent};
       setEditingIndex(null);
       toast({
-        title: "Issue Updated",
-        description: "The issue has been successfully updated.",
+        title: "Message Sent",
+        description: `From CEC-068 SGTB Khalsa College: Packet details updated for Packet No. ${data.packetNo}.`,
       });
     } else {
       newIssues = [...issues, {...data, noOfAbsent: 0}];
+      // Update QP-UPC Map
+      if (!qpUpcMap[data.qpNo]) {
+        const newMap = {...qpUpcMap, [data.qpNo]: data.upc};
+        setQpUpcMap(newMap);
+        localStorage.setItem(QP_UPC_MAP_KEY, JSON.stringify(newMap));
+      }
+
       toast({
-        title: "Issue Saved",
-        description: "Your issue has been successfully saved.",
+        title: "Message Sent",
+        description: `From CEC-068 SGTB Khalsa College: Packet issue details saved for Packet No. ${data.packetNo}.`,
       });
     }
     updateIssuesStateAndLocalStorage(newIssues);
@@ -131,7 +169,7 @@ export default function IssueFormPage() {
       packetNo: "",
       packetFrom: "",
       packetTo: "",
-      noOfScripts: 0,
+      noOfScripts: undefined,
       qpNo: "",
       upc: "",
       teacherName: "",
@@ -183,15 +221,24 @@ export default function IssueFormPage() {
 
   const handleRowDataChange = (index: number, field: keyof IssueFormValues, value: any) => {
     const newIssues = [...issues];
+    const oldIssue = newIssues[index];
     (newIssues[index] as any)[field] = value;
     setIssues(newIssues);
+
+    if (field === 'received' && value === true) {
+         toast({
+            title: "Message Sent",
+            description: `From CEC-068 SGTB Khalsa College: Packet No. ${oldIssue.packetNo} received.`,
+        });
+    }
   };
   
   const handleSaveRow = (index: number) => {
     updateIssuesStateAndLocalStorage(issues);
+    const issue = issues[index];
     toast({
-      title: "Entry Saved",
-      description: "Changes to this row have been saved."
+      title: "Message Sent",
+      description: `From CEC-068 SGTB Khalsa College: Details updated for Packet No. ${issue.packetNo}. Absents: ${issue.noOfAbsent}, Received: ${issue.received ? 'Yes' : 'No'}.`
     });
   }
   
@@ -261,13 +308,13 @@ export default function IssueFormPage() {
                         <div className="flex gap-4">
                            <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'North'} onCheckedChange={(checked) => checked && field.onChange('North')} />
+                              <Checkbox checked={field.value === 'North'} onCheckedChange={(checked) => field.onChange('North')} />
                             </FormControl>
                             <FormLabel className="font-normal">North</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'South'} onCheckedChange={(checked) => checked && field.onChange('South')} />
+                              <Checkbox checked={field.value === 'South'} onCheckedChange={(checked) => field.onChange('South')} />
                             </FormControl>
                             <FormLabel className="font-normal">South</FormLabel>
                           </FormItem>
@@ -287,19 +334,19 @@ export default function IssueFormPage() {
                          <div className="flex gap-4">
                           <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'Regular'} onCheckedChange={(checked) => checked && field.onChange('Regular')} />
+                              <Checkbox checked={field.value === 'Regular'} onCheckedChange={(checked) => field.onChange('Regular')} />
                             </FormControl>
                             <FormLabel className="font-normal">Regular</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                               <Checkbox checked={field.value === 'NCWEB'} onCheckedChange={(checked) => checked && field.onChange('NCWEB')} />
+                               <Checkbox checked={field.value === 'NCWEB'} onCheckedChange={(checked) => field.onChange('NCWEB')} />
                             </FormControl>
                             <FormLabel className="font-normal">NCWEB</FormLabel>
                           </FormItem>
                            <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'SOL'} onCheckedChange={(checked) => checked && field.onChange('SOL')} />
+                              <Checkbox checked={field.value === 'SOL'} onCheckedChange={(checked) => field.onChange('SOL')} />
                             </FormControl>
                             <FormLabel className="font-normal">SOL</FormLabel>
                           </FormItem>
