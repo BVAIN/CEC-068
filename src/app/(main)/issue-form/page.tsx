@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
+import * as XLSX from "xlsx";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Printer, FileDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 const issueFormSchema = z.object({
@@ -91,6 +92,17 @@ export default function IssueFormPage() {
     });
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExport = () => {
+    const worksheet = XLSX.utils.json_to_sheet(issues);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Issues");
+    XLSX.writeFile(workbook, "IssueData.xlsx");
+  };
+
   return (
     <div className="space-y-8">
       <header>
@@ -160,7 +172,7 @@ export default function IssueFormPage() {
                   name="schoolType"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
-                      <FormLabel>School Type</FormLabel>
+                      <FormLabel>Type</FormLabel>
                       <FormControl>
                          <div className="flex gap-4">
                           <FormItem className="flex items-center space-x-2 space-y-0">
@@ -201,8 +213,16 @@ export default function IssueFormPage() {
         <Separator className="my-8" />
         <Card>
           <CardHeader>
-            <CardTitle>Submitted Issues</CardTitle>
-            <CardDescription>View and manage the submitted issues.</CardDescription>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Submitted Issues</CardTitle>
+                <CardDescription>View and manage the submitted issues.</CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handlePrint} variant="outline"><Printer className="mr-2 h-4 w-4" /> Print</Button>
+                <Button onClick={handleExport}><FileDown className="mr-2 h-4 w-4" />Export to Excel</Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
              <div className="overflow-x-auto">
@@ -212,7 +232,7 @@ export default function IssueFormPage() {
                   <TableHead>Teacher Name</TableHead>
                   <TableHead>Teacher ID</TableHead>
                   <TableHead>Date of Issue</TableHead>
-                  <TableHead>Packet No.</TableHead>
+                  <TableHead>Packet No. Range</TableHead>
                   <TableHead>QP No.</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>

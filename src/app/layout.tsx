@@ -4,7 +4,7 @@ import { ThemeProvider } from '@/contexts/theme-provider';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'DriveSync Notes',
+  title: 'CEC-068',
   description: 'Manage your data with ease, online and offline.',
 };
 
