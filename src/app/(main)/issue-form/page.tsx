@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { sendEmail } from "@/ai/flows/send-email-flow";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 
 const issueFormSchema = z.object({
@@ -73,6 +74,7 @@ type FilterValues = {
   type: ("Regular" | "NCWEB" | "SOL")[];
   teacherId: string;
   teacherName: string;
+  receivedStatus: "all" | "received" | "not-received";
 };
 
 
@@ -93,7 +95,8 @@ export default function ScriptsIssueFormPage() {
     campus: [],
     type: [],
     teacherId: "",
-    teacherName: ""
+    teacherName: "",
+    receivedStatus: "all",
   });
 
 
@@ -203,7 +206,8 @@ export default function ScriptsIssueFormPage() {
             (filters.campus.length > 0 ? issue.campus && filters.campus.includes(issue.campus) : true) &&
             (filters.type.length > 0 ? issue.schoolType && filters.type.includes(issue.schoolType) : true) &&
             (filters.teacherId ? issue.teacherId.toLowerCase().includes(filters.teacherId.toLowerCase()) : true) &&
-            (filters.teacherName ? issue.teacherName.toLowerCase().includes(filters.teacherName.toLowerCase()) : true);
+            (filters.teacherName ? issue.teacherName.toLowerCase().includes(filters.teacherName.toLowerCase()) : true) &&
+            (filters.receivedStatus === 'all' || (filters.receivedStatus === 'received' && issue.received) || (filters.receivedStatus === 'not-received' && !issue.received));
             
         return searchMatch && filterMatch;
     });
@@ -589,6 +593,25 @@ export default function ScriptsIssueFormPage() {
                             <div className="flex items-center space-x-2"><Checkbox id="filter-type-ncweb" checked={filters.type.includes('NCWEB')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'NCWEB', !!c)} /><Label htmlFor="filter-type-ncweb" className="font-normal">NCWEB</Label></div>
                             <div className="flex items-center space-x-2"><Checkbox id="filter-type-sol" checked={filters.type.includes('SOL')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'SOL', !!c)} /><Label htmlFor="filter-type-sol" className="font-normal">SOL</Label></div>
                           </div>
+                        </div>
+                         <div className="grid grid-cols-3 items-start gap-4">
+                            <Label>Packet Status</Label>
+                            <div className="col-span-2">
+                                <RadioGroup value={filters.receivedStatus} onValueChange={(value) => handleFilterChange('receivedStatus', value)}>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="all" id="filter-status-all" />
+                                        <Label htmlFor="filter-status-all" className="font-normal">All</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="received" id="filter-status-received" />
+                                        <Label htmlFor="filter-status-received" className="font-normal">Received Packets</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="not-received" id="filter-status-not-received" />
+                                        <Label htmlFor="filter-status-not-received" className="font-normal">Not Received Packets</Label>
+                                    </div>
+                                </RadioGroup>
+                            </div>
                         </div>
                       </div>
                     </div>
