@@ -19,6 +19,8 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { sendEmail } from "@/ai/flows/send-email-flow";
+
 
 const issueFormSchema = z.object({
   tokenNo: z.number().optional(),
@@ -219,6 +221,17 @@ export default function ScriptsIssueFormPage() {
     setIssues(sortedIssues);
     localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(sortedIssues));
   };
+
+  const generateEmailBody = (issue: IssueFormValues, title: string) => {
+    return `
+      <h2>${title}</h2>
+      <p><strong>Packet No:</strong> ${issue.packetNo}</p>
+      <p><strong>Date of Issue:</strong> ${issue.dateOfIssue}</p>
+      <p><strong>Course:</strong> ${issue.course}</p>
+      <p><strong>No. of Scripts:</strong> ${issue.noOfScripts}</p>
+      <p>Thank you.</p>
+    `;
+  }
   
   function onSubmit(data: IssueFormValues) {
     let newIssues;
@@ -247,13 +260,19 @@ export default function ScriptsIssueFormPage() {
             setTeacherCourseTokenMap(currentTokenMap);
             localStorage.setItem(TEACHER_COURSE_TOKEN_MAP_KEY, JSON.stringify(currentTokenMap));
         }
-
-      newIssues = [...issues, {...data, noOfAbsent: 0, noOfMissing: 0, extraSheets: 0, tokenNo: teacherToken}];
+      const newIssueWithToken = {...data, noOfAbsent: 0, noOfMissing: 0, extraSheets: 0, tokenNo: teacherToken};
+      newIssues = [...issues, newIssueWithToken];
       if (data.qpNo && data.upc && !qpUpcMap[data.qpNo]) {
         const newMap = {...qpUpcMap, [data.qpNo]: data.upc};
         setQpUpcMap(newMap);
         localStorage.setItem(QP_UPC_MAP_KEY, JSON.stringify(newMap));
       }
+       // Send email for new issue
+      sendEmail({
+          to: data.email,
+          subject: 'New Script Packet Issued',
+          body: generateEmailBody(newIssueWithToken, 'New Script Packet Issued')
+      });
     }
     updateIssuesStateAndLocalStorage(newIssues);
     form.reset({
@@ -329,6 +348,15 @@ export default function ScriptsIssueFormPage() {
     const newIssues = [...issues];
     (newIssues[index] as any)[field] = value;
     setIssues(newIssues);
+    
+    if (field === 'received' && value === true) {
+        const issue = newIssues[index];
+        sendEmail({
+            to: issue.email,
+            subject: 'Script Packet Received',
+            body: generateEmailBody(issue, 'Script Packet Received')
+        });
+    }
   };
   
   const handleSaveRow = (index: number) => {
