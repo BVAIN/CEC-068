@@ -92,6 +92,11 @@ export default function IssueViewPage() {
         <Card className="md:col-span-2">
             <CardHeader>
                 <CardTitle>Packet-wise Information</CardTitle>
+                {teacherIssues.length > 0 && (
+                    <CardDescription>
+                        Teacher: {teacherIssues[0].teacherName} | Campus: {teacherIssues[0].campus}
+                    </CardDescription>
+                )}
             </CardHeader>
             <CardContent>
                 <Table>
@@ -148,5 +153,3 @@ export default function IssueViewPage() {
     </div>
   );
 }
-
-    
