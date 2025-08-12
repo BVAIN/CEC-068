@@ -204,9 +204,9 @@ export default function IssueFormPage() {
         let teacherToken = currentTokenMap[teacherCourseKey];
 
         if (!teacherToken) {
-            // Find the highest token number for the current course
             const courseTeachers = Object.keys(currentTokenMap).filter(key => key.endsWith(`-${data.course}`));
-            const lastTokenForCourse = courseTeachers.reduce((max, key) => Math.max(max, currentTokenMap[key]), 0);
+            const lastTokenForCourse = courseTeachers.length > 0 ?
+                Math.max(...courseTeachers.map(key => currentTokenMap[key])) : 0;
             
             teacherToken = lastTokenForCourse + 1;
             currentTokenMap = {...currentTokenMap, [teacherCourseKey]: teacherToken};
@@ -539,6 +539,28 @@ export default function IssueFormPage() {
                   </PopoverContent>
                 </Popover>
                 <Button onClick={handlePrint} variant="outline"><Printer className="mr-2 h-4 w-4" /> Print</Button>
+                {selectedIssues.length > 0 && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete Selected ({selectedIssues.length})
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action will move {selectedIssues.length} issue(s) to the trash. You can restore them later.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleBulkDelete}>Continue</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
                 <Button onClick={handleExport}><FileDown className="mr-2 h-4 w-4" />Export to Excel</Button>
               </div>
             </div>
@@ -547,26 +569,6 @@ export default function IssueFormPage() {
              {selectedIssues.length > 0 && (
               <div className="mb-4 flex items-center gap-4 rounded-md bg-muted p-3">
                  <p className="text-sm font-medium">{selectedIssues.length} issue(s) selected.</p>
-                 <AlertDialog>
-                   <AlertDialogTrigger asChild>
-                     <Button variant="destructive">
-                       <Trash2 className="mr-2 h-4 w-4" />
-                       Delete Selected
-                     </Button>
-                   </AlertDialogTrigger>
-                   <AlertDialogContent>
-                     <AlertDialogHeader>
-                       <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                       <AlertDialogDescription>
-                         This action will move {selectedIssues.length} issue(s) to the trash. You can restore them later.
-                       </AlertDialogDescription>
-                     </AlertDialogHeader>
-                     <AlertDialogFooter>
-                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                       <AlertDialogAction onClick={handleBulkDelete}>Continue</AlertDialogAction>
-                     </AlertDialogFooter>
-                   </AlertDialogContent>
-                 </AlertDialog>
                </div>
              )}
              <div className="overflow-x-auto">
@@ -681,5 +683,7 @@ export default function IssueFormPage() {
   );
 }
 
+
+    
 
     
