@@ -30,6 +30,7 @@ const issueFormSchema = z.object({
   noOfScripts: z.coerce.number().min(1, "Number of Scripts must be at least 1"),
   qpNo: z.string().min(1, "QP No. is required"),
   upc: z.string().min(1, "UPC is required"),
+  course: z.string().min(1, "Course is required"),
   teacherName: z.string().min(1, "Teacher Name is required"),
   mobileNo: z.string().min(1, "Mobile No. is required"),
   email: z.string().email("Invalid email address"),
@@ -64,6 +65,7 @@ type FilterValues = {
   dateOfIssue: string;
   qpNo: string;
   upc: string;
+  course: string;
   campus: ("North" | "South")[];
   type: ("Regular" | "NCWEB" | "SOL")[];
   teacherId: string;
@@ -84,6 +86,7 @@ export default function IssueFormPage() {
     dateOfIssue: "",
     qpNo: "",
     upc: "",
+    course: "",
     campus: [],
     type: [],
     teacherId: "",
@@ -117,6 +120,7 @@ export default function IssueFormPage() {
       noOfScripts: undefined,
       qpNo: "",
       upc: "",
+      course: "",
       teacherName: "",
       mobileNo: "",
       email: "",
@@ -163,6 +167,7 @@ export default function IssueFormPage() {
             (filters.dateOfIssue ? issue.dateOfIssue === filters.dateOfIssue : true) &&
             (filters.qpNo ? issue.qpNo.toLowerCase().includes(filters.qpNo.toLowerCase()) : true) &&
             (filters.upc ? issue.upc.toLowerCase().includes(filters.upc.toLowerCase()) : true) &&
+            (filters.course ? issue.course.toLowerCase().includes(filters.course.toLowerCase()) : true) &&
             (filters.campus.length > 0 ? issue.campus && filters.campus.includes(issue.campus) : true) &&
             (filters.type.length > 0 ? issue.schoolType && filters.type.includes(issue.schoolType) : true) &&
             (filters.teacherId ? issue.teacherId.toLowerCase().includes(filters.teacherId.toLowerCase()) : true) &&
@@ -226,6 +231,7 @@ export default function IssueFormPage() {
       noOfScripts: undefined,
       qpNo: "",
       upc: "",
+      course: "",
       teacherName: "",
       mobileNo: "",
       email: "",
@@ -350,6 +356,7 @@ export default function IssueFormPage() {
               <FormField control={form.control} name="noOfScripts" render={({ field }) => (<FormItem><FormLabel>No. of Scripts</FormLabel><FormControl><Input type="number" placeholder="" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name="qpNo" render={({ field }) => (<FormItem><FormLabel>QP No.</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name="upc" render={({ field }) => (<FormItem><FormLabel>UPC</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="course" render={({ field }) => (<FormItem><FormLabel>Course</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
             </CardContent>
           </Card>
           
@@ -479,6 +486,10 @@ export default function IssueFormPage() {
                           <Label htmlFor="upc">UPC</Label>
                           <Input id="upc" value={filters.upc} onChange={e => handleFilterChange('upc', e.target.value)} className="col-span-2 h-8" />
                         </div>
+                        <div className="grid grid-cols-3 items-center gap-4">
+                          <Label htmlFor="course">Course</Label>
+                          <Input id="course" value={filters.course} onChange={e => handleFilterChange('course', e.target.value)} className="col-span-2 h-8" />
+                        </div>
                          <div className="grid grid-cols-3 items-center gap-4">
                           <Label htmlFor="teacherName">Teacher Name</Label>
                           <Input id="teacherName" value={filters.teacherName} onChange={e => handleFilterChange('teacherName', e.target.value)} className="col-span-2 h-8" />
@@ -528,6 +539,7 @@ export default function IssueFormPage() {
                   <TableHead>Date of Issue</TableHead>
                   <TableHead>Packet No.</TableHead>
                   <TableHead>QP No.</TableHead>
+                  <TableHead>Course</TableHead>
                   <TableHead>Range</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Campus</TableHead>
@@ -555,6 +567,7 @@ export default function IssueFormPage() {
                     <TableCell>{issue.dateOfIssue}</TableCell>
                     <TableCell>{issue.packetNo}</TableCell>
                     <TableCell>{issue.qpNo}</TableCell>
+                    <TableCell>{issue.course}</TableCell>
                     <TableCell>{issue.packetFrom} - {issue.packetTo}</TableCell>
                     <TableCell>{issue.schoolType}</TableCell>
                     <TableCell>{issue.campus}</TableCell>

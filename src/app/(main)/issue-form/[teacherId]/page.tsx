@@ -47,6 +47,8 @@ export default function IssueViewPage() {
   const totalScripts = teacherIssues.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
   const totalAbsent = teacherIssues.reduce((acc, issue) => acc + (issue.noOfAbsent || 0), 0);
   const netScripts = totalScripts - totalAbsent;
+  const totalVisits = new Set(teacherIssues.map(issue => issue.dateOfIssue)).size;
+
 
   return (
     <div className="space-y-8">
@@ -77,6 +79,7 @@ export default function IssueViewPage() {
                             <TableRow>
                                 <TableHead>Packet No.</TableHead>
                                 <TableHead>Date of Issue</TableHead>
+                                <TableHead>Course</TableHead>
                                 <TableHead>Range & Campus</TableHead>
                                 <TableHead>Type</TableHead>
                                 <TableHead>No. of Scripts</TableHead>
@@ -89,6 +92,7 @@ export default function IssueViewPage() {
                                 <TableRow key={issue.packetNo}>
                                     <TableCell>{issue.packetNo}</TableCell>
                                     <TableCell>{issue.dateOfIssue}</TableCell>
+                                    <TableCell>{issue.course}</TableCell>
                                     <TableCell>{issue.packetFrom} - {issue.packetTo} ({issue.campus})</TableCell>
                                     <TableCell>{issue.schoolType}</TableCell>
                                     <TableCell>{issue.noOfScripts}</TableCell>
@@ -140,6 +144,10 @@ export default function IssueViewPage() {
                     <div className="flex justify-between">
                         <span className="font-medium text-muted-foreground">Email:</span>
                         <span className="truncate">{teacherInfo.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="font-medium text-muted-foreground">Total Visits:</span>
+                        <span>{totalVisits}</span>
                     </div>
                 </CardContent>
             </Card>
