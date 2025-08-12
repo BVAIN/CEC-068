@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import * as XLSX from "xlsx";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Edit, Trash2, Printer, FileDown, Search } from "lucide-react";
+import { Edit, Trash2, Printer, FileDown, Search, Save, Eye } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 
@@ -43,6 +45,7 @@ const TRASH_STORAGE_KEY = 'cec068_trash';
 
 export default function IssueFormPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const [issues, setIssues] = useState<IssueFormValues[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -61,7 +64,7 @@ export default function IssueFormPage() {
       packetNo: "",
       packetFrom: "",
       packetTo: "",
-      noOfScripts: 1,
+      noOfScripts: 0,
       qpNo: "",
       upc: "",
       teacherName: "",
@@ -76,7 +79,7 @@ export default function IssueFormPage() {
     },
   });
 
-  const updateIssuesState = (newIssues: IssueFormValues[]) => {
+  const updateIssuesStateAndLocalStorage = (newIssues: IssueFormValues[]) => {
     setIssues(newIssues);
     localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(newIssues));
   };
@@ -86,7 +89,8 @@ export default function IssueFormPage() {
     if (editingIndex !== null) {
       newIssues = [...issues];
       const existingIssue = newIssues[editingIndex];
-      newIssues[editingIndex] = {...existingIssue, ...data, noOfAbsent: existingIssue.noOfAbsent, received: existingIssue.received};
+      // When updating, we preserve the received status and noOfAbsent count
+      newIssues[editingIndex] = {...data, received: existingIssue.received, noOfAbsent: existingIssue.noOfAbsent};
       setEditingIndex(null);
       toast({
         title: "Issue Updated",
@@ -99,13 +103,13 @@ export default function IssueFormPage() {
         description: "Your issue has been successfully saved.",
       });
     }
-    updateIssuesState(newIssues);
+    updateIssuesStateAndLocalStorage(newIssues);
     form.reset({
       dateOfIssue: new Date().toISOString().split('T')[0],
       packetNo: "",
       packetFrom: "",
       packetTo: "",
-      noOfScripts: 1,
+      noOfScripts: 0,
       qpNo: "",
       upc: "",
       teacherName: "",
@@ -128,7 +132,7 @@ export default function IssueFormPage() {
   const handleDelete = (index: number) => {
     const issueToDelete = issues[index];
     const newIssues = issues.filter((_, i) => i !== index);
-    updateIssuesState(newIssues);
+    updateIssuesStateAndLocalStorage(newIssues);
 
     const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
     const trash = storedTrash ? JSON.parse(storedTrash) : [];
@@ -138,6 +142,10 @@ export default function IssueFormPage() {
       title: "Issue Deleted",
       description: "The issue has been moved to the trash.",
     });
+  };
+  
+  const handleView = (teacherId: string) => {
+    router.push(`/issue-form/${encodeURIComponent(teacherId)}`);
   };
 
   const handlePrint = () => {
@@ -151,20 +159,23 @@ export default function IssueFormPage() {
     XLSX.writeFile(workbook, "IssueData.xlsx");
   };
 
-  const handleReceivedChange = (index: number, checked: boolean) => {
+  const handleRowDataChange = (index: number, field: keyof IssueFormValues, value: any) => {
     const newIssues = [...issues];
-    newIssues[index].received = checked;
-    updateIssuesState(newIssues);
+    (newIssues[index] as any)[field] = value;
+    setIssues(newIssues);
   };
   
-  const handleAbsentChange = (index: number, value: string) => {
-    const newIssues = [...issues];
-    newIssues[index].noOfAbsent = parseInt(value, 10) || 0;
-    updateIssuesState(newIssues);
-  };
+  const handleSaveRow = (index: number) => {
+    updateIssuesStateAndLocalStorage(issues);
+    toast({
+      title: "Entry Saved",
+      description: "Changes to this row have been saved."
+    });
+  }
   
   const filteredIssues = issues.filter(issue => 
-    issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase())
+    issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
   const totalScripts = filteredIssues.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
@@ -290,7 +301,7 @@ export default function IssueFormPage() {
                  <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input 
-                      placeholder="Search by teacher name..." 
+                      placeholder="Search by teacher..." 
                       className="pl-10"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
@@ -307,11 +318,9 @@ export default function IssueFormPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Teacher Name</TableHead>
-                  <TableHead>Teacher ID</TableHead>
                   <TableHead>Date of Issue</TableHead>
                   <TableHead>Packet No.</TableHead>
                   <TableHead>Range</TableHead>
-                  <TableHead>QP No.</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Campus</TableHead>
                   <TableHead>No. of Scripts</TableHead>
@@ -322,15 +331,13 @@ export default function IssueFormPage() {
               </TableHeader>
               <TableBody>
                 {filteredIssues.map((issue, index) => {
-                  const originalIndex = issues.findIndex(i => i === issue);
+                  const originalIndex = issues.findIndex(i => i.teacherId === issue.teacherId && i.packetNo === issue.packetNo);
                   return (
                   <TableRow key={originalIndex}>
-                    <TableCell>{issue.teacherName}</TableCell>
-                    <TableCell>{issue.teacherId}</TableCell>
+                    <TableCell>{issue.teacherName}<br/><span className="text-xs text-muted-foreground">{issue.teacherId}</span></TableCell>
                     <TableCell>{issue.dateOfIssue}</TableCell>
                     <TableCell>{issue.packetNo}</TableCell>
                     <TableCell>{issue.packetFrom} - {issue.packetTo}</TableCell>
-                    <TableCell>{issue.qpNo}</TableCell>
                     <TableCell>{issue.schoolType}</TableCell>
                     <TableCell>{issue.campus}</TableCell>
                     <TableCell>{issue.noOfScripts}</TableCell>
@@ -338,7 +345,7 @@ export default function IssueFormPage() {
                       <Input 
                         type="number" 
                         value={issue.noOfAbsent || ''} 
-                        onChange={(e) => handleAbsentChange(originalIndex, e.target.value)}
+                        onChange={(e) => handleRowDataChange(originalIndex, 'noOfAbsent', parseInt(e.target.value, 10) || 0)}
                         className="w-20"
                       />
                     </TableCell>
@@ -347,13 +354,19 @@ export default function IssueFormPage() {
                         <Checkbox
                           id={`received-${originalIndex}`}
                           checked={issue.received}
-                          onCheckedChange={(checked) => handleReceivedChange(originalIndex, !!checked)}
+                          onCheckedChange={(checked) => handleRowDataChange(originalIndex, 'received', !!checked)}
                         />
                         <Label htmlFor={`received-${originalIndex}`} className="sr-only">Received</Label>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
+                        <Button variant="outline" size="icon" onClick={() => handleView(issue.teacherId)}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="icon" onClick={() => handleSaveRow(originalIndex)}>
+                          <Save className="h-4 w-4" />
+                        </Button>
                         <Button variant="outline" size="icon" onClick={() => handleEdit(originalIndex)}>
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -366,7 +379,7 @@ export default function IssueFormPage() {
                 )})}
               </TableBody>
               <TableRow className="font-bold bg-muted/50">
-                  <TableCell colSpan={8} className="text-right">Total</TableCell>
+                  <TableCell colSpan={6} className="text-right">Total</TableCell>
                   <TableCell>{totalScripts}</TableCell>
                   <TableCell>{totalAbsent}</TableCell>
                   <TableCell colSpan={2} className="text-left">Total Scripts: {totalScripts - totalAbsent}</TableCell>
@@ -380,5 +393,3 @@ export default function IssueFormPage() {
     </div>
   );
 }
-
-    
