@@ -10,6 +10,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
+import { useGoogleDrive } from "@/hooks/use-google-drive";
+import { Loader2 } from "lucide-react";
 
 const passwordFormSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
@@ -23,6 +25,7 @@ const passwordFormSchema = z.object({
 
 export default function SettingsPage() {
     const { toast } = useToast();
+    const { isConnected, isLoading, error, connect, disconnect } = useGoogleDrive();
 
     const form = useForm<z.infer<typeof passwordFormSchema>>({
         resolver: zodResolver(passwordFormSchema),
@@ -125,9 +128,22 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <Button>Connect to Google Drive</Button>
-            <p className="text-sm text-muted-foreground">Status: <span className="font-semibold text-destructive-foreground/80">Not connected</span></p>
+            {isConnected ? (
+              <Button onClick={disconnect} variant="destructive" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Disconnect Google Drive
+              </Button>
+            ) : (
+              <Button onClick={connect} disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Connect to Google Drive
+              </Button>
+            )}
+            <p className="text-sm text-muted-foreground">
+              Status: <span className={`font-semibold ${isConnected ? 'text-green-600' : 'text-destructive-foreground/80'}`}>{isLoading ? 'Connecting...' : isConnected ? 'Connected' : 'Not connected'}</span>
+            </p>
           </div>
+           {error && <p className="text-sm text-destructive mt-2">{error}</p>}
         </CardContent>
       </Card>
     </div>
