@@ -33,9 +33,13 @@ export function ThemeProvider({
     if (typeof window === 'undefined') {
       return defaultTheme;
     }
-    const storedTheme = localStorage.getItem(storageKey);
-    if (storedTheme === 'light' || storedTheme === 'dark') {
-        return storedTheme;
+    try {
+      const storedTheme = localStorage.getItem(storageKey);
+      if (storedTheme === 'light' || storedTheme === 'dark') {
+          return storedTheme;
+      }
+    } catch (e) {
+        console.error("Failed to access localStorage", e);
     }
     return defaultTheme;
   });
@@ -44,14 +48,27 @@ export function ThemeProvider({
     if (typeof window === 'undefined') return;
     const root = window.document.documentElement
     root.classList.remove("theme-light", "theme-grey", "theme-dark")
-    root.classList.add(`theme-${theme}`)
+
+    // Add a class based on the current theme
+    if (theme === "light") {
+      root.classList.add("theme-light")
+    } else if (theme === "dark") {
+      root.classList.add("theme-dark")
+    } else {
+       root.classList.add(`theme-${theme}`)
+    }
+    
   }, [theme])
 
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(storageKey, theme)
+      try {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(storageKey, theme)
+        }
+      } catch (e) {
+          console.error("Failed to access localStorage", e);
       }
       setTheme(theme)
     },
