@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -152,23 +152,26 @@ export default function IssueFormPage() {
       }
   }, [watchedQpNo, qpUpcMap, setValue]);
   
-  const filteredIssues = issues.filter(issue => {
-    const searchMatch = 
-        issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        issue.mobileNo.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredIssues = useMemo(() => {
+    return issues.filter(issue => {
+        const searchMatch = 
+            issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            issue.mobileNo.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const filterMatch = 
-        (filters.dateOfIssue ? issue.dateOfIssue === filters.dateOfIssue : true) &&
-        (filters.qpNo ? issue.qpNo.toLowerCase().includes(filters.qpNo.toLowerCase()) : true) &&
-        (filters.upc ? issue.upc.toLowerCase().includes(filters.upc.toLowerCase()) : true) &&
-        (filters.campus.length > 0 ? issue.campus && filters.campus.includes(issue.campus) : true) &&
-        (filters.type.length > 0 ? issue.schoolType && filters.type.includes(issue.schoolType) : true) &&
-        (filters.teacherId ? issue.teacherId.toLowerCase().includes(filters.teacherId.toLowerCase()) : true) &&
-        (filters.teacherName ? issue.teacherName.toLowerCase().includes(filters.teacherName.toLowerCase()) : true);
-        
-    return searchMatch && filterMatch;
-  });
+        const filterMatch = 
+            (filters.dateOfIssue ? issue.dateOfIssue === filters.dateOfIssue : true) &&
+            (filters.qpNo ? issue.qpNo.toLowerCase().includes(filters.qpNo.toLowerCase()) : true) &&
+            (filters.upc ? issue.upc.toLowerCase().includes(filters.upc.toLowerCase()) : true) &&
+            (filters.campus.length > 0 ? issue.campus && filters.campus.includes(issue.campus) : true) &&
+            (filters.type.length > 0 ? issue.schoolType && filters.type.includes(issue.schoolType) : true) &&
+            (filters.teacherId ? issue.teacherId.toLowerCase().includes(filters.teacherId.toLowerCase()) : true) &&
+            (filters.teacherName ? issue.teacherName.toLowerCase().includes(filters.teacherName.toLowerCase()) : true);
+            
+        return searchMatch && filterMatch;
+    });
+  }, [issues, searchTerm, filters]);
+
 
   const updateIssuesStateAndLocalStorage = (newIssues: IssueFormValues[]) => {
     const sortedIssues = newIssues.sort((a, b) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime());
@@ -618,3 +621,5 @@ export default function IssueFormPage() {
     </div>
   );
 }
+
+    

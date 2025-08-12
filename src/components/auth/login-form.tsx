@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -5,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ export default function LoginForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -32,19 +34,24 @@ export default function LoginForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    if (values.username === "cec-068" && values.password === "Khalsa@123") {
-      toast({
-        title: "Login Successful",
-        description: "Welcome back! Redirecting...",
-      });
-      router.push("/home");
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: "Invalid username or password.",
-      });
-    }
+    setIsLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      if (values.username === "cec-068" && values.password === "Khalsa@123") {
+        toast({
+          title: "Login Successful",
+          description: "Welcome back! Redirecting...",
+        });
+        router.push("/home");
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: "Invalid username or password.",
+        });
+      }
+      setIsLoading(false);
+    }, 1000);
   }
 
   return (
@@ -62,7 +69,7 @@ export default function LoginForm() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="" {...field} />
+                    <Input placeholder="" {...field} disabled={isLoading} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -80,6 +87,7 @@ export default function LoginForm() {
                         type={showPassword ? "text" : "password"}
                         placeholder=""
                         {...field}
+                        disabled={isLoading}
                       />
                       <Button
                         type="button"
@@ -88,6 +96,7 @@ export default function LoginForm() {
                         className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground"
                         onClick={() => setShowPassword((prev) => !prev)}
                         aria-label={showPassword ? "Hide password" : "Show password"}
+                        disabled={isLoading}
                       >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
@@ -99,8 +108,9 @@ export default function LoginForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full font-bold">
-              Login
+            <Button type="submit" className="w-full font-bold" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isLoading ? "Logging in..." : "Login"}
             </Button>
           </CardFooter>
         </form>
@@ -108,3 +118,5 @@ export default function LoginForm() {
     </Card>
   );
 }
+
+    
