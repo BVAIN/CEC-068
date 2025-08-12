@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Edit, Trash2, Printer, FileDown } from "lucide-react";
+import { Edit, Trash2, Printer, FileDown, Search } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 
@@ -33,6 +33,7 @@ const issueFormSchema = z.object({
   campus: z.enum(["North", "South"]),
   schoolType: z.enum(["Regular", "NCWEB", "SOL"]),
   received: z.boolean().default(false),
+  noOfAbsent: z.coerce.number().optional(),
 });
 
 export type IssueFormValues = z.infer<typeof issueFormSchema>;
@@ -44,6 +45,7 @@ export default function IssueFormPage() {
   const { toast } = useToast();
   const [issues, setIssues] = useState<IssueFormValues[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
@@ -70,6 +72,7 @@ export default function IssueFormPage() {
       campus: "North",
       schoolType: "Regular",
       received: false,
+      noOfAbsent: 0,
     },
   });
 
@@ -83,14 +86,14 @@ export default function IssueFormPage() {
     if (editingIndex !== null) {
       newIssues = [...issues];
       const existingIssue = newIssues[editingIndex];
-      newIssues[editingIndex] = {...existingIssue, ...data};
+      newIssues[editingIndex] = {...existingIssue, ...data, noOfAbsent: existingIssue.noOfAbsent, received: existingIssue.received};
       setEditingIndex(null);
       toast({
         title: "Issue Updated",
         description: "The issue has been successfully updated.",
       });
     } else {
-      newIssues = [...issues, data];
+      newIssues = [...issues, {...data, noOfAbsent: 0}];
       toast({
         title: "Issue Saved",
         description: "Your issue has been successfully saved.",
@@ -98,7 +101,6 @@ export default function IssueFormPage() {
     }
     updateIssuesState(newIssues);
     form.reset({
-      ...form.getValues(), // keep current values
       dateOfIssue: new Date().toISOString().split('T')[0],
       packetNo: "",
       packetFrom: "",
@@ -114,6 +116,7 @@ export default function IssueFormPage() {
       campus: "North",
       schoolType: "Regular",
       received: false,
+      noOfAbsent: 0,
     });
   }
 
@@ -153,6 +156,19 @@ export default function IssueFormPage() {
     newIssues[index].received = checked;
     updateIssuesState(newIssues);
   };
+  
+  const handleAbsentChange = (index: number, value: string) => {
+    const newIssues = [...issues];
+    newIssues[index].noOfAbsent = parseInt(value, 10) || 0;
+    updateIssuesState(newIssues);
+  };
+  
+  const filteredIssues = issues.filter(issue => 
+    issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  const totalScripts = filteredIssues.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
+  const totalAbsent = filteredIssues.reduce((acc, issue) => acc + (issue.noOfAbsent || 0), 0);
 
   return (
     <div className="space-y-8">
@@ -170,23 +186,23 @@ export default function IssueFormPage() {
             </CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-6">
               <FormField control={form.control} name="dateOfIssue" render={({ field }) => (<FormItem><FormLabel>Date of Issue</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="packetNo" render={({ field }) => (<FormItem><FormLabel>Packet No.</FormLabel><FormControl><Input placeholder="e.g. P123" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="packetFrom" render={({ field }) => (<FormItem><FormLabel>From</FormLabel><FormControl><Input placeholder="e.g. 12345" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="packetTo" render={({ field }) => (<FormItem><FormLabel>To</FormLabel><FormControl><Input placeholder="e.g. 12350" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="noOfScripts" render={({ field }) => (<FormItem><FormLabel>No. of Scripts</FormLabel><FormControl><Input type="number" placeholder="1" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="qpNo" render={({ field }) => (<FormItem><FormLabel>QP No.</FormLabel><FormControl><Input placeholder="e.g. 9876" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="upc" render={({ field }) => (<FormItem><FormLabel>UPC</FormLabel><FormControl><Input placeholder="e.g. 112233" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="packetNo" render={({ field }) => (<FormItem><FormLabel>Packet No.</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="packetFrom" render={({ field }) => (<FormItem><FormLabel>From</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="packetTo" render={({ field }) => (<FormItem><FormLabel>To</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="noOfScripts" render={({ field }) => (<FormItem><FormLabel>No. of Scripts</FormLabel><FormControl><Input type="number" placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="qpNo" render={({ field }) => (<FormItem><FormLabel>QP No.</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="upc" render={({ field }) => (<FormItem><FormLabel>UPC</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader><CardTitle>Teacher Details</CardTitle></CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-6">
-              <FormField control={form.control} name="teacherName" render={({ field }) => (<FormItem><FormLabel>Teacher Name</FormLabel><FormControl><Input placeholder="e.g. John Doe" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="teacherId" render={({ field }) => (<FormItem><FormLabel>Teacher ID</FormLabel><FormControl><Input placeholder="e.g. T-123" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="college" render={({ field }) => (<FormItem><FormLabel>College</FormLabel><FormControl><Input placeholder="e.g. University College" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="mobileNo" render={({ field }) => (<FormItem><FormLabel>Mobile No.</FormLabel><FormControl><Input placeholder="e.g. 9876543210" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="e.g. teacher@example.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="teacherName" render={({ field }) => (<FormItem><FormLabel>Teacher Name</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="teacherId" render={({ field }) => (<FormItem><FormLabel>Teacher ID</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="college" render={({ field }) => (<FormItem><FormLabel>College</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="mobileNo" render={({ field }) => (<FormItem><FormLabel>Mobile No.</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
             </CardContent>
           </Card>
           
@@ -265,12 +281,21 @@ export default function IssueFormPage() {
         <Separator className="my-8" />
         <Card>
           <CardHeader>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center gap-4">
               <div>
                 <CardTitle>Submitted Issues</CardTitle>
                 <CardDescription>View and manage the submitted issues.</CardDescription>
               </div>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
+                 <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input 
+                      placeholder="Search by teacher name..." 
+                      className="pl-10"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
                 <Button onClick={handlePrint} variant="outline"><Printer className="mr-2 h-4 w-4" /> Print</Button>
                 <Button onClick={handleExport}><FileDown className="mr-2 h-4 w-4" />Export to Excel</Button>
               </div>
@@ -288,13 +313,18 @@ export default function IssueFormPage() {
                   <TableHead>Range</TableHead>
                   <TableHead>QP No.</TableHead>
                   <TableHead>Type</TableHead>
+                  <TableHead>Campus</TableHead>
+                  <TableHead>No. of Scripts</TableHead>
+                  <TableHead>No. of Absent</TableHead>
                   <TableHead>Received</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {issues.map((issue, index) => (
-                  <TableRow key={index}>
+                {filteredIssues.map((issue, index) => {
+                  const originalIndex = issues.findIndex(i => i === issue);
+                  return (
+                  <TableRow key={originalIndex}>
                     <TableCell>{issue.teacherName}</TableCell>
                     <TableCell>{issue.teacherId}</TableCell>
                     <TableCell>{issue.dateOfIssue}</TableCell>
@@ -302,29 +332,45 @@ export default function IssueFormPage() {
                     <TableCell>{issue.packetFrom} - {issue.packetTo}</TableCell>
                     <TableCell>{issue.qpNo}</TableCell>
                     <TableCell>{issue.schoolType}</TableCell>
+                    <TableCell>{issue.campus}</TableCell>
+                    <TableCell>{issue.noOfScripts}</TableCell>
+                     <TableCell>
+                      <Input 
+                        type="number" 
+                        value={issue.noOfAbsent || ''} 
+                        onChange={(e) => handleAbsentChange(originalIndex, e.target.value)}
+                        className="w-20"
+                      />
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <Checkbox
-                          id={`received-${index}`}
+                          id={`received-${originalIndex}`}
                           checked={issue.received}
-                          onCheckedChange={(checked) => handleReceivedChange(index, !!checked)}
+                          onCheckedChange={(checked) => handleReceivedChange(originalIndex, !!checked)}
                         />
-                        <Label htmlFor={`received-${index}`} className="sr-only">Received</Label>
+                        <Label htmlFor={`received-${originalIndex}`} className="sr-only">Received</Label>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="icon" onClick={() => handleEdit(index)}>
+                        <Button variant="outline" size="icon" onClick={() => handleEdit(originalIndex)}>
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="destructive" size="icon" onClick={() => handleDelete(index)}>
+                        <Button variant="destructive" size="icon" onClick={() => handleDelete(originalIndex)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                )})}
               </TableBody>
+              <TableRow className="font-bold bg-muted/50">
+                  <TableCell colSpan={8} className="text-right">Total</TableCell>
+                  <TableCell>{totalScripts}</TableCell>
+                  <TableCell>{totalAbsent}</TableCell>
+                  <TableCell colSpan={2} className="text-left">Total Scripts: {totalScripts - totalAbsent}</TableCell>
+              </TableRow>
             </Table>
             </div>
           </CardContent>
@@ -334,3 +380,5 @@ export default function IssueFormPage() {
     </div>
   );
 }
+
+    
