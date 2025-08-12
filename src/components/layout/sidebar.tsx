@@ -9,8 +9,7 @@ import { cn } from "@/lib/utils";
 
 const menuItems = [
   { href: "/home", label: "Home", icon: Home },
-  { href: "/issue", label: "Issue", icon: FileText },
-  { href: "/bill-form", label: "Bill Form", icon: FilePlus },
+  { href: "/issue-form", label: "Issue Form", icon: FilePlus },
   { href: "/theme", label: "Theme", icon: Palette },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

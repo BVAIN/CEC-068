@@ -7,7 +7,7 @@ export default function HomePage() {
   return (
     <div className="space-y-8 animate-fade-in">
       <header>
-        <h1 className="text-4xl font-bold tracking-tight font-headline lg:text-5xl">Welcome to DriveSync Notes</h1>
+        <h1 className="text-4xl font-bold tracking-tight font-headline lg:text-5xl">Welcome to CEC-068</h1>
         <p className="text-lg text-muted-foreground mt-2">Manage your data with ease, online and offline.</p>
       </header>
       
@@ -16,16 +16,16 @@ export default function HomePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FilePlus className="w-6 h-6 text-primary" />
-              Create New Bill
+              Create New Issue
             </CardTitle>
-            <CardDescription>Start generating a new bill for a client.</CardDescription>
+            <CardDescription>Start generating a new issue for a teacher.</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow">
-            <p>Go to the Bill Form page to get started with creating professional invoices for your clients.</p>
+            <p>Go to the Issue Form page to get started with creating issue records.</p>
           </CardContent>
           <CardFooter>
-            <Link href="/bill-form" passHref>
-              <Button className="w-full">Go to Bill Form</Button>
+            <Link href="/issue-form" passHref>
+              <Button className="w-full">Go to Issue Form</Button>
             </Link>
           </CardFooter>
         </Card>
