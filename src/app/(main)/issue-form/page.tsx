@@ -26,10 +26,10 @@ const issueFormSchema = z.object({
   dateOfIssue: z.string().min(1, "Date of Issue is required"),
   packetNo: z.string().min(1, "Packet No. is required"),
   packetFrom: z.string().min(1, "Packet No. (From) is required"),
-  packetTo: z.string().min(1, "Packet No. (To) is required"),
+  packetTo: z.string().optional(),
   noOfScripts: z.coerce.number().min(1, "Number of Scripts must be at least 1"),
-  qpNo: z.string().min(1, "QP No. is required"),
-  upc: z.string().min(1, "UPC is required"),
+  qpNo: z.string().optional(),
+  upc: z.string().optional(),
   course: z.string().min(1, "Course is required"),
   teacherName: z.string().min(1, "Teacher Name is required"),
   mobileNo: z.string().min(1, "Mobile No. is required"),
@@ -166,8 +166,8 @@ export default function IssueFormPage() {
 
         const filterMatch = 
             (filters.dateOfIssue ? issue.dateOfIssue === filters.dateOfIssue : true) &&
-            (filters.qpNo ? issue.qpNo.toLowerCase().includes(filters.qpNo.toLowerCase()) : true) &&
-            (filters.upc ? issue.upc.toLowerCase().includes(filters.upc.toLowerCase()) : true) &&
+            (filters.qpNo && issue.qpNo ? issue.qpNo.toLowerCase().includes(filters.qpNo.toLowerCase()) : !filters.qpNo) &&
+            (filters.upc && issue.upc ? issue.upc.toLowerCase().includes(filters.upc.toLowerCase()) : !filters.upc) &&
             (filters.course ? issue.course.toLowerCase().includes(filters.course.toLowerCase()) : true) &&
             (filters.campus.length > 0 ? issue.campus && filters.campus.includes(issue.campus) : true) &&
             (filters.type.length > 0 ? issue.schoolType && filters.type.includes(issue.schoolType) : true) &&
@@ -212,7 +212,7 @@ export default function IssueFormPage() {
 
       newIssues = [...issues, {...data, noOfAbsent: 0, tokenNo: teacherToken}];
       // Update QP-UPC Map
-      if (!qpUpcMap[data.qpNo]) {
+      if (data.qpNo && data.upc && !qpUpcMap[data.qpNo]) {
         const newMap = {...qpUpcMap, [data.qpNo]: data.upc};
         setQpUpcMap(newMap);
         localStorage.setItem(QP_UPC_MAP_KEY, JSON.stringify(newMap));
@@ -596,8 +596,8 @@ export default function IssueFormPage() {
                   const originalIndex = issues.findIndex(i => i.teacherId === issue.teacherId && i.packetNo === issue.packetNo);
                   const isSelected = selectedIssues.includes(originalIndex);
                   return (
-                  <TableRow key={originalIndex} data-state={isSelected && "selected"}>
-                    <TableCell>
+                  <TableRow key={originalIndex} data-state={isSelected && "selected"} onClick={() => handleView(issue.teacherId)} style={{cursor: 'pointer'}}>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <Checkbox
                         onCheckedChange={(checked) => handleSelectIssue(originalIndex, !!checked)}
                         checked={isSelected}
@@ -614,7 +614,7 @@ export default function IssueFormPage() {
                     <TableCell>{issue.schoolType}</TableCell>
                     <TableCell>{issue.campus}</TableCell>
                     <TableCell>{issue.noOfScripts}</TableCell>
-                     <TableCell>
+                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <Input 
                         type="number" 
                         value={issue.noOfAbsent || ''} 
@@ -622,7 +622,7 @@ export default function IssueFormPage() {
                         className="w-20"
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id={`received-${originalIndex}`}
@@ -632,11 +632,8 @@ export default function IssueFormPage() {
                         <Label htmlFor={`received-${originalIndex}`} className="sr-only">Received</Label>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="icon" onClick={() => handleView(issue.teacherId)}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
                         <Button variant="outline" size="icon" onClick={() => handleSaveRow(originalIndex)}>
                           <Save className="h-4 w-4" />
                         </Button>
@@ -676,5 +673,3 @@ export default function IssueFormPage() {
     </div>
   );
 }
-
-    

@@ -137,6 +137,10 @@ export default function IssueViewPage() {
                         <span className="font-medium text-muted-foreground">College:</span>
                         <span>{teacherInfo.college}</span>
                     </div>
+                     <div className="flex justify-between">
+                        <span className="font-medium text-muted-foreground">Course:</span>
+                        <span>{teacherInfo.course}</span>
+                    </div>
                     <div className="flex justify-between">
                         <span className="font-medium text-muted-foreground">Mobile:</span>
                         <span>{teacherInfo.mobileNo}</span>
