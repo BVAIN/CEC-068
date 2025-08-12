@@ -190,7 +190,7 @@ export default function ScriptsIssueFormPage() {
       }
   }, [watchedQpNo, qpUpcMap, setValue]);
   
-  const { filteredIssues, totalScripts, totalMissing, totalExtra } = useMemo(() => {
+  const { filteredIssues, totalScripts, totalMissing, totalExtra, totalEvaluatedScripts } = useMemo(() => {
     const filtered = issues.filter(issue => {
         const searchMatch = 
             issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -215,8 +215,9 @@ export default function ScriptsIssueFormPage() {
     const totalScripts = filtered.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
     const totalMissing = filtered.reduce((acc, issue) => acc + (issue.noOfMissing || 0), 0);
     const totalExtra = filtered.reduce((acc, issue) => acc + (issue.extraSheets || 0), 0);
+    const totalEvaluatedScripts = filtered.filter(issue => issue.received).reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
 
-    return { filteredIssues: filtered, totalScripts, totalMissing, totalExtra };
+    return { filteredIssues: filtered, totalScripts, totalMissing, totalExtra, totalEvaluatedScripts };
   }, [issues, searchTerm, filters]);
 
 
@@ -509,10 +510,14 @@ export default function ScriptsIssueFormPage() {
         <>
         <Separator className="my-8" />
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-4 gap-6">
             <Card>
                 <CardHeader><CardTitle>Total Scripts Issued</CardTitle></CardHeader>
                 <CardContent><p className="text-3xl font-bold">{totalScripts}</p></CardContent>
+            </Card>
+             <Card>
+                <CardHeader><CardTitle>Total Evaluated scripts at CEC</CardTitle></CardHeader>
+                <CardContent><p className="text-3xl font-bold">{totalEvaluatedScripts}</p></CardContent>
             </Card>
             <Card>
                 <CardHeader><CardTitle>Total Missings</CardTitle></CardHeader>
