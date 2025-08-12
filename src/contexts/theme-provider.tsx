@@ -1,8 +1,9 @@
+
 "use client"
 
 import { createContext, useContext, useEffect, useState } from "react"
 
-type Theme = "light" | "grey" | "dark"
+type Theme = "light" | "dark"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -32,7 +33,11 @@ export function ThemeProvider({
     if (typeof window === 'undefined') {
       return defaultTheme;
     }
-    return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
+    const storedTheme = localStorage.getItem(storageKey);
+    if (storedTheme === 'light' || storedTheme === 'dark') {
+        return storedTheme;
+    }
+    return defaultTheme;
   });
 
   useEffect(() => {

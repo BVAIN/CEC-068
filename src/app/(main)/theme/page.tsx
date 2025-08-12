@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useTheme } from "@/contexts/theme-provider";
@@ -11,7 +12,6 @@ export default function ThemePage() {
 
   const themes = [
     { name: "light", icon: <Sun className="w-8 h-8" /> },
-    { name: "grey", icon: <Monitor className="w-8 h-8" /> },
     { name: "dark", icon: <Moon className="w-8 h-8" /> },
   ] as const;
 
@@ -22,7 +22,7 @@ export default function ThemePage() {
         <p className="text-lg text-muted-foreground mt-2">Personalize the appearance of your application.</p>
       </header>
       
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 gap-6">
         {themes.map((t) => (
           <ThemeCard
             key={t.name}

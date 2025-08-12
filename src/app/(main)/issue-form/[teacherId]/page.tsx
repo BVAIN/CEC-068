@@ -39,34 +39,6 @@ export default function IssueViewPage() {
       }
     }
   }, [params.teacherId, router, toast]);
-
-  const updateIssueState = (index: number, updatedIssue: IssueFormValues) => {
-    const newTeacherIssues = [...teacherIssues];
-    newTeacherIssues[index] = updatedIssue;
-    setTeacherIssues(newTeacherIssues);
-
-    const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
-    if (storedIssues) {
-        const allIssues: IssueFormValues[] = JSON.parse(storedIssues);
-        const issueToUpdateIndex = allIssues.findIndex(i => i.teacherId === updatedIssue.teacherId && i.packetNo === updatedIssue.packetNo);
-        if(issueToUpdateIndex !== -1) {
-            allIssues[issueToUpdateIndex] = updatedIssue;
-            localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(allIssues));
-        }
-    }
-  };
-  
-  const handleSaveChanges = (index: number) => {
-    toast({ title: "Changes Saved", description: "The issue details have been updated." });
-    // The state is already updated, and local storage is updated on change.
-    // This button can just provide feedback.
-  };
-
-  const handleRowDataChange = (index: number, field: keyof IssueFormValues, value: any) => {
-      const issueToUpdate = teacherIssues[index];
-      const updatedIssue = { ...issueToUpdate, [field]: value };
-      updateIssueState(index, updatedIssue);
-  };
   
   if (!teacherInfo) {
     return <div className="flex justify-center items-center h-full">Loading...</div>;
@@ -95,7 +67,7 @@ export default function IssueViewPage() {
                     <CardTitle>Packet-wise Information</CardTitle>
                     {teacherIssues.length > 0 && (
                         <CardDescription>
-                            Teacher: {teacherIssues[0].teacherName}
+                            Teacher: {teacherIssues[0].teacherName} ({teacherIssues[0].campus})
                         </CardDescription>
                     )}
                 </CardHeader>
@@ -106,6 +78,7 @@ export default function IssueViewPage() {
                                 <TableHead>Packet No.</TableHead>
                                 <TableHead>Date of Issue</TableHead>
                                 <TableHead>Range & Campus</TableHead>
+                                <TableHead>Type</TableHead>
                                 <TableHead>No. of Scripts</TableHead>
                                 <TableHead>No. of Absent</TableHead>
                                 <TableHead>Received</TableHead>
@@ -117,21 +90,10 @@ export default function IssueViewPage() {
                                     <TableCell>{issue.packetNo}</TableCell>
                                     <TableCell>{issue.dateOfIssue}</TableCell>
                                     <TableCell>{issue.packetFrom} - {issue.packetTo} ({issue.campus})</TableCell>
+                                    <TableCell>{issue.schoolType}</TableCell>
                                     <TableCell>{issue.noOfScripts}</TableCell>
-                                    <TableCell>
-                                        <Input 
-                                            type="number" 
-                                            value={issue.noOfAbsent || ''} 
-                                            onChange={(e) => handleRowDataChange(index, 'noOfAbsent', parseInt(e.target.value, 10) || 0)}
-                                            className="w-20"
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        <Checkbox
-                                            checked={issue.received}
-                                            onCheckedChange={(checked) => handleRowDataChange(index, 'received', !!checked)}
-                                        />
-                                    </TableCell>
+                                    <TableCell>{issue.noOfAbsent}</TableCell>
+                                    <TableCell>{issue.received ? 'Yes' : 'No'}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
