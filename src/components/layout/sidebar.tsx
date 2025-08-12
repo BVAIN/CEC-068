@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, FilePlus, Palette, Settings, LogOut, Rocket, Trash2 } from "lucide-react";
+import { Home, FilePlus, Palette, Settings, LogOut, Rocket, Trash2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/theme-provider";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const menuItems = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/issue-form", label: "Issue Form", icon: FilePlus },
+  { href: "/bill-form", label: "Bill Form", icon: FileText },
   { href: "/trash", label: "Trash", icon: Trash2 },
   { href: "/theme", label: "Theme", icon: Palette },
   { href: "/settings", label: "Settings", icon: Settings },

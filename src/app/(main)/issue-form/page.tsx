@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Trash2, Printer, FileDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
 
 const issueFormSchema = z.object({
   dateOfIssue: z.string().min(1, "Date of Issue is required"),
@@ -31,6 +32,7 @@ const issueFormSchema = z.object({
   college: z.string().min(1, "College is required"),
   campus: z.enum(["North", "South"]),
   schoolType: z.enum(["Regular", "NCWEB", "SOL"]),
+  received: z.boolean().default(false),
 });
 
 export type IssueFormValues = z.infer<typeof issueFormSchema>;
@@ -66,7 +68,8 @@ export default function IssueFormPage() {
       teacherId: "",
       college: "",
       campus: "North",
-      schoolType: "Regular"
+      schoolType: "Regular",
+      received: false,
     },
   });
 
@@ -79,7 +82,8 @@ export default function IssueFormPage() {
     let newIssues;
     if (editingIndex !== null) {
       newIssues = [...issues];
-      newIssues[editingIndex] = data;
+      const existingIssue = newIssues[editingIndex];
+      newIssues[editingIndex] = {...existingIssue, ...data};
       setEditingIndex(null);
       toast({
         title: "Issue Updated",
@@ -93,7 +97,24 @@ export default function IssueFormPage() {
       });
     }
     updateIssuesState(newIssues);
-    form.reset();
+    form.reset({
+      ...form.getValues(), // keep current values
+      dateOfIssue: new Date().toISOString().split('T')[0],
+      packetNo: "",
+      packetFrom: "",
+      packetTo: "",
+      noOfScripts: 1,
+      qpNo: "",
+      upc: "",
+      teacherName: "",
+      mobileNo: "",
+      email: "",
+      teacherId: "",
+      college: "",
+      campus: "North",
+      schoolType: "Regular",
+      received: false,
+    });
   }
 
   const handleEdit = (index: number) => {
@@ -125,6 +146,12 @@ export default function IssueFormPage() {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Issues");
     XLSX.writeFile(workbook, "IssueData.xlsx");
+  };
+
+  const handleReceivedChange = (index: number, checked: boolean) => {
+    const newIssues = [...issues];
+    newIssues[index].received = checked;
+    updateIssuesState(newIssues);
   };
 
   return (
@@ -258,8 +285,10 @@ export default function IssueFormPage() {
                   <TableHead>Teacher ID</TableHead>
                   <TableHead>Date of Issue</TableHead>
                   <TableHead>Packet No.</TableHead>
-                  <TableHead>Packet No. Range</TableHead>
+                  <TableHead>Range</TableHead>
                   <TableHead>QP No.</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Received</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -272,6 +301,17 @@ export default function IssueFormPage() {
                     <TableCell>{issue.packetNo}</TableCell>
                     <TableCell>{issue.packetFrom} - {issue.packetTo}</TableCell>
                     <TableCell>{issue.qpNo}</TableCell>
+                    <TableCell>{issue.schoolType}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`received-${index}`}
+                          checked={issue.received}
+                          onCheckedChange={(checked) => handleReceivedChange(index, !!checked)}
+                        />
+                        <Label htmlFor={`received-${index}`} className="sr-only">Received</Label>
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
                         <Button variant="outline" size="icon" onClick={() => handleEdit(index)}>
