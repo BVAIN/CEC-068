@@ -3,9 +3,10 @@
 /**
  * @fileOverview A flow for sending emails.
  *
- * This is a placeholder for a real email sending implementation.
- * In a real application, you would use a service like SendGrid, Nodemailer, Resend, etc.
- * The current code only logs the email details to the console and does not actually send an email.
+ * IMPORTANT: This is a placeholder for a real email sending implementation.
+ * The current code only logs the email details to the console and DOES NOT actually send an email.
+ * To enable email sending, you must integrate a real email service like Resend, SendGrid, or Nodemailer
+ * within the 'sendEmailFlow' below.
  *
  * - sendEmail - A function that handles sending an email.
  * - SendEmailInput - The input type for the sendEmail function.
@@ -23,8 +24,8 @@ export type SendEmailInput = z.infer<typeof SendEmailInputSchema>;
 
 
 export async function sendEmail(input: SendEmailInput): Promise<void> {
-    // This is where you would integrate with an email service.
-    // For now, we'll just log it to the console as a placeholder.
+    // This function calls the Genkit flow to handle the email logic.
+    // The current implementation is a placeholder.
     console.log(`Email sending function called for: ${input.to}`);
     console.log(`Subject: ${input.subject}`);
     await sendEmailFlow(input);
@@ -38,13 +39,28 @@ const sendEmailFlow = ai.defineFlow(
     outputSchema: z.void(),
   },
   async (input) => {
-    // In a real implementation, this flow would use a tool or an SDK to send the email.
-    // For example, using a service like Resend, SendGrid, or Nodemailer.
+    // DEVELOPER ACTION REQUIRED:
     // This is a placeholder and does NOT actually send an email.
+    // To implement email sending, replace the console logs below with an integration
+    // for a real email service provider.
+    //
+    // Example using Resend (you would need to `npm install resend`):
+    //
+    // import { Resend } from 'resend';
+    // const resend = new Resend(process.env.RESEND_API_KEY);
+    //
+    // await resend.emails.send({
+    //   from: 'onboarding@resend.dev', // Your verified sending address
+    //   to: input.to,
+    //   subject: input.subject,
+    //   html: input.body,
+    // });
+
     console.log(`--- PLACEHOLDER: Pretending to send email ---`);
     console.log(`To: ${input.to}`);
     console.log(`Subject: ${input.subject}`);
     console.log(`Body: ${input.body}`);
     console.log(`-------------------------------------------`);
+    console.log("REMINDER: This is a log message. No email was actually sent.");
   }
 );
