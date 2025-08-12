@@ -47,7 +47,7 @@ export type IssueFormValues = z.infer<typeof issueFormSchema>;
 const ISSUES_STORAGE_KEY = 'cec068_issues';
 const TRASH_STORAGE_KEY = 'cec068_trash';
 const QP_UPC_MAP_KEY = 'cec068_qp_upc_map';
-const TEACHER_TOKEN_MAP_KEY = 'cec068_teacher_token_map';
+const TEACHER_COURSE_TOKEN_MAP_KEY = 'cec068_teacher_course_token_map';
 
 // Populate with some initial data for demonstration
 const seedQpUpcMap = () => {
@@ -81,7 +81,7 @@ export default function IssueFormPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIssues, setSelectedIssues] = useState<number[]>([]);
   const [qpUpcMap, setQpUpcMap] = useState<Record<string, string>>({});
-  const [teacherTokenMap, setTeacherTokenMap] = useState<Record<string, number>>({});
+  const [teacherCourseTokenMap, setTeacherCourseTokenMap] = useState<Record<string, number>>({});
   const [filters, setFilters] = useState<FilterValues>({
     dateOfIssue: "",
     qpNo: "",
@@ -104,9 +104,9 @@ export default function IssueFormPage() {
     if (storedMap) {
         setQpUpcMap(JSON.parse(storedMap));
     }
-    const storedTokenMap = localStorage.getItem(TEACHER_TOKEN_MAP_KEY);
+    const storedTokenMap = localStorage.getItem(TEACHER_COURSE_TOKEN_MAP_KEY);
     if(storedTokenMap) {
-        setTeacherTokenMap(JSON.parse(storedTokenMap));
+        setTeacherCourseTokenMap(JSON.parse(storedTokenMap));
     }
   }, []);
 
@@ -199,15 +199,19 @@ export default function IssueFormPage() {
         description: `From CEC-068 SGTB Khalsa College: Packet details updated for Packet No. ${data.packetNo}.`,
       });
     } else {
-        let currentTokenMap = teacherTokenMap;
-        let nextToken = Object.keys(currentTokenMap).length + 1;
-        let teacherToken = currentTokenMap[data.teacherId];
+        const teacherCourseKey = `${data.teacherId}-${data.course}`;
+        let currentTokenMap = teacherCourseTokenMap;
+        let teacherToken = currentTokenMap[teacherCourseKey];
 
         if (!teacherToken) {
-            teacherToken = nextToken;
-            currentTokenMap = {...currentTokenMap, [data.teacherId]: teacherToken};
-            setTeacherTokenMap(currentTokenMap);
-            localStorage.setItem(TEACHER_TOKEN_MAP_KEY, JSON.stringify(currentTokenMap));
+            // Find the highest token number for the current course
+            const courseTeachers = Object.keys(currentTokenMap).filter(key => key.endsWith(`-${data.course}`));
+            const lastTokenForCourse = courseTeachers.reduce((max, key) => Math.max(max, currentTokenMap[key]), 0);
+            
+            teacherToken = lastTokenForCourse + 1;
+            currentTokenMap = {...currentTokenMap, [teacherCourseKey]: teacherToken};
+            setTeacherCourseTokenMap(currentTokenMap);
+            localStorage.setItem(TEACHER_COURSE_TOKEN_MAP_KEY, JSON.stringify(currentTokenMap));
         }
 
       newIssues = [...issues, {...data, noOfAbsent: 0, tokenNo: teacherToken}];
