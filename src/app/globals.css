@@ -13,8 +13,8 @@
     --popover-foreground: 220 10% 10%;
     --primary: 217 91% 60%; /* Medium Blue */
     --primary-foreground: 0 0% 100%; 
-    --secondary: 216 100% 75%; /* Lighter Blue */
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 216 100% 95%; /* Lighter Blue */
+    --secondary-foreground: 217 91% 60%;
     --muted: 220 10% 90%;
     --muted-foreground: 220 10% 40%;
     --accent: 220 10% 90%;
@@ -61,23 +61,16 @@
 
 @layer components {
   .glass-button {
-      @apply relative overflow-hidden rounded-lg shadow-lg backdrop-filter backdrop-blur-lg;
-      background-color: rgba(255, 255, 255, 0.05);
+      @apply relative overflow-hidden rounded-lg shadow-lg;
+      background-color: hsl(var(--primary));
       border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  .glass-button::before {
-      content: '';
-      @apply absolute inset-0;
-      background: linear-gradient(120deg, hsl(var(--primary)), hsl(var(--secondary)));
-      @apply transition-opacity duration-300 opacity-80;
-  }
-
-  .glass-button:hover::before {
-      @apply opacity-100;
+  .glass-button:hover {
+      background-color: hsl(var(--primary) / 0.9);
   }
   
   .glass-button span {
-      @apply relative z-10;
+      @apply relative z-10 text-primary-foreground;
   }
 }

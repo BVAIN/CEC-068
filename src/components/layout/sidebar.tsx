@@ -33,7 +33,7 @@ export default function Sidebar() {
                 variant={isActive ? "default" : "ghost"}
                 className={cn(
                   'w-full justify-start text-base py-6',
-                  isActive && 'glass-button text-primary-foreground'
+                  isActive && 'text-primary-foreground'
                 )}
               >
                 <item.icon className="mr-3 h-5 w-5" />
