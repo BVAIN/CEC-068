@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { useTheme } from "@/contexts/theme-provider";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 
 const formSchema = z.object({
@@ -23,7 +22,6 @@ export default function LoginForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const { theme } = useTheme();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,15 +44,6 @@ export default function LoginForm() {
         title: "Login Failed",
         description: "Invalid username or password.",
       });
-    }
-  }
-
-  const getButtonGradientClass = () => {
-    switch (theme) {
-      case 'light': return 'bg-gradient-to-r from-primary to-blue-400 hover:from-primary/90 hover:to-blue-400/90 text-primary-foreground';
-      case 'grey': return 'bg-gradient-to-r from-primary to-green-400 hover:from-primary/90 hover:to-green-400/90 text-primary-foreground';
-      case 'dark': return 'bg-gradient-to-r from-primary to-yellow-400 hover:from-primary/90 hover:to-yellow-400/90 text-primary-foreground';
-      default: return 'bg-gradient-to-r from-primary text-primary-foreground';
     }
   }
 
@@ -110,7 +99,7 @@ export default function LoginForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" className={`w-full font-bold ${getButtonGradientClass()}`}>
+            <Button type="submit" className="w-full font-bold">
               Login
             </Button>
           </CardFooter>

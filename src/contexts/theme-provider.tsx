@@ -3,7 +3,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react"
 
-type Theme = "light" | "dark"
+type Theme = "dark" | "light" | "system"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -17,7 +17,7 @@ type ThemeProviderState = {
 }
 
 const initialState: ThemeProviderState = {
-  theme: "light",
+  theme: "system",
   setTheme: () => null,
 }
 
@@ -25,48 +25,39 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,
-  defaultTheme = "light",
+  defaultTheme = "system",
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme);
+  const [theme, setTheme] = useState<Theme>("system");
 
   useEffect(() => {
-    try {
-      const storedTheme = localStorage.getItem(storageKey);
-      if (storedTheme === 'light' || storedTheme === 'dark') {
-          setTheme(storedTheme);
-      }
-    } catch (e) {
-        console.error("Failed to access localStorage", e);
-    }
-  }, [storageKey]);
+    const storedTheme = (localStorage.getItem(storageKey) as Theme) || defaultTheme;
+    setTheme(storedTheme);
+  }, [storageKey, defaultTheme]);
 
   useEffect(() => {
     const root = window.document.documentElement
-    root.classList.remove("theme-light", "theme-grey", "theme-dark")
 
-    // Add a class based on the current theme
-    if (theme === "light") {
-      root.classList.add("theme-light")
-    } else if (theme === "dark") {
-      root.classList.add("theme-dark")
-    } else {
-       root.classList.add(`theme-${theme}`)
+    root.classList.remove("light", "dark")
+
+    if (theme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
+        ? "dark"
+        : "light"
+
+      root.classList.add(systemTheme)
+      return
     }
-    
+
+    root.classList.add(theme)
   }, [theme])
 
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      try {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(storageKey, theme)
-        }
-      } catch (e) {
-          console.error("Failed to access localStorage", e);
-      }
+      localStorage.setItem(storageKey, theme)
       setTheme(theme)
     },
   }
@@ -80,7 +71,9 @@ export function ThemeProvider({
 
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext)
+
   if (context === undefined)
     throw new Error("useTheme must be used within a ThemeProvider")
+
   return context
 }

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { FilePlus, Palette, Settings } from "lucide-react";
+import { FilePlus, Settings } from "lucide-react";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -26,23 +26,6 @@ export default function HomePage() {
           <CardFooter>
             <Link href="/issue-form" passHref>
               <Button className="w-full">Go to Issue Form</Button>
-            </Link>
-          </CardFooter>
-        </Card>
-        <Card className="flex flex-col">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Palette className="w-6 h-6 text-primary" />
-              Customize Theme
-            </CardTitle>
-            <CardDescription>Change the look and feel of the app.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-grow">
-            <p>Explore different visual styles to find one that suits you. Light, Grey, and Dark themes are available.</p>
-          </CardContent>
-          <CardFooter>
-            <Link href="/theme" passHref>
-              <Button className="w-full">Change Theme</Button>
             </Link>
           </CardFooter>
         </Card>

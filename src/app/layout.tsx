@@ -21,7 +21,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <ThemeProvider defaultTheme="light" storageKey="drivesync-theme">
+        <ThemeProvider storageKey="drivesync-theme">
             {children}
             <Toaster />
         </ThemeProvider>

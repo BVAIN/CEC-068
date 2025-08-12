@@ -4,71 +4,49 @@
 @tailwind utilities;
 
 @layer base {
-  :root, .theme-light {
-    --background: 197 88% 94%;
-    --foreground: 215 28% 17%;
-    --card: 197 88% 98%;
-    --card-foreground: 215 28% 17%;
-    --popover: 197 88% 98%;
-    --popover-foreground: 215 28% 17%;
-    --primary: 197 78% 53%; /* Blue */
+  :root, .light {
+    --background: 220 20% 95%;
+    --foreground: 220 10% 10%;
+    --card: 220 20% 100%;
+    --card-foreground: 220 10% 10%;
+    --popover: 220 20% 100%;
+    --popover-foreground: 220 10% 10%;
+    --primary: 210 100% 56%; /* Blue */
     --primary-foreground: 0 0% 100%;
-    --secondary: 197 50% 90%;
-    --secondary-foreground: 215 28% 17%;
-    --muted: 197 50% 90%;
-    --muted-foreground: 215 28% 40%;
-    --accent: 163 64% 71%; /* Green */
-    --accent-foreground: 215 28% 17%;
+    --secondary: 48 96% 58%; /* Yellow */
+    --secondary-foreground: 220 10% 10%;
+    --muted: 220 10% 90%;
+    --muted-foreground: 220 10% 40%;
+    --accent: 220 10% 90%;
+    --accent-foreground: 220 10% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 197 50% 85%;
-    --input: 197 50% 85%;
-    --ring: 197 78% 53%;
-    --radius: 0.5rem;
+    --border: 220 10% 85%;
+    --input: 220 10% 85%;
+    --ring: 210 100% 56%;
+    --radius: 0.75rem;
   }
 
-  .theme-grey {
-    --background: 220 9% 46%;
+  .dark {
+    --background: 0 0% 0%;
     --foreground: 210 20% 98%;
-    --card: 220 9% 51%;
+    --card: 0 0% 9%;
     --card-foreground: 210 20% 98%;
-    --popover: 220 9% 51%;
+    --popover: 0 0% 9%;
     --popover-foreground: 210 20% 98%;
-    --primary: 163 64% 51%; /* Green buttons */
-    --primary-foreground: 215 28% 17%;
-    --secondary: 220 9% 36%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 220 9% 36%;
+    --primary: 210 100% 56%; /* Blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 48 96% 58%; /* Yellow */
+    --secondary-foreground: 220 10% 10%;
+    --muted: 0 0% 15%;
     --muted-foreground: 210 20% 80%;
-    --accent: 197 78% 63%; /* Blue */
-    --accent-foreground: 215 28% 17%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 220 9% 56%;
-    --input: 220 9% 56%;
-    --ring: 163 64% 51%;
-  }
-
-  .theme-dark {
-    --background: 0 0% 0%; /* Black */
-    --foreground: 210 20% 98%;
-    --card: 215 28% 12%;
-    --card-foreground: 210 20% 98%;
-    --popover: 215 28% 12%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 48 96% 58%; /* Yellow */
-    --primary-foreground: 215 28% 10%;
-    --secondary: 215 28% 17%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 28% 17%;
-    --muted-foreground: 210 20% 80%;
-    --accent: 197 78% 53%; /* Blue */
+    --accent: 0 0% 15%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 20% 98%;
-    --border: 215 28% 17%;
-    --input: 215 28% 17%;
-    --ring: 48 96% 58%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 210 100% 56%;
   }
 }
 
@@ -78,5 +56,28 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .glass-button {
+      @apply relative overflow-hidden rounded-lg shadow-lg backdrop-filter backdrop-blur-lg;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-button::before {
+      content: '';
+      @apply absolute inset-0;
+      background: linear-gradient(120deg, hsl(var(--primary)), hsl(var(--secondary)));
+      @apply transition-opacity duration-300 opacity-80;
+  }
+
+  .glass-button:hover::before {
+      @apply opacity-100;
+  }
+  
+  .glass-button span {
+      @apply relative z-10;
   }
 }
