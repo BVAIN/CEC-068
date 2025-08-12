@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { History } from "lucide-react";
+import { History, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { IssueFormValues } from "../issue-form/page";
 
