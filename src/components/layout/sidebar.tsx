@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const menuItems = [
   { href: "/home", label: "Home", icon: Home },
-  { href: "/issue-form", label: "Issue Form", icon: FilePlus },
+  { href: "/issue-form", label: "Scripts Issue Form", icon: FilePlus },
   { href: "/bill-form", label: "Bill Form", icon: FileText },
   { href: "/trash", label: "Trash", icon: Trash2 },
   { href: "/settings", label: "Settings", icon: Settings },

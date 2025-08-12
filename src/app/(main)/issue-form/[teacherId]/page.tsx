@@ -34,7 +34,7 @@ export default function IssueViewPage() {
         setTeacherIssues(foundIssues);
         setTeacherInfo(foundIssues[0]);
       } else {
-        toast({ variant: "destructive", title: "Error", description: "No issues found for this teacher." });
+        // toast({ variant: "destructive", title: "Error", description: "No issues found for this teacher." });
         router.push("/issue-form");
       }
     }
@@ -84,6 +84,8 @@ export default function IssueViewPage() {
                                 <TableHead>Type</TableHead>
                                 <TableHead>No. of Scripts</TableHead>
                                 <TableHead>No. of Absent</TableHead>
+                                <TableHead>Missing</TableHead>
+                                <TableHead>Extra</TableHead>
                                 <TableHead>Received</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -97,6 +99,8 @@ export default function IssueViewPage() {
                                     <TableCell>{issue.schoolType}</TableCell>
                                     <TableCell>{issue.noOfScripts}</TableCell>
                                     <TableCell>{issue.noOfAbsent}</TableCell>
+                                    <TableCell>{issue.noOfMissing}</TableCell>
+                                    <TableCell>{issue.extraSheets}</TableCell>
                                     <TableCell>{issue.received ? 'Yes' : 'No'}</TableCell>
                                 </TableRow>
                             ))}
@@ -129,6 +133,10 @@ export default function IssueViewPage() {
                         <span className="font-medium text-muted-foreground">Name:</span>
                         <span>{teacherInfo.teacherName}</span>
                     </div>
+                     <div className="flex justify-between">
+                        <span className="font-medium text-muted-foreground">Course:</span>
+                        <span>{teacherInfo.course}</span>
+                    </div>
                     <div className="flex justify-between">
                         <span className="font-medium text-muted-foreground">ID:</span>
                         <span>{teacherInfo.teacherId}</span>
@@ -136,10 +144,6 @@ export default function IssueViewPage() {
                     <div className="flex justify-between">
                         <span className="font-medium text-muted-foreground">College:</span>
                         <span>{teacherInfo.college}</span>
-                    </div>
-                     <div className="flex justify-between">
-                        <span className="font-medium text-muted-foreground">Course:</span>
-                        <span>{teacherInfo.course}</span>
                     </div>
                     <div className="flex justify-between">
                         <span className="font-medium text-muted-foreground">Mobile:</span>

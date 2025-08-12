@@ -21,11 +21,11 @@ export default function HomePage() {
             <CardDescription>Start generating a new issue for a teacher.</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow">
-            <p>Go to the Issue Form page to get started with creating issue records.</p>
+            <p>Go to the Scripts Issue Form page to get started with creating issue records.</p>
           </CardContent>
           <CardFooter>
             <Link href="/issue-form" passHref>
-              <Button className="w-full">Go to Issue Form</Button>
+              <Button className="w-full">Go to Scripts Issue Form</Button>
             </Link>
           </CardFooter>
         </Card>

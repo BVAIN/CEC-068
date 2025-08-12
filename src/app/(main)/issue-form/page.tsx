@@ -30,16 +30,18 @@ const issueFormSchema = z.object({
   noOfScripts: z.coerce.number().min(1, "Number of Scripts must be at least 1"),
   qpNo: z.string().optional(),
   upc: z.string().optional(),
-  course: z.string().min(1, "Course is required"),
   teacherName: z.string().min(1, "Teacher Name is required"),
   mobileNo: z.string().min(1, "Mobile No. is required"),
   email: z.string().email("Invalid email address"),
   teacherId: z.string().min(1, "Teacher ID is required"),
   college: z.string().min(1, "College is required"),
+  course: z.string().min(1, "Course is required"),
   campus: z.enum(["North", "South"]).optional(),
   schoolType: z.enum(["Regular", "NCWEB", "SOL"]).optional(),
   received: z.boolean().default(false),
   noOfAbsent: z.coerce.number().optional(),
+  noOfMissing: z.coerce.number().optional(),
+  extraSheets: z.coerce.number().optional(),
 });
 
 export type IssueFormValues = z.infer<typeof issueFormSchema>;
@@ -121,17 +123,19 @@ export default function IssueFormPage() {
       noOfScripts: undefined,
       qpNo: "",
       upc: "",
-      course: "",
       teacherName: "",
       mobileNo: "",
       email: "",
       teacherId: "",
       college: "",
+      course: "",
       campus: undefined,
       schoolType: undefined,
       received: false,
       noOfAbsent: 0,
       tokenNo: undefined,
+      noOfMissing: 0,
+      extraSheets: 0,
     },
   });
 
@@ -183,8 +187,8 @@ export default function IssueFormPage() {
       }
   }, [watchedQpNo, qpUpcMap, setValue]);
   
-  const filteredIssues = useMemo(() => {
-    return issues.filter(issue => {
+  const { filteredIssues, totalScripts, totalMissing, totalExtra } = useMemo(() => {
+    const filtered = issues.filter(issue => {
         const searchMatch = 
             issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -203,6 +207,12 @@ export default function IssueFormPage() {
             
         return searchMatch && filterMatch;
     });
+
+    const totalScripts = filtered.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
+    const totalMissing = filtered.reduce((acc, issue) => acc + (issue.noOfMissing || 0), 0);
+    const totalExtra = filtered.reduce((acc, issue) => acc + (issue.extraSheets || 0), 0);
+
+    return { filteredIssues: filtered, totalScripts, totalMissing, totalExtra };
   }, [issues, searchTerm, filters]);
 
 
@@ -219,7 +229,7 @@ export default function IssueFormPage() {
     if (isUpdating) {
       newIssues = [...issues];
       const existingIssue = newIssues[editingIndex];
-      newIssues[editingIndex] = {...data, tokenNo: existingIssue.tokenNo, received: existingIssue.received, noOfAbsent: existingIssue.noOfAbsent};
+      newIssues[editingIndex] = {...data, tokenNo: existingIssue.tokenNo, received: existingIssue.received, noOfAbsent: existingIssue.noOfAbsent, noOfMissing: existingIssue.noOfMissing, extraSheets: existingIssue.extraSheets};
       setEditingIndex(null);
     } else {
         const teacherCourseKey = data.course;
@@ -240,7 +250,7 @@ export default function IssueFormPage() {
             localStorage.setItem(TEACHER_COURSE_TOKEN_MAP_KEY, JSON.stringify(currentTokenMap));
         }
 
-      newIssues = [...issues, {...data, noOfAbsent: 0, tokenNo: teacherToken}];
+      newIssues = [...issues, {...data, noOfAbsent: 0, noOfMissing: 0, extraSheets: 0, tokenNo: teacherToken}];
       if (data.qpNo && data.upc && !qpUpcMap[data.qpNo]) {
         const newMap = {...qpUpcMap, [data.qpNo]: data.upc};
         setQpUpcMap(newMap);
@@ -256,17 +266,19 @@ export default function IssueFormPage() {
       noOfScripts: undefined,
       qpNo: "",
       upc: "",
-      course: "",
       teacherName: "",
       mobileNo: "",
       email: "",
       teacherId: "",
       college: "",
+      course: "",
       campus: undefined,
       schoolType: undefined,
       received: false,
       noOfAbsent: 0,
       tokenNo: undefined,
+      noOfMissing: 0,
+      extraSheets: 0,
     });
     setIsAutofilled(false);
   }
@@ -323,7 +335,6 @@ export default function IssueFormPage() {
   
   const handleSaveRow = (index: number) => {
     updateIssuesStateAndLocalStorage(issues);
-    const issue = issues[index];
   }
   
   const handleSelectIssue = (index: number, checked: boolean) => {
@@ -360,7 +371,7 @@ export default function IssueFormPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-4xl font-bold tracking-tight font-headline">Issue Form</h1>
+        <h1 className="text-4xl font-bold tracking-tight font-headline">Scripts Issue Form</h1>
         <p className="text-lg text-muted-foreground mt-2">Create and manage teacher issues here.</p>
       </header>
 
@@ -459,7 +470,7 @@ export default function IssueFormPage() {
           </Card>
 
           <div className="flex justify-end">
-            <Button type="submit" size="lg">{editingIndex !== null ? 'Update Issue' : 'Save Issue'}</Button>
+            <Button type="submit" size="lg">{editingIndex !== null ? 'Update Issue' : 'Save'}</Button>
           </div>
         </form>
       </Form>
@@ -467,6 +478,23 @@ export default function IssueFormPage() {
       {issues.length > 0 && (
         <>
         <Separator className="my-8" />
+
+        <div className="grid md:grid-cols-3 gap-6">
+            <Card>
+                <CardHeader><CardTitle>Total Scripts Issued</CardTitle></CardHeader>
+                <CardContent><p className="text-3xl font-bold">{totalScripts}</p></CardContent>
+            </Card>
+            <Card>
+                <CardHeader><CardTitle>Total Missing</CardTitle></CardHeader>
+                <CardContent><p className="text-3xl font-bold">{totalMissing}</p></CardContent>
+            </Card>
+            <Card>
+                <CardHeader><CardTitle>Total Extra Sheets</CardTitle></CardHeader>
+                <CardContent><p className="text-3xl font-bold">{totalExtra}</p></CardContent>
+            </Card>
+        </div>
+
+
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center gap-4 flex-wrap">
@@ -595,6 +623,8 @@ export default function IssueFormPage() {
                   <TableHead>Campus</TableHead>
                   <TableHead>No. of Scripts</TableHead>
                   <TableHead>No. of Absent</TableHead>
+                  <TableHead>Missing</TableHead>
+                  <TableHead>Extra Sheets</TableHead>
                   <TableHead>Received</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -629,6 +659,22 @@ export default function IssueFormPage() {
                         onChange={(e) => handleRowDataChange(originalIndex, 'noOfAbsent', parseInt(e.target.value, 10) || 0)}
                         className="w-20"
                       />
+                    </TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Input
+                            type="number"
+                            value={issue.noOfMissing || ''}
+                            onChange={(e) => handleRowDataChange(originalIndex, 'noOfMissing', parseInt(e.target.value, 10) || 0)}
+                            className="w-20"
+                        />
+                    </TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Input
+                            type="number"
+                            value={issue.extraSheets || ''}
+                            onChange={(e) => handleRowDataChange(originalIndex, 'extraSheets', parseInt(e.target.value, 10) || 0)}
+                            className="w-20"
+                        />
                     </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center space-x-2">
