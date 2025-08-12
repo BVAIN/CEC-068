@@ -40,21 +40,11 @@ export default function TrashPage() {
     const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
     const issues = storedIssues ? JSON.parse(storedIssues) : [];
     localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify([...issues, issueToRestore]));
-
-    toast({
-      title: "Issue Restored",
-      description: "The issue has been successfully restored.",
-    });
   };
   
   const handleDeletePermanent = (index: number) => {
     const newTrash = trashedIssues.filter((_, i) => i !== index);
     updateAndSaveTrash(newTrash);
-    toast({
-      variant: "destructive",
-      title: "Issue Deleted Permanently",
-      description: "The issue has been permanently removed.",
-    });
   };
   
   const handleSelectTrash = (index: number, checked: boolean) => {
@@ -83,10 +73,6 @@ export default function TrashPage() {
     
     updateAndSaveTrash(newTrash);
     setSelectedTrash([]);
-    toast({
-        title: `${issuesToRestore.length} Issues Restored`,
-        description: "The selected issues have been restored.",
-    });
   };
 
   const handleBulkDelete = () => {
@@ -94,11 +80,6 @@ export default function TrashPage() {
     updateAndSaveTrash(newTrash);
     const count = selectedTrash.length;
     setSelectedTrash([]);
-    toast({
-      variant: "destructive",
-      title: `${count} Issues Deleted Permanently`,
-      description: "The selected issues have been permanently removed.",
-    });
   };
 
   return (
@@ -153,6 +134,9 @@ export default function TrashPage() {
                       </TableHead>
                     <TableHead>Teacher Name</TableHead>
                     <TableHead>Teacher ID</TableHead>
+                    <TableHead>Course</TableHead>
+                    <TableHead>Campus</TableHead>
+                    <TableHead>Type</TableHead>
                     <TableHead>Date of Issue</TableHead>
                     <TableHead>Packet No.</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -172,6 +156,9 @@ export default function TrashPage() {
                         </TableCell>
                       <TableCell>{issue.teacherName}</TableCell>
                       <TableCell>{issue.teacherId}</TableCell>
+                      <TableCell>{issue.course}</TableCell>
+                      <TableCell>{issue.campus}</TableCell>
+                      <TableCell>{issue.schoolType}</TableCell>
                       <TableCell>{issue.dateOfIssue}</TableCell>
                       <TableCell>{issue.packetNo}</TableCell>
                       <TableCell className="text-right">

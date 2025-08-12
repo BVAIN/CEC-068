@@ -81,7 +81,8 @@ export default function IssueFormPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIssues, setSelectedIssues] = useState<number[]>([]);
   const [qpUpcMap, setQpUpcMap] = useState<Record<string, string>>({});
-  const [teacherCourseTokenMap, setTeacherCourseTokenMap] = useState<Record<string, number>>({});
+  const [teacherCourseTokenMap, setTeacherCourseTokenMap] = useState<Record<string, Record<string, number>>>({});
+  const [isAutofilled, setIsAutofilled] = useState(false);
   const [filters, setFilters] = useState<FilterValues>({
     dateOfIssue: "",
     qpNo: "",
@@ -134,9 +135,14 @@ export default function IssueFormPage() {
     },
   });
 
-  const { watch, setValue } = form;
+  const { watch, setValue, getValues } = form;
   const watchedTeacherId = watch('teacherId');
   const watchedQpNo = watch('qpNo');
+  const watchedTeacherName = watch('teacherName');
+  const watchedCourse = watch('course');
+  const watchedCollege = watch('college');
+  const watchedMobileNo = watch('mobileNo');
+  const watchedEmail = watch('email');
 
   useEffect(() => {
     if (watchedTeacherId && editingIndex === null) {
@@ -147,9 +153,29 @@ export default function IssueFormPage() {
         setValue('email', existingTeacherIssue.email);
         setValue('college', existingTeacherIssue.college);
         setValue('course', existingTeacherIssue.course);
+        setIsAutofilled(true);
       }
     }
   }, [watchedTeacherId, issues, setValue, editingIndex]);
+
+  useEffect(() => {
+      // If any of the autofilled fields are changed by the user, break the autofill link
+      if (isAutofilled) {
+        const currentValues = getValues();
+        const existingTeacherIssue = issues.find(issue => issue.teacherId === currentValues.teacherId);
+        if (existingTeacherIssue) {
+            if (
+                currentValues.teacherName !== existingTeacherIssue.teacherName ||
+                currentValues.mobileNo !== existingTeacherIssue.mobileNo ||
+                currentValues.email !== existingTeacherIssue.email ||
+                currentValues.college !== existingTeacherIssue.college ||
+                currentValues.course !== existingTeacherIssue.course
+            ) {
+                setIsAutofilled(false);
+            }
+        }
+      }
+  }, [watchedTeacherName, watchedCourse, watchedCollege, watchedMobileNo, watchedEmail, isAutofilled, getValues, issues]);
 
   useEffect(() => {
       if (watchedQpNo && qpUpcMap[watchedQpNo]) {
@@ -162,7 +188,8 @@ export default function IssueFormPage() {
         const searchMatch = 
             issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            issue.mobileNo.toLowerCase().includes(searchTerm.toLowerCase());
+            issue.mobileNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (issue.course && issue.course.toLowerCase().includes(searchTerm.toLowerCase()));
 
         const filterMatch = 
             (filters.dateOfIssue ? issue.dateOfIssue === filters.dateOfIssue : true) &&
@@ -194,38 +221,31 @@ export default function IssueFormPage() {
       const existingIssue = newIssues[editingIndex];
       newIssues[editingIndex] = {...data, tokenNo: existingIssue.tokenNo, received: existingIssue.received, noOfAbsent: existingIssue.noOfAbsent};
       setEditingIndex(null);
-      toast({
-        title: "Message Sent",
-        description: `From CEC-068 SGTB Khalsa College: Packet details updated for Packet No. ${data.packetNo}.`,
-      });
     } else {
-        const teacherCourseKey = `${data.teacherId}-${data.course}`;
-        let currentTokenMap = teacherCourseTokenMap;
-        let teacherToken = currentTokenMap[teacherCourseKey];
+        const teacherCourseKey = data.course;
+        let currentTokenMap = {...teacherCourseTokenMap};
+        let courseTokens = currentTokenMap[teacherCourseKey] || {};
+        
+        let teacherToken = courseTokens[data.teacherId];
 
         if (!teacherToken) {
-            const courseTeachers = Object.keys(currentTokenMap).filter(key => key.endsWith(`-${data.course}`));
-            const lastTokenForCourse = courseTeachers.length > 0 ?
-                Math.max(...courseTeachers.map(key => currentTokenMap[key])) : 0;
+             const lastTokenForCourse = Object.keys(courseTokens).length > 0 ?
+                Math.max(0, ...Object.values(courseTokens)) : 0;
             
             teacherToken = lastTokenForCourse + 1;
-            currentTokenMap = {...currentTokenMap, [teacherCourseKey]: teacherToken};
+            courseTokens[data.teacherId] = teacherToken;
+            currentTokenMap[teacherCourseKey] = courseTokens;
+            
             setTeacherCourseTokenMap(currentTokenMap);
             localStorage.setItem(TEACHER_COURSE_TOKEN_MAP_KEY, JSON.stringify(currentTokenMap));
         }
 
       newIssues = [...issues, {...data, noOfAbsent: 0, tokenNo: teacherToken}];
-      // Update QP-UPC Map
       if (data.qpNo && data.upc && !qpUpcMap[data.qpNo]) {
         const newMap = {...qpUpcMap, [data.qpNo]: data.upc};
         setQpUpcMap(newMap);
         localStorage.setItem(QP_UPC_MAP_KEY, JSON.stringify(newMap));
       }
-
-      toast({
-        title: "Message Sent",
-        description: `From CEC-068 SGTB Khalsa College: Packet issue details saved for Packet No. ${data.packetNo}.`,
-      });
     }
     updateIssuesStateAndLocalStorage(newIssues);
     form.reset({
@@ -248,6 +268,7 @@ export default function IssueFormPage() {
       noOfAbsent: 0,
       tokenNo: undefined,
     });
+    setIsAutofilled(false);
   }
 
   const handleEdit = (index: number) => {
@@ -263,11 +284,8 @@ export default function IssueFormPage() {
     const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
     const trash = storedTrash ? JSON.parse(storedTrash) : [];
     localStorage.setItem(TRASH_STORAGE_KEY, JSON.stringify([...trash, issueToDelete]));
-
-    toast({
-      title: "Issue Deleted",
-      description: "The issue has been moved to the trash.",
-    });
+    
+    setSelectedIssues([]);
   };
 
   const handleBulkDelete = () => {
@@ -279,10 +297,6 @@ export default function IssueFormPage() {
     const trash = storedTrash ? JSON.parse(storedTrash) : [];
     localStorage.setItem(TRASH_STORAGE_KEY, JSON.stringify([...trash, ...issuesToDelete]));
 
-    toast({
-      title: `${selectedIssues.length} Issues Deleted`,
-      description: "The selected issues have been moved to the trash.",
-    });
     setSelectedIssues([]);
   };
 
@@ -303,25 +317,13 @@ export default function IssueFormPage() {
 
   const handleRowDataChange = (index: number, field: keyof IssueFormValues, value: any) => {
     const newIssues = [...issues];
-    const oldIssue = newIssues[index];
     (newIssues[index] as any)[field] = value;
     setIssues(newIssues);
-
-    if (field === 'received' && value === true) {
-         toast({
-            title: "Message Sent",
-            description: `From CEC-068 SGTB Khalsa College: Packet No. ${oldIssue.packetNo} received.`,
-        });
-    }
   };
   
   const handleSaveRow = (index: number) => {
     updateIssuesStateAndLocalStorage(issues);
     const issue = issues[index];
-    toast({
-      title: "Message Sent",
-      description: `From CEC-068 SGTB Khalsa College: Details updated for Packet No. ${issue.packetNo}. Absents: ${issue.noOfAbsent}, Received: ${issue.received ? 'Yes' : 'No'}.`
-    });
   }
   
   const handleSelectIssue = (index: number, checked: boolean) => {
@@ -334,7 +336,7 @@ export default function IssueFormPage() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIssues(filteredIssues.map((_, index) => issues.findIndex(i => i.teacherId === filteredIssues[index].teacherId && i.packetNo === filteredIssues[index].packetNo)));
+      setSelectedIssues(filteredIssues.map((issue) => issues.findIndex(i => i.packetNo === issue.packetNo)));
     } else {
       setSelectedIssues([]);
     }
@@ -476,7 +478,7 @@ export default function IssueFormPage() {
                  <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input 
-                      placeholder="Search by teacher..." 
+                      placeholder="Search..." 
                       className="pl-10"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
@@ -599,7 +601,7 @@ export default function IssueFormPage() {
               </TableHeader>
               <TableBody>
                 {filteredIssues.map((issue) => {
-                  const originalIndex = issues.findIndex(i => i.teacherId === issue.teacherId && i.packetNo === issue.packetNo);
+                  const originalIndex = issues.findIndex(i => i.packetNo === issue.packetNo);
                   const isSelected = selectedIssues.includes(originalIndex);
                   return (
                   <TableRow key={originalIndex} data-state={isSelected && "selected"}>
@@ -682,8 +684,3 @@ export default function IssueFormPage() {
     </div>
   );
 }
-
-
-    
-
-    
