@@ -22,6 +22,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const issueFormSchema = z.object({
+  tokenNo: z.number().optional(),
   dateOfIssue: z.string().min(1, "Date of Issue is required"),
   packetNo: z.string().min(1, "Packet No. is required"),
   packetFrom: z.string().min(1, "Packet No. (From) is required"),
@@ -45,6 +46,7 @@ export type IssueFormValues = z.infer<typeof issueFormSchema>;
 const ISSUES_STORAGE_KEY = 'cec068_issues';
 const TRASH_STORAGE_KEY = 'cec068_trash';
 const QP_UPC_MAP_KEY = 'cec068_qp_upc_map';
+const TEACHER_TOKEN_MAP_KEY = 'cec068_teacher_token_map';
 
 // Populate with some initial data for demonstration
 const seedQpUpcMap = () => {
@@ -77,6 +79,7 @@ export default function IssueFormPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIssues, setSelectedIssues] = useState<number[]>([]);
   const [qpUpcMap, setQpUpcMap] = useState<Record<string, string>>({});
+  const [teacherTokenMap, setTeacherTokenMap] = useState<Record<string, number>>({});
   const [filters, setFilters] = useState<FilterValues>({
     dateOfIssue: "",
     qpNo: "",
@@ -97,6 +100,10 @@ export default function IssueFormPage() {
     const storedMap = localStorage.getItem(QP_UPC_MAP_KEY);
     if (storedMap) {
         setQpUpcMap(JSON.parse(storedMap));
+    }
+    const storedTokenMap = localStorage.getItem(TEACHER_TOKEN_MAP_KEY);
+    if(storedTokenMap) {
+        setTeacherTokenMap(JSON.parse(storedTokenMap));
     }
   }, []);
 
@@ -119,6 +126,7 @@ export default function IssueFormPage() {
       schoolType: undefined,
       received: false,
       noOfAbsent: 0,
+      tokenNo: undefined,
     },
   });
 
@@ -175,14 +183,25 @@ export default function IssueFormPage() {
     if (isUpdating) {
       newIssues = [...issues];
       const existingIssue = newIssues[editingIndex];
-      newIssues[editingIndex] = {...data, received: existingIssue.received, noOfAbsent: existingIssue.noOfAbsent};
+      newIssues[editingIndex] = {...data, tokenNo: existingIssue.tokenNo, received: existingIssue.received, noOfAbsent: existingIssue.noOfAbsent};
       setEditingIndex(null);
       toast({
         title: "Message Sent",
         description: `From CEC-068 SGTB Khalsa College: Packet details updated for Packet No. ${data.packetNo}.`,
       });
     } else {
-      newIssues = [...issues, {...data, noOfAbsent: 0}];
+        let currentTokenMap = teacherTokenMap;
+        let nextToken = Object.keys(currentTokenMap).length + 1;
+        let teacherToken = currentTokenMap[data.teacherId];
+
+        if (!teacherToken) {
+            teacherToken = nextToken;
+            currentTokenMap = {...currentTokenMap, [data.teacherId]: teacherToken};
+            setTeacherTokenMap(currentTokenMap);
+            localStorage.setItem(TEACHER_TOKEN_MAP_KEY, JSON.stringify(currentTokenMap));
+        }
+
+      newIssues = [...issues, {...data, noOfAbsent: 0, tokenNo: teacherToken}];
       // Update QP-UPC Map
       if (!qpUpcMap[data.qpNo]) {
         const newMap = {...qpUpcMap, [data.qpNo]: data.upc};
@@ -213,6 +232,7 @@ export default function IssueFormPage() {
       schoolType: undefined,
       received: false,
       noOfAbsent: 0,
+      tokenNo: undefined,
     });
   }
 
@@ -471,9 +491,9 @@ export default function IssueFormPage() {
                             <div className="flex items-center space-x-2"><Checkbox id="filter-campus-south" checked={filters.campus.includes('South')} onCheckedChange={(c) => handleCheckboxFilterChange('campus', 'South', !!c)} /><Label htmlFor="filter-campus-south" className="font-normal">South</Label></div>
                           </div>
                         </div>
-                        <div className="grid grid-cols-3 items-center gap-4">
+                        <div className="grid grid-cols-3 items-start gap-4">
                           <Label>Type</Label>
-                          <div className="col-span-2 flex gap-2">
+                           <div className="col-span-2 flex flex-col gap-2">
                             <div className="flex items-center space-x-2"><Checkbox id="filter-type-regular" checked={filters.type.includes('Regular')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'Regular', !!c)} /><Label htmlFor="filter-type-regular" className="font-normal">Regular</Label></div>
                             <div className="flex items-center space-x-2"><Checkbox id="filter-type-ncweb" checked={filters.type.includes('NCWEB')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'NCWEB', !!c)} /><Label htmlFor="filter-type-ncweb" className="font-normal">NCWEB</Label></div>
                             <div className="flex items-center space-x-2"><Checkbox id="filter-type-sol" checked={filters.type.includes('SOL')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'SOL', !!c)} /><Label htmlFor="filter-type-sol" className="font-normal">SOL</Label></div>
@@ -500,6 +520,7 @@ export default function IssueFormPage() {
                       aria-label="Select all"
                     />
                   </TableHead>
+                  <TableHead>Token No.</TableHead>
                   <TableHead>Teacher Name / ID</TableHead>
                   <TableHead>Date of Issue</TableHead>
                   <TableHead>Packet No.</TableHead>
@@ -526,6 +547,7 @@ export default function IssueFormPage() {
                         aria-label={`Select row ${originalIndex + 1}`}
                       />
                     </TableCell>
+                    <TableCell>{issue.tokenNo}</TableCell>
                     <TableCell>{issue.teacherName}<br/><span className="text-xs text-muted-foreground">{issue.teacherId}</span></TableCell>
                     <TableCell>{issue.dateOfIssue}</TableCell>
                     <TableCell>{issue.packetNo}</TableCell>

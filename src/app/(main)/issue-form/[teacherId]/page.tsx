@@ -118,6 +118,10 @@ export default function IssueViewPage() {
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                     <div className="flex justify-between">
+                        <span className="font-medium text-muted-foreground">Token No:</span>
+                        <span>{teacherInfo.tokenNo}</span>
+                    </div>
+                    <div className="flex justify-between">
                         <span className="font-medium text-muted-foreground">Name:</span>
                         <span>{teacherInfo.teacherName}</span>
                     </div>
