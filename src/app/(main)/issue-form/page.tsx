@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
 import { Edit, Trash2, Printer, FileDown, Search, Save, Eye } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
@@ -427,12 +427,14 @@ export default function IssueFormPage() {
                   </TableRow>
                 )})}
               </TableBody>
-              <TableRow className="font-bold bg-muted/50">
-                  <TableCell colSpan={7} className="text-right">Total</TableCell>
-                  <TableCell>{totalScripts}</TableCell>
-                  <TableCell>{totalAbsent}</TableCell>
-                  <TableCell colSpan={3} className="text-left">Total Scripts: {totalScripts - totalAbsent}</TableCell>
-              </TableRow>
+              <TableFooter>
+                <TableRow className="font-bold bg-muted/50">
+                    <TableCell colSpan={7} className="text-right">Total</TableCell>
+                    <TableCell>{totalScripts}</TableCell>
+                    <TableCell>{totalAbsent}</TableCell>
+                    <TableCell colSpan={3} className="text-left">Total Scripts: {totalScripts - totalAbsent}</TableCell>
+                </TableRow>
+              </TableFooter>
             </Table>
             </div>
           </CardContent>
@@ -442,3 +444,5 @@ export default function IssueFormPage() {
     </div>
   );
 }
+
+    
