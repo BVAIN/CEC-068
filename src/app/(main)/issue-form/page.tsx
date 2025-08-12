@@ -596,8 +596,8 @@ export default function IssueFormPage() {
                   const originalIndex = issues.findIndex(i => i.teacherId === issue.teacherId && i.packetNo === issue.packetNo);
                   const isSelected = selectedIssues.includes(originalIndex);
                   return (
-                  <TableRow key={originalIndex} data-state={isSelected && "selected"} onClick={() => handleView(issue.teacherId)} style={{cursor: 'pointer'}}>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                  <TableRow key={originalIndex} data-state={isSelected && "selected"}>
+                    <TableCell onClick={(e) => { e.stopPropagation(); }}>
                       <Checkbox
                         onCheckedChange={(checked) => handleSelectIssue(originalIndex, !!checked)}
                         checked={isSelected}
@@ -634,6 +634,9 @@ export default function IssueFormPage() {
                     </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex gap-2">
+                        <Button variant="outline" size="icon" onClick={() => handleView(issue.teacherId)}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
                         <Button variant="outline" size="icon" onClick={() => handleSaveRow(originalIndex)}>
                           <Save className="h-4 w-4" />
                         </Button>
@@ -673,3 +676,6 @@ export default function IssueFormPage() {
     </div>
   );
 }
+
+
+    
