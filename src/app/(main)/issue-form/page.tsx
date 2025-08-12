@@ -62,11 +62,11 @@ export default function IssueFormPage() {
   const form = useForm<IssueFormValues>({
     resolver: zodResolver(issueFormSchema),
     defaultValues: {
-      dateOfIssue: new Date().toISOString().split('T')[0],
+      dateOfIssue: "",
       packetNo: "",
       packetFrom: "",
       packetTo: "",
-      noOfScripts: 0,
+      noOfScripts: undefined,
       qpNo: "",
       upc: "",
       teacherName: "",
@@ -112,11 +112,11 @@ export default function IssueFormPage() {
     }
     updateIssuesStateAndLocalStorage(newIssues);
     form.reset({
-      dateOfIssue: new Date().toISOString().split('T')[0],
+      dateOfIssue: "",
       packetNo: "",
       packetFrom: "",
       packetTo: "",
-      noOfScripts: 0,
+      noOfScripts: undefined,
       qpNo: "",
       upc: "",
       teacherName: "",
@@ -196,8 +196,6 @@ export default function IssueFormPage() {
     }
   };
   
-  const totalScripts = filteredIssues.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
-  const totalAbsent = filteredIssues.reduce((acc, issue) => acc + (issue.noOfAbsent || 0), 0);
 
   return (
     <div className="space-y-8">
@@ -427,14 +425,6 @@ export default function IssueFormPage() {
                   </TableRow>
                 )})}
               </TableBody>
-              <TableFooter>
-                <TableRow className="font-bold bg-muted/50">
-                    <TableCell colSpan={7} className="text-right">Total</TableCell>
-                    <TableCell>{totalScripts}</TableCell>
-                    <TableCell>{totalAbsent}</TableCell>
-                    <TableCell colSpan={3} className="text-left">Total Scripts: {totalScripts - totalAbsent}</TableCell>
-                </TableRow>
-              </TableFooter>
             </Table>
             </div>
           </CardContent>

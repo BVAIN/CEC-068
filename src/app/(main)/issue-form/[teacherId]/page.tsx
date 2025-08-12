@@ -19,68 +19,62 @@ export default function IssueViewPage() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
-  const [issue, setIssue] = useState<IssueFormValues | null>(null);
-  const [originalIndex, setOriginalIndex] = useState<number | null>(null);
+  const [teacherIssues, setTeacherIssues] = useState<IssueFormValues[]>([]);
+  const [teacherInfo, setTeacherInfo] = useState<{name: string, id: string} | null>(null);
 
   useEffect(() => {
     const teacherId = params.teacherId;
     const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
     if (storedIssues && teacherId) {
-      const issues: IssueFormValues[] = JSON.parse(storedIssues);
+      const allIssues: IssueFormValues[] = JSON.parse(storedIssues);
       const decodedTeacherId = decodeURIComponent(teacherId as string);
-      const foundIndex = issues.findIndex(i => i.teacherId === decodedTeacherId);
+      const foundIssues = allIssues.filter(i => i.teacherId === decodedTeacherId);
       
-      if (foundIndex !== -1) {
-        setIssue(issues[foundIndex]);
-        setOriginalIndex(foundIndex);
+      if (foundIssues.length > 0) {
+        setTeacherIssues(foundIssues);
+        setTeacherInfo({ name: foundIssues[0].teacherName, id: foundIssues[0].teacherId });
       } else {
-        toast({ variant: "destructive", title: "Error", description: "Issue not found." });
+        toast({ variant: "destructive", title: "Error", description: "No issues found for this teacher." });
         router.push("/issue-form");
       }
     }
   }, [params.teacherId, router, toast]);
 
-  const updateIssuesState = (updatedIssue: IssueFormValues) => {
+  const updateIssueState = (index: number, updatedIssue: IssueFormValues) => {
+    const newTeacherIssues = [...teacherIssues];
+    newTeacherIssues[index] = updatedIssue;
+    setTeacherIssues(newTeacherIssues);
+
     const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
-    if (storedIssues && originalIndex !== null) {
-        const issues = JSON.parse(storedIssues);
-        issues[originalIndex] = updatedIssue;
-        localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(issues));
-        setIssue(updatedIssue);
-    }
-  };
-
-  const handleReceivedChange = (checked: boolean) => {
-    if (issue) {
-      const updatedIssue = { ...issue, received: checked };
-      updateIssuesState(updatedIssue);
-    }
-  };
-
-  const handleAbsentChange = (value: string) => {
-    if (issue) {
-      const updatedIssue = { ...issue, noOfAbsent: parseInt(value, 10) || 0 };
-      updateIssuesState(updatedIssue);
+    if (storedIssues) {
+        const allIssues: IssueFormValues[] = JSON.parse(storedIssues);
+        const issueToUpdateIndex = allIssues.findIndex(i => i.teacherId === updatedIssue.teacherId && i.packetNo === updatedIssue.packetNo);
+        if(issueToUpdateIndex !== -1) {
+            allIssues[issueToUpdateIndex] = updatedIssue;
+            localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(allIssues));
+        }
     }
   };
   
-  const handleSaveChanges = () => {
-    if (issue) {
-      const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
-      if (storedIssues && originalIndex !== null) {
-        const issues = JSON.parse(storedIssues);
-        issues[originalIndex] = issue;
-        localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(issues));
-        toast({ title: "Changes Saved", description: "The issue details have been updated." });
-      }
-    }
+  const handleSaveChanges = (index: number) => {
+    toast({ title: "Changes Saved", description: "The issue details have been updated." });
+    // The state is already updated, and local storage is updated on change.
+    // This button can just provide feedback.
   };
 
-  if (!issue) {
+  const handleRowDataChange = (index: number, field: keyof IssueFormValues, value: any) => {
+      const issueToUpdate = teacherIssues[index];
+      const updatedIssue = { ...issueToUpdate, [field]: value };
+      updateIssueState(index, updatedIssue);
+  };
+  
+  if (!teacherInfo) {
     return <div className="flex justify-center items-center h-full">Loading...</div>;
   }
 
-  const netScripts = (issue.noOfScripts || 0) - (issue.noOfAbsent || 0);
+  const totalScripts = teacherIssues.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
+  const totalAbsent = teacherIssues.reduce((acc, issue) => acc + (issue.noOfAbsent || 0), 0);
+  const netScripts = totalScripts - totalAbsent;
 
   return (
     <div className="space-y-8">
@@ -90,68 +84,63 @@ export default function IssueViewPage() {
         </Button>
         <div>
             <h1 className="text-4xl font-bold tracking-tight font-headline">Issue Details</h1>
-            <p className="text-lg text-muted-foreground mt-2">Viewing issue for {issue.teacherName}.</p>
+            <p className="text-lg text-muted-foreground mt-2">Viewing all issues for {teacherInfo.name} ({teacherInfo.id}).</p>
         </div>
       </header>
       
       <div className="grid md:grid-cols-3 gap-6">
         <Card className="md:col-span-2">
             <CardHeader>
-                <CardTitle>Detailed Information</CardTitle>
+                <CardTitle>Packet-wise Information</CardTitle>
             </CardHeader>
             <CardContent>
                 <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Packet No.</TableHead>
+                            <TableHead>Date of Issue</TableHead>
+                            <TableHead>Range</TableHead>
+                            <TableHead>No. of Scripts</TableHead>
+                            <TableHead>No. of Absent</TableHead>
+                            <TableHead>Received</TableHead>
+                        </TableRow>
+                    </TableHeader>
                     <TableBody>
-                        <TableRow><TableCell className="font-medium">Teacher Name</TableCell><TableCell>{issue.teacherName}</TableCell></TableRow>
-                        <TableRow><TableCell className="font-medium">Teacher ID</TableCell><TableCell>{issue.teacherId}</TableCell></TableRow>
-                        <TableRow><TableCell className="font-medium">Date of Issue</TableCell><TableCell>{issue.dateOfIssue}</TableCell></TableRow>
-                        <TableRow><TableCell className="font-medium">Packet No.</TableCell><TableCell>{issue.packetNo}</TableCell></TableRow>
-                        <TableRow><TableCell className="font-medium">Range</TableCell><TableCell>{issue.packetFrom} - {issue.packetTo}</TableCell></TableRow>
-                        <TableRow><TableCell className="font-medium">QP No.</TableCell><TableCell>{issue.qpNo}</TableCell></TableRow>
-                        <TableRow><TableCell className="font-medium">UPC</TableCell><TableCell>{issue.upc}</TableCell></TableRow>
-                        <TableRow><TableCell className="font-medium">College</TableCell><TableCell>{issue.college}</TableCell></TableRow>
-                        <TableRow><TableCell className="font-medium">Mobile No.</TableCell><TableCell>{issue.mobileNo}</TableCell></TableRow>
-                        <TableRow><TableCell className="font-medium">Email</TableCell><TableCell>{issue.email}</TableCell></TableRow>
-                        <TableRow><TableCell className="font-medium">Type</TableCell><TableCell>{issue.schoolType}</TableCell></TableRow>
-                        <TableRow><TableCell className="font-medium">Campus</TableCell><TableCell>{issue.campus}</TableCell></TableRow>
+                        {teacherIssues.map((issue, index) => (
+                             <TableRow key={issue.packetNo}>
+                                <TableCell>{issue.packetNo}</TableCell>
+                                <TableCell>{issue.dateOfIssue}</TableCell>
+                                <TableCell>{issue.packetFrom} - {issue.packetTo}</TableCell>
+                                <TableCell>{issue.noOfScripts}</TableCell>
+                                <TableCell>
+                                    <Input 
+                                        type="number" 
+                                        value={issue.noOfAbsent || ''} 
+                                        onChange={(e) => handleRowDataChange(index, 'noOfAbsent', parseInt(e.target.value, 10) || 0)}
+                                        className="w-20"
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <Checkbox
+                                        checked={issue.received}
+                                        onCheckedChange={(checked) => handleRowDataChange(index, 'received', !!checked)}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        ))}
                     </TableBody>
                 </Table>
             </CardContent>
         </Card>
 
         <div className="space-y-6">
-            <Card>
-                <CardHeader><CardTitle>Status & Actions</CardTitle></CardHeader>
-                <CardContent className="space-y-4">
-                     <div className="space-y-2">
-                        <Label htmlFor="noOfAbsent">No. of Absent</Label>
-                        <Input 
-                            id="noOfAbsent"
-                            type="number" 
-                            value={issue.noOfAbsent || ''} 
-                            onChange={(e) => handleAbsentChange(e.target.value)}
-                        />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Checkbox
-                            id="received"
-                            checked={issue.received}
-                            onCheckedChange={(checked) => handleReceivedChange(!!checked)}
-                        />
-                        <Label htmlFor="received" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Received
-                        </Label>
-                    </div>
-                     <Button onClick={handleSaveChanges} className="w-full">Save Changes</Button>
-                </CardContent>
-            </Card>
              <Card>
-                <CardHeader><CardTitle>Script Calculation</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Total Script Calculation</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
-                    <div className="flex justify-between"><span>No. of Scripts:</span> <span>{issue.noOfScripts}</span></div>
-                    <div className="flex justify-between"><span>No. of Absent:</span> <span>{issue.noOfAbsent || 0}</span></div>
+                    <div className="flex justify-between"><span>Total No. of Scripts:</span> <span>{totalScripts}</span></div>
+                    <div className="flex justify-between"><span>Total No. of Absent:</span> <span>{totalAbsent}</span></div>
                     <hr className="my-2" />
-                    <div className="flex justify-between font-bold"><span>Total Scripts:</span> <span>{netScripts}</span></div>
+                    <div className="flex justify-between font-bold"><span>Net Total Scripts:</span> <span>{netScripts}</span></div>
                 </CardContent>
             </Card>
         </div>
@@ -159,3 +148,5 @@ export default function IssueViewPage() {
     </div>
   );
 }
+
+    
