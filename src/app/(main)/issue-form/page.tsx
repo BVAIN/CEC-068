@@ -15,10 +15,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
-import { Edit, Trash2, Printer, FileDown, Search, Save, Eye } from "lucide-react";
+import { Edit, Trash2, Printer, FileDown, Search, Save, Eye, Filter } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const issueFormSchema = z.object({
   dateOfIssue: z.string().min(1, "Date of Issue is required"),
@@ -57,6 +58,16 @@ const seedQpUpcMap = () => {
     }
 };
 
+type FilterValues = {
+  dateOfIssue: string;
+  qpNo: string;
+  upc: string;
+  campus: ("North" | "South")[];
+  type: ("Regular" | "NCWEB" | "SOL")[];
+  teacherId: string;
+  teacherName: string;
+};
+
 
 export default function IssueFormPage() {
   const { toast } = useToast();
@@ -66,6 +77,15 @@ export default function IssueFormPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIssues, setSelectedIssues] = useState<number[]>([]);
   const [qpUpcMap, setQpUpcMap] = useState<Record<string, string>>({});
+  const [filters, setFilters] = useState<FilterValues>({
+    dateOfIssue: "",
+    qpNo: "",
+    upc: "",
+    campus: [],
+    type: [],
+    teacherId: "",
+    teacherName: ""
+  });
 
 
   useEffect(() => {
@@ -124,11 +144,23 @@ export default function IssueFormPage() {
       }
   }, [watchedQpNo, qpUpcMap, setValue]);
   
-  const filteredIssues = issues.filter(issue => 
-    issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    issue.mobileNo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredIssues = issues.filter(issue => {
+    const searchMatch = 
+        issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        issue.mobileNo.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const filterMatch = 
+        (filters.dateOfIssue ? issue.dateOfIssue === filters.dateOfIssue : true) &&
+        (filters.qpNo ? issue.qpNo.toLowerCase().includes(filters.qpNo.toLowerCase()) : true) &&
+        (filters.upc ? issue.upc.toLowerCase().includes(filters.upc.toLowerCase()) : true) &&
+        (filters.campus.length > 0 ? issue.campus && filters.campus.includes(issue.campus) : true) &&
+        (filters.type.length > 0 ? issue.schoolType && filters.type.includes(issue.schoolType) : true) &&
+        (filters.teacherId ? issue.teacherId.toLowerCase().includes(filters.teacherId.toLowerCase()) : true) &&
+        (filters.teacherName ? issue.teacherName.toLowerCase().includes(filters.teacherName.toLowerCase()) : true);
+        
+    return searchMatch && filterMatch;
+  });
 
   const updateIssuesStateAndLocalStorage = (newIssues: IssueFormValues[]) => {
     const sortedIssues = newIssues.sort((a, b) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime());
@@ -258,6 +290,20 @@ export default function IssueFormPage() {
     }
   };
   
+  const handleFilterChange = (field: keyof FilterValues, value: any) => {
+    setFilters(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCheckboxFilterChange = (field: 'campus' | 'type', value: string, checked: boolean) => {
+    setFilters(prev => {
+        const currentValues = prev[field] as string[];
+        if (checked) {
+            return { ...prev, [field]: [...currentValues, value] };
+        } else {
+            return { ...prev, [field]: currentValues.filter(v => v !== value) };
+        }
+    });
+  };
 
   return (
     <div className="space-y-8">
@@ -385,6 +431,58 @@ export default function IssueFormPage() {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80">
+                    <div className="grid gap-4">
+                      <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Filters</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Filter the issues by the following criteria.
+                        </p>
+                      </div>
+                      <div className="grid gap-2">
+                        <div className="grid grid-cols-3 items-center gap-4">
+                          <Label htmlFor="dateOfIssue">Date of Issue</Label>
+                          <Input id="dateOfIssue" type="date" value={filters.dateOfIssue} onChange={e => handleFilterChange('dateOfIssue', e.target.value)} className="col-span-2 h-8" />
+                        </div>
+                        <div className="grid grid-cols-3 items-center gap-4">
+                          <Label htmlFor="qpNo">QP No.</Label>
+                          <Input id="qpNo" value={filters.qpNo} onChange={e => handleFilterChange('qpNo', e.target.value)} className="col-span-2 h-8" />
+                        </div>
+                        <div className="grid grid-cols-3 items-center gap-4">
+                          <Label htmlFor="upc">UPC</Label>
+                          <Input id="upc" value={filters.upc} onChange={e => handleFilterChange('upc', e.target.value)} className="col-span-2 h-8" />
+                        </div>
+                         <div className="grid grid-cols-3 items-center gap-4">
+                          <Label htmlFor="teacherName">Teacher Name</Label>
+                          <Input id="teacherName" value={filters.teacherName} onChange={e => handleFilterChange('teacherName', e.target.value)} className="col-span-2 h-8" />
+                        </div>
+                         <div className="grid grid-cols-3 items-center gap-4">
+                          <Label htmlFor="teacherId">Teacher ID</Label>
+                          <Input id="teacherId" value={filters.teacherId} onChange={e => handleFilterChange('teacherId', e.target.value)} className="col-span-2 h-8" />
+                        </div>
+                        <div className="grid grid-cols-3 items-center gap-4">
+                          <Label>Campus</Label>
+                          <div className="col-span-2 flex gap-4">
+                            <FormItem className="flex items-center space-x-2 space-y-0"><FormControl><Checkbox checked={filters.campus.includes('North')} onCheckedChange={(c) => handleCheckboxFilterChange('campus', 'North', !!c)} /></FormControl><FormLabel className="font-normal">North</FormLabel></FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0"><FormControl><Checkbox checked={filters.campus.includes('South')} onCheckedChange={(c) => handleCheckboxFilterChange('campus', 'South', !!c)} /></FormControl><FormLabel className="font-normal">South</FormLabel></FormItem>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 items-center gap-4">
+                          <Label>Type</Label>
+                          <div className="col-span-2 flex gap-2">
+                            <FormItem className="flex items-center space-x-2 space-y-0"><FormControl><Checkbox checked={filters.type.includes('Regular')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'Regular', !!c)} /></FormControl><FormLabel className="font-normal">Regular</FormLabel></FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0"><FormControl><Checkbox checked={filters.type.includes('NCWEB')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'NCWEB', !!c)} /></FormControl><FormLabel className="font-normal">NCWEB</FormLabel></FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0"><FormControl><Checkbox checked={filters.type.includes('SOL')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'SOL', !!c)} /></FormControl><FormLabel className="font-normal">SOL</FormLabel></FormItem>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <Button onClick={handlePrint} variant="outline"><Printer className="mr-2 h-4 w-4" /> Print</Button>
                 <Button onClick={handleExport}><FileDown className="mr-2 h-4 w-4" />Export to Excel</Button>
               </div>
@@ -405,6 +503,7 @@ export default function IssueFormPage() {
                   <TableHead>Teacher Name / ID</TableHead>
                   <TableHead>Date of Issue</TableHead>
                   <TableHead>Packet No.</TableHead>
+                  <TableHead>QP No.</TableHead>
                   <TableHead>Range</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Campus</TableHead>
@@ -430,6 +529,7 @@ export default function IssueFormPage() {
                     <TableCell>{issue.teacherName}<br/><span className="text-xs text-muted-foreground">{issue.teacherId}</span></TableCell>
                     <TableCell>{issue.dateOfIssue}</TableCell>
                     <TableCell>{issue.packetNo}</TableCell>
+                    <TableCell>{issue.qpNo}</TableCell>
                     <TableCell>{issue.packetFrom} - {issue.packetTo}</TableCell>
                     <TableCell>{issue.schoolType}</TableCell>
                     <TableCell>{issue.campus}</TableCell>
