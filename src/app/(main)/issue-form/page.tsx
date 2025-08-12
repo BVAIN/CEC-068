@@ -15,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
-import { Edit, Trash2, Printer, FileDown, Search, Save, Eye, Filter } from "lucide-react";
+import { Edit, Trash2, Printer, FileDown, Search, Save, Eye, Filter, ShieldX } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -265,7 +265,23 @@ export default function IssueFormPage() {
       description: "The issue has been moved to the trash.",
     });
   };
-  
+
+  const handleBulkDelete = () => {
+    const issuesToDelete = issues.filter((_, index) => selectedIssues.includes(index));
+    const newIssues = issues.filter((_, index) => !selectedIssues.includes(index));
+    updateIssuesStateAndLocalStorage(newIssues);
+    
+    const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
+    const trash = storedTrash ? JSON.parse(storedTrash) : [];
+    localStorage.setItem(TRASH_STORAGE_KEY, JSON.stringify([...trash, ...issuesToDelete]));
+
+    toast({
+      title: `${selectedIssues.length} Issues Deleted`,
+      description: "The selected issues have been moved to the trash.",
+    });
+    setSelectedIssues([]);
+  };
+
   const handleView = (teacherId: string) => {
     router.push(`/issue-form/${encodeURIComponent(teacherId)}`);
   };
@@ -447,7 +463,7 @@ export default function IssueFormPage() {
         <Separator className="my-8" />
         <Card>
           <CardHeader>
-            <div className="flex justify-between items-center gap-4">
+            <div className="flex justify-between items-center gap-4 flex-wrap">
               <div>
                 <CardTitle>Submitted Issues</CardTitle>
                 <CardDescription>View and manage the submitted issues.</CardDescription>
@@ -524,6 +540,31 @@ export default function IssueFormPage() {
             </div>
           </CardHeader>
           <CardContent>
+             {selectedIssues.length > 0 && (
+              <div className="mb-4 flex items-center gap-4 rounded-md bg-muted p-3">
+                 <p className="text-sm font-medium">{selectedIssues.length} issue(s) selected.</p>
+                 <AlertDialog>
+                   <AlertDialogTrigger asChild>
+                     <Button variant="destructive">
+                       <Trash2 className="mr-2 h-4 w-4" />
+                       Delete Selected
+                     </Button>
+                   </AlertDialogTrigger>
+                   <AlertDialogContent>
+                     <AlertDialogHeader>
+                       <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                       <AlertDialogDescription>
+                         This action will move {selectedIssues.length} issue(s) to the trash. You can restore them later.
+                       </AlertDialogDescription>
+                     </AlertDialogHeader>
+                     <AlertDialogFooter>
+                       <AlertDialogCancel>Cancel</AlertDialogCancel>
+                       <AlertDialogAction onClick={handleBulkDelete}>Continue</AlertDialogAction>
+                     </AlertDialogFooter>
+                   </AlertDialogContent>
+                 </AlertDialog>
+               </div>
+             )}
              <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -551,7 +592,7 @@ export default function IssueFormPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredIssues.map((issue, index) => {
+                {filteredIssues.map((issue) => {
                   const originalIndex = issues.findIndex(i => i.teacherId === issue.teacherId && i.packetNo === issue.packetNo);
                   const isSelected = selectedIssues.includes(originalIndex);
                   return (
