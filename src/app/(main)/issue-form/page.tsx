@@ -496,7 +496,7 @@ export default function ScriptsIssueFormPage() {
           </Card>
 
           <div className="flex justify-end">
-            <Button type="submit" size="lg">{editingIndex !== null ? 'Update Issue' : 'Save'}</Button>
+            <Button type="submit" size="lg">{editingIndex !== null ? 'Update' : 'Save'}</Button>
           </div>
         </form>
       </Form>
