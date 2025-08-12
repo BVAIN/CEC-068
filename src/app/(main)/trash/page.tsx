@@ -9,7 +9,7 @@ import { History, Trash2, ShieldX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { IssueFormValues } from "../issue-form/page";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 
 const ISSUES_STORAGE_KEY = 'cec068_issues';
@@ -217,5 +217,3 @@ export default function TrashPage() {
     </div>
   );
 }
-
-    
