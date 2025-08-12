@@ -5,7 +5,6 @@ import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useToast } from "@/hooks/use-toast";
 import * as XLSX from "xlsx";
 import { useRouter } from "next/navigation";
 
@@ -75,8 +74,7 @@ type FilterValues = {
 };
 
 
-export default function IssueFormPage() {
-  const { toast } = useToast();
+export default function ScriptsIssueFormPage() {
   const router = useRouter();
   const [issues, setIssues] = useState<IssueFormValues[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -485,7 +483,7 @@ export default function IssueFormPage() {
                 <CardContent><p className="text-3xl font-bold">{totalScripts}</p></CardContent>
             </Card>
             <Card>
-                <CardHeader><CardTitle>Total Missing</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Total Missings</CardTitle></CardHeader>
                 <CardContent><p className="text-3xl font-bold">{totalMissing}</p></CardContent>
             </Card>
             <Card>
@@ -730,3 +728,5 @@ export default function IssueFormPage() {
     </div>
   );
 }
+
+    
