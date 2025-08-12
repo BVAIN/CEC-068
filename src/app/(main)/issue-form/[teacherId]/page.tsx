@@ -20,7 +20,7 @@ export default function IssueViewPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [teacherIssues, setTeacherIssues] = useState<IssueFormValues[]>([]);
-  const [teacherInfo, setTeacherInfo] = useState<{name: string, id: string} | null>(null);
+  const [teacherInfo, setTeacherInfo] = useState<IssueFormValues | null>(null);
 
   useEffect(() => {
     const teacherId = params.teacherId;
@@ -32,7 +32,7 @@ export default function IssueViewPage() {
       
       if (foundIssues.length > 0) {
         setTeacherIssues(foundIssues);
-        setTeacherInfo({ name: foundIssues[0].teacherName, id: foundIssues[0].teacherId });
+        setTeacherInfo(foundIssues[0]);
       } else {
         toast({ variant: "destructive", title: "Error", description: "No issues found for this teacher." });
         router.push("/issue-form");
@@ -84,59 +84,61 @@ export default function IssueViewPage() {
         </Button>
         <div>
             <h1 className="text-4xl font-bold tracking-tight font-headline">Issue Details</h1>
-            <p className="text-lg text-muted-foreground mt-2">Viewing all issues for {teacherInfo.name} ({teacherInfo.id}).</p>
+            <p className="text-lg text-muted-foreground mt-2">Viewing all issues for {teacherInfo.teacherName} ({teacherInfo.teacherId}).</p>
         </div>
       </header>
       
       <div className="grid md:grid-cols-3 gap-6">
-        <Card className="md:col-span-2">
-            <CardHeader>
-                <CardTitle>Packet-wise Information</CardTitle>
-                {teacherIssues.length > 0 && (
-                    <CardDescription>
-                        Teacher: {teacherIssues[0].teacherName}
-                    </CardDescription>
-                )}
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Packet No.</TableHead>
-                            <TableHead>Date of Issue</TableHead>
-                            <TableHead>Range & Campus</TableHead>
-                            <TableHead>No. of Scripts</TableHead>
-                            <TableHead>No. of Absent</TableHead>
-                            <TableHead>Received</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {teacherIssues.map((issue, index) => (
-                             <TableRow key={issue.packetNo}>
-                                <TableCell>{issue.packetNo}</TableCell>
-                                <TableCell>{issue.dateOfIssue}</TableCell>
-                                <TableCell>{issue.packetFrom} - {issue.packetTo} ({issue.campus})</TableCell>
-                                <TableCell>{issue.noOfScripts}</TableCell>
-                                <TableCell>
-                                    <Input 
-                                        type="number" 
-                                        value={issue.noOfAbsent || ''} 
-                                        onChange={(e) => handleRowDataChange(index, 'noOfAbsent', parseInt(e.target.value, 10) || 0)}
-                                        className="w-20"
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Checkbox
-                                        checked={issue.received}
-                                        onCheckedChange={(checked) => handleRowDataChange(index, 'received', !!checked)}
-                                    />
-                                </TableCell>
+        <div className="md:col-span-2 space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Packet-wise Information</CardTitle>
+                    {teacherIssues.length > 0 && (
+                        <CardDescription>
+                            Teacher: {teacherIssues[0].teacherName}
+                        </CardDescription>
+                    )}
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Packet No.</TableHead>
+                                <TableHead>Date of Issue</TableHead>
+                                <TableHead>Range & Campus</TableHead>
+                                <TableHead>No. of Scripts</TableHead>
+                                <TableHead>No. of Absent</TableHead>
+                                <TableHead>Received</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
+                        </TableHeader>
+                        <TableBody>
+                            {teacherIssues.map((issue, index) => (
+                                <TableRow key={issue.packetNo}>
+                                    <TableCell>{issue.packetNo}</TableCell>
+                                    <TableCell>{issue.dateOfIssue}</TableCell>
+                                    <TableCell>{issue.packetFrom} - {issue.packetTo} ({issue.campus})</TableCell>
+                                    <TableCell>{issue.noOfScripts}</TableCell>
+                                    <TableCell>
+                                        <Input 
+                                            type="number" 
+                                            value={issue.noOfAbsent || ''} 
+                                            onChange={(e) => handleRowDataChange(index, 'noOfAbsent', parseInt(e.target.value, 10) || 0)}
+                                            className="w-20"
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Checkbox
+                                            checked={issue.received}
+                                            onCheckedChange={(checked) => handleRowDataChange(index, 'received', !!checked)}
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </div>
 
         <div className="space-y-6">
              <Card>
@@ -146,6 +148,33 @@ export default function IssueViewPage() {
                     <div className="flex justify-between"><span>Total No. of Absent:</span> <span>{totalAbsent}</span></div>
                     <hr className="my-2" />
                     <div className="flex justify-between font-bold"><span>Net Total Scripts:</span> <span>{netScripts}</span></div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Teacher Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                        <span className="font-medium text-muted-foreground">Name:</span>
+                        <span>{teacherInfo.teacherName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="font-medium text-muted-foreground">ID:</span>
+                        <span>{teacherInfo.teacherId}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="font-medium text-muted-foreground">College:</span>
+                        <span>{teacherInfo.college}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="font-medium text-muted-foreground">Mobile:</span>
+                        <span>{teacherInfo.mobileNo}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="font-medium text-muted-foreground">Email:</span>
+                        <span className="truncate">{teacherInfo.email}</span>
+                    </div>
                 </CardContent>
             </Card>
         </div>

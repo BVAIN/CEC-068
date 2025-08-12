@@ -33,8 +33,8 @@ const issueFormSchema = z.object({
   email: z.string().email("Invalid email address"),
   teacherId: z.string().min(1, "Teacher ID is required"),
   college: z.string().min(1, "College is required"),
-  campus: z.enum(["North", "South"]),
-  schoolType: z.enum(["Regular", "NCWEB", "SOL"]),
+  campus: z.enum(["North", "South"]).optional(),
+  schoolType: z.enum(["Regular", "NCWEB", "SOL"]).optional(),
   received: z.boolean().default(false),
   noOfAbsent: z.coerce.number().optional(),
 });
@@ -95,8 +95,8 @@ export default function IssueFormPage() {
       email: "",
       teacherId: "",
       college: "",
-      campus: "North",
-      schoolType: "Regular",
+      campus: undefined,
+      schoolType: undefined,
       received: false,
       noOfAbsent: 0,
     },
@@ -177,8 +177,8 @@ export default function IssueFormPage() {
       email: "",
       teacherId: "",
       college: "",
-      campus: "North",
-      schoolType: "Regular",
+      campus: undefined,
+      schoolType: undefined,
       received: false,
       noOfAbsent: 0,
     });
@@ -308,13 +308,13 @@ export default function IssueFormPage() {
                         <div className="flex gap-4">
                            <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'North'} onCheckedChange={(checked) => field.onChange('North')} />
+                              <Checkbox checked={field.value === 'North'} onCheckedChange={(checked) => field.onChange(checked ? 'North' : undefined)} />
                             </FormControl>
                             <FormLabel className="font-normal">North</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'South'} onCheckedChange={(checked) => field.onChange('South')} />
+                              <Checkbox checked={field.value === 'South'} onCheckedChange={(checked) => field.onChange(checked ? 'South' : undefined)} />
                             </FormControl>
                             <FormLabel className="font-normal">South</FormLabel>
                           </FormItem>
@@ -334,19 +334,19 @@ export default function IssueFormPage() {
                          <div className="flex gap-4">
                           <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'Regular'} onCheckedChange={(checked) => field.onChange('Regular')} />
+                              <Checkbox checked={field.value === 'Regular'} onCheckedChange={(checked) => field.onChange(checked ? 'Regular' : undefined)} />
                             </FormControl>
                             <FormLabel className="font-normal">Regular</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                               <Checkbox checked={field.value === 'NCWEB'} onCheckedChange={(checked) => field.onChange('NCWEB')} />
+                               <Checkbox checked={field.value === 'NCWEB'} onCheckedChange={(checked) => field.onChange(checked ? 'NCWEB' : undefined)} />
                             </FormControl>
                             <FormLabel className="font-normal">NCWEB</FormLabel>
                           </FormItem>
                            <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'SOL'} onCheckedChange={(checked) => field.onChange('SOL')} />
+                              <Checkbox checked={field.value === 'SOL'} onCheckedChange={(checked) => field.onChange(checked ? 'SOL' : undefined)} />
                             </FormControl>
                             <FormLabel className="font-normal">SOL</FormLabel>
                           </FormItem>
