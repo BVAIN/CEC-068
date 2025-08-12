@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Edit, Trash2, Printer, FileDown, Search, Save, Eye } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const issueFormSchema = z.object({
   dateOfIssue: z.string().min(1, "Date of Issue is required"),
@@ -49,6 +50,7 @@ export default function IssueFormPage() {
   const [issues, setIssues] = useState<IssueFormValues[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedIssues, setSelectedIssues] = useState<number[]>([]);
 
   useEffect(() => {
     const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
@@ -78,6 +80,11 @@ export default function IssueFormPage() {
       noOfAbsent: 0,
     },
   });
+  
+  const filteredIssues = issues.filter(issue => 
+    issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const updateIssuesStateAndLocalStorage = (newIssues: IssueFormValues[]) => {
     setIssues(newIssues);
@@ -173,10 +180,21 @@ export default function IssueFormPage() {
     });
   }
   
-  const filteredIssues = issues.filter(issue => 
-    issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSelectIssue = (index: number, checked: boolean) => {
+    if (checked) {
+      setSelectedIssues(prev => [...prev, index]);
+    } else {
+      setSelectedIssues(prev => prev.filter(i => i !== index));
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIssues(filteredIssues.map((_, index) => issues.findIndex(i => i.teacherId === filteredIssues[index].teacherId && i.packetNo === filteredIssues[index].packetNo)));
+    } else {
+      setSelectedIssues([]);
+    }
+  };
   
   const totalScripts = filteredIssues.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
   const totalAbsent = filteredIssues.reduce((acc, issue) => acc + (issue.noOfAbsent || 0), 0);
@@ -317,6 +335,13 @@ export default function IssueFormPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>
+                    <Checkbox
+                      onCheckedChange={handleSelectAll}
+                      checked={selectedIssues.length === filteredIssues.length && filteredIssues.length > 0}
+                      aria-label="Select all"
+                    />
+                  </TableHead>
                   <TableHead>Teacher Name</TableHead>
                   <TableHead>Date of Issue</TableHead>
                   <TableHead>Packet No.</TableHead>
@@ -332,8 +357,16 @@ export default function IssueFormPage() {
               <TableBody>
                 {filteredIssues.map((issue, index) => {
                   const originalIndex = issues.findIndex(i => i.teacherId === issue.teacherId && i.packetNo === issue.packetNo);
+                  const isSelected = selectedIssues.includes(originalIndex);
                   return (
-                  <TableRow key={originalIndex}>
+                  <TableRow key={originalIndex} data-state={isSelected && "selected"}>
+                    <TableCell>
+                      <Checkbox
+                        onCheckedChange={(checked) => handleSelectIssue(originalIndex, !!checked)}
+                        checked={isSelected}
+                        aria-label={`Select row ${originalIndex + 1}`}
+                      />
+                    </TableCell>
                     <TableCell>{issue.teacherName}<br/><span className="text-xs text-muted-foreground">{issue.teacherId}</span></TableCell>
                     <TableCell>{issue.dateOfIssue}</TableCell>
                     <TableCell>{issue.packetNo}</TableCell>
@@ -370,19 +403,35 @@ export default function IssueFormPage() {
                         <Button variant="outline" size="icon" onClick={() => handleEdit(originalIndex)}>
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="destructive" size="icon" onClick={() => handleDelete(originalIndex)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="icon">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action will move this issue to the trash. You can restore it later.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(originalIndex)}>Continue</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </TableCell>
                   </TableRow>
                 )})}
               </TableBody>
               <TableRow className="font-bold bg-muted/50">
-                  <TableCell colSpan={6} className="text-right">Total</TableCell>
+                  <TableCell colSpan={7} className="text-right">Total</TableCell>
                   <TableCell>{totalScripts}</TableCell>
                   <TableCell>{totalAbsent}</TableCell>
-                  <TableCell colSpan={2} className="text-left">Total Scripts: {totalScripts - totalAbsent}</TableCell>
+                  <TableCell colSpan={3} className="text-left">Total Scripts: {totalScripts - totalAbsent}</TableCell>
               </TableRow>
             </Table>
             </div>
@@ -393,3 +442,5 @@ export default function IssueFormPage() {
     </div>
   );
 }
+
+    
