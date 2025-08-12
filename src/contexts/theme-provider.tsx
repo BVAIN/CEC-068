@@ -29,23 +29,20 @@ export function ThemeProvider({
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === 'undefined') {
-      return defaultTheme;
-    }
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
+
+  useEffect(() => {
     try {
       const storedTheme = localStorage.getItem(storageKey);
       if (storedTheme === 'light' || storedTheme === 'dark') {
-          return storedTheme;
+          setTheme(storedTheme);
       }
     } catch (e) {
         console.error("Failed to access localStorage", e);
     }
-    return defaultTheme;
-  });
+  }, [storageKey]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
     const root = window.document.documentElement
     root.classList.remove("theme-light", "theme-grey", "theme-dark")
 
