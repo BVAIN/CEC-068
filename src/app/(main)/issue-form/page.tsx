@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -18,6 +18,7 @@ import { Separator } from "@/components/ui/separator";
 
 const issueFormSchema = z.object({
   dateOfIssue: z.string().min(1, "Date of Issue is required"),
+  packetNo: z.string().min(1, "Packet No. is required"),
   packetFrom: z.string().min(1, "Packet No. (From) is required"),
   packetTo: z.string().min(1, "Packet No. (To) is required"),
   noOfScripts: z.coerce.number().min(1, "Number of Scripts must be at least 1"),
@@ -32,17 +33,28 @@ const issueFormSchema = z.object({
   schoolType: z.enum(["Regular", "NCWEB", "SOL"]),
 });
 
-type IssueFormValues = z.infer<typeof issueFormSchema>;
+export type IssueFormValues = z.infer<typeof issueFormSchema>;
+
+const ISSUES_STORAGE_KEY = 'cec068_issues';
+const TRASH_STORAGE_KEY = 'cec068_trash';
 
 export default function IssueFormPage() {
   const { toast } = useToast();
   const [issues, setIssues] = useState<IssueFormValues[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
+  useEffect(() => {
+    const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+    if (storedIssues) {
+      setIssues(JSON.parse(storedIssues));
+    }
+  }, []);
+
   const form = useForm<IssueFormValues>({
     resolver: zodResolver(issueFormSchema),
     defaultValues: {
       dateOfIssue: new Date().toISOString().split('T')[0],
+      packetNo: "",
       packetFrom: "",
       packetTo: "",
       noOfScripts: 1,
@@ -58,23 +70,29 @@ export default function IssueFormPage() {
     },
   });
 
+  const updateIssuesState = (newIssues: IssueFormValues[]) => {
+    setIssues(newIssues);
+    localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(newIssues));
+  };
+  
   function onSubmit(data: IssueFormValues) {
+    let newIssues;
     if (editingIndex !== null) {
-      const updatedIssues = [...issues];
-      updatedIssues[editingIndex] = data;
-      setIssues(updatedIssues);
+      newIssues = [...issues];
+      newIssues[editingIndex] = data;
       setEditingIndex(null);
       toast({
         title: "Issue Updated",
         description: "The issue has been successfully updated.",
       });
     } else {
-      setIssues([...issues, data]);
+      newIssues = [...issues, data];
       toast({
         title: "Issue Saved",
         description: "Your issue has been successfully saved.",
       });
     }
+    updateIssuesState(newIssues);
     form.reset();
   }
 
@@ -84,11 +102,17 @@ export default function IssueFormPage() {
   };
 
   const handleDelete = (index: number) => {
+    const issueToDelete = issues[index];
     const newIssues = issues.filter((_, i) => i !== index);
-    setIssues(newIssues);
+    updateIssuesState(newIssues);
+
+    const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
+    const trash = storedTrash ? JSON.parse(storedTrash) : [];
+    localStorage.setItem(TRASH_STORAGE_KEY, JSON.stringify([...trash, issueToDelete]));
+
     toast({
       title: "Issue Deleted",
-      description: "The issue has been successfully deleted.",
+      description: "The issue has been moved to the trash.",
     });
   };
 
@@ -119,8 +143,9 @@ export default function IssueFormPage() {
             </CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-6">
               <FormField control={form.control} name="dateOfIssue" render={({ field }) => (<FormItem><FormLabel>Date of Issue</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="packetFrom" render={({ field }) => (<FormItem><FormLabel>Packet No. (From)</FormLabel><FormControl><Input placeholder="e.g. 12345" {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="packetTo" render={({ field }) => (<FormItem><FormLabel>Packet No. (To)</FormLabel><FormControl><Input placeholder="e.g. 12350" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="packetNo" render={({ field }) => (<FormItem><FormLabel>Packet No.</FormLabel><FormControl><Input placeholder="e.g. P123" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="packetFrom" render={({ field }) => (<FormItem><FormLabel>From</FormLabel><FormControl><Input placeholder="e.g. 12345" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="packetTo" render={({ field }) => (<FormItem><FormLabel>To</FormLabel><FormControl><Input placeholder="e.g. 12350" {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name="noOfScripts" render={({ field }) => (<FormItem><FormLabel>No. of Scripts</FormLabel><FormControl><Input type="number" placeholder="1" {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name="qpNo" render={({ field }) => (<FormItem><FormLabel>QP No.</FormLabel><FormControl><Input placeholder="e.g. 9876" {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name="upc" render={({ field }) => (<FormItem><FormLabel>UPC</FormLabel><FormControl><Input placeholder="e.g. 112233" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -232,6 +257,7 @@ export default function IssueFormPage() {
                   <TableHead>Teacher Name</TableHead>
                   <TableHead>Teacher ID</TableHead>
                   <TableHead>Date of Issue</TableHead>
+                  <TableHead>Packet No.</TableHead>
                   <TableHead>Packet No. Range</TableHead>
                   <TableHead>QP No.</TableHead>
                   <TableHead>Actions</TableHead>
@@ -243,6 +269,7 @@ export default function IssueFormPage() {
                     <TableCell>{issue.teacherName}</TableCell>
                     <TableCell>{issue.teacherId}</TableCell>
                     <TableCell>{issue.dateOfIssue}</TableCell>
+                    <TableCell>{issue.packetNo}</TableCell>
                     <TableCell>{issue.packetFrom} - {issue.packetTo}</TableCell>
                     <TableCell>{issue.qpNo}</TableCell>
                     <TableCell>
