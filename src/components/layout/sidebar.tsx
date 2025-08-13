@@ -9,15 +9,12 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-provider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-const topMenuItems = [
+const menuItems = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/issue-form", label: "Issue Packets", icon: FilePlus },
   { href: "/bill-form", label: "Bill Form", icon: FileText },
-];
-
-const bottomMenuItems = [
-    { href: "/trash", label: "Trash", icon: Trash2 },
-    { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/trash", label: "Trash", icon: Trash2 },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export default function Sidebar() {
@@ -31,8 +28,8 @@ export default function Sidebar() {
         <h1 className="text-xl font-bold font-headline">CEC-068</h1>
       </div>
       <nav className="flex-1 p-4 space-y-2 flex flex-col justify-between">
-        <div>
-            {topMenuItems.map((item) => {
+        <div className="space-y-2">
+            {menuItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
                 <Link key={item.href} href={item.href} passHref>
@@ -49,9 +46,7 @@ export default function Sidebar() {
                 </Link>
             );
             })}
-        </div>
-        <div>
-            <DropdownMenu>
+             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="w-full justify-start text-base py-6">
                     <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -74,23 +69,6 @@ export default function Sidebar() {
                 </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-            {bottomMenuItems.map((item) => {
-                const isActive = pathname.startsWith(item.href);
-                return (
-                    <Link key={item.href} href={item.href} passHref>
-                    <Button
-                        variant={isActive ? "default" : "ghost"}
-                        className={cn(
-                        'w-full justify-start text-base py-6',
-                        isActive && 'text-primary-foreground'
-                        )}
-                    >
-                        <item.icon className="mr-3 h-5 w-5" />
-                        <span>{item.label}</span>
-                    </Button>
-                    </Link>
-                );
-            })}
         </div>
       </nav>
     </aside>
