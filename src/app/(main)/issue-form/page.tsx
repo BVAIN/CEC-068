@@ -102,17 +102,25 @@ export default function ScriptsIssueFormPage() {
 
   useEffect(() => {
     seedQpUpcMap();
-    const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
-    if (storedIssues) {
-      setIssues(JSON.parse(storedIssues).sort((a: IssueFormValues, b: IssueFormValues) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime()));
-    }
-    const storedMap = localStorage.getItem(QP_UPC_MAP_KEY);
-    if (storedMap) {
-        setQpUpcMap(JSON.parse(storedMap));
-    }
-    const storedTokenMap = localStorage.getItem(TEACHER_COURSE_TOKEN_MAP_KEY);
-    if(storedTokenMap) {
-        setTeacherCourseTokenMap(JSON.parse(storedTokenMap));
+    try {
+        const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+        if (storedIssues) {
+            setIssues(JSON.parse(storedIssues).sort((a: IssueFormValues, b: IssueFormValues) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime()));
+        }
+        const storedMap = localStorage.getItem(QP_UPC_MAP_KEY);
+        if (storedMap) {
+            setQpUpcMap(JSON.parse(storedMap));
+        }
+        const storedTokenMap = localStorage.getItem(TEACHER_COURSE_TOKEN_MAP_KEY);
+        if(storedTokenMap) {
+            setTeacherCourseTokenMap(JSON.parse(storedTokenMap));
+        }
+    } catch (error) {
+        console.error("Error parsing localStorage data:", error);
+        // Clear potentially corrupted data
+        localStorage.removeItem(ISSUES_STORAGE_KEY);
+        localStorage.removeItem(QP_UPC_MAP_KEY);
+        localStorage.removeItem(TEACHER_COURSE_TOKEN_MAP_KEY);
     }
   }, []);
 
@@ -784,6 +792,8 @@ export default function ScriptsIssueFormPage() {
     </div>
   );
 }
+
+    
 
     
 
