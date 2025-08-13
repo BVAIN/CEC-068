@@ -1,9 +1,34 @@
+
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { FilePlus, Settings } from "lucide-react";
+import { FilePlus, Settings, Sparkles, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { Textarea } from "@/components/ui/textarea";
+import { askAi } from "@/ai/flows/conversational-flow";
 
 export default function HomePage() {
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiResponse, setAiResponse] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAskAi = async () => {
+    if (!aiPrompt) return;
+    setIsLoading(true);
+    setAiResponse("");
+    try {
+      const response = await askAi(aiPrompt);
+      setAiResponse(response);
+    } catch (error) {
+      console.error(error);
+      setAiResponse("Sorry, something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       <header>
@@ -12,6 +37,40 @@ export default function HomePage() {
       </header>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="flex flex-col md:col-span-2 lg:col-span-3">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="w-6 h-6 text-primary" />
+              Ask AI
+            </CardTitle>
+            <CardDescription>Have a question? Ask our AI assistant for help.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex-grow space-y-4">
+            <Textarea 
+              placeholder="Ask anything..."
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              disabled={isLoading}
+            />
+            {aiResponse && (
+              <div className="p-4 bg-muted/50 rounded-lg border">
+                <p className="text-sm">{aiResponse}</p>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter>
+            <Button onClick={handleAskAi} disabled={isLoading || !aiPrompt}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Thinking...
+                </>
+              ) : (
+                "Get Answer"
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
