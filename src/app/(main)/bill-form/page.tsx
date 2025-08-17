@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Trash2, Upload, Edit } from "lucide-react";
+import { Eye, Trash2, Upload, Edit, Search } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
@@ -47,6 +47,7 @@ export default function BillFormPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedBills, setSelectedBills] = useState<string[]>([]);
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { isConnected, files, readFile, writeFile } = useGoogleDrive();
 
@@ -78,6 +79,16 @@ export default function BillFormPage() {
     };
     loadData();
   }, [isConnected, readFile]);
+
+  const filteredBills = useMemo(() => {
+    const lowercasedTerm = searchTerm.toLowerCase();
+    return bills.filter(bill =>
+        bill.evaluatorName.toLowerCase().includes(lowercasedTerm) ||
+        bill.evaluatorId.toLowerCase().includes(lowercasedTerm) ||
+        bill.mobileNo.toLowerCase().includes(lowercasedTerm) ||
+        bill.email.toLowerCase().includes(lowercasedTerm)
+    );
+  }, [bills, searchTerm]);
 
 
   const form = useForm<BillFormValues>({
@@ -171,7 +182,7 @@ export default function BillFormPage() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedBills(bills.map((bill) => bill.id || '').filter(id => id));
+      setSelectedBills(filteredBills.map((bill) => bill.id || '').filter(id => id));
     } else {
       setSelectedBills([]);
     }
@@ -233,33 +244,44 @@ export default function BillFormPage() {
        {bills.length > 0 && (
         <Card>
             <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center gap-4 flex-wrap">
                     <div>
                         <CardTitle>Submitted Bills</CardTitle>
                         <CardDescription>View and manage submitted bill forms.</CardDescription>
                     </div>
-                    {selectedBills.length > 0 && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                             <Button variant="destructive">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete Selected ({selectedBills.length})
-                              </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action will permanently delete {selectedBills.length} bill(s).
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(selectedBills)}>Continue</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                    )}
+                     <div className="flex items-center gap-2">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <Input 
+                            placeholder="Search by name, ID, mobile..." 
+                            className="pl-10 w-64"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        {selectedBills.length > 0 && (
+                            <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete ({selectedBills.length})
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action will permanently delete {selectedBills.length} bill(s).
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(selectedBills)}>Continue</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                            </AlertDialog>
+                        )}
+                    </div>
                 </div>
             </CardHeader>
             <CardContent>
@@ -270,7 +292,7 @@ export default function BillFormPage() {
                                 <TableHead className="w-12">
                                      <Checkbox
                                       onCheckedChange={handleSelectAll}
-                                      checked={selectedBills.length === bills.length && bills.length > 0}
+                                      checked={filteredBills.length > 0 && selectedBills.length === filteredBills.length}
                                       aria-label="Select all"
                                     />
                                 </TableHead>
@@ -282,7 +304,7 @@ export default function BillFormPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {bills.map((bill) => (
+                            {filteredBills.map((bill) => (
                                 <TableRow key={bill.id} data-state={selectedBills.includes(bill.id!) ? "selected" : "unselected"}>
                                     <TableCell>
                                         <Checkbox
@@ -336,3 +358,5 @@ export default function BillFormPage() {
     </div>
   );
 }
+
+    
