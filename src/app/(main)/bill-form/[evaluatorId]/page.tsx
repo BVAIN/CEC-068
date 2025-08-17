@@ -319,7 +319,7 @@ export default function BillViewPage() {
                     </div>
                 </div>
 
-                <div className="pt-8">
+                <div className="pt-12">
                     <div className="flex items-start justify-between gap-2">
                         <div className="flex flex-col">
                             <span className="font-bold">Coordinator</span>
