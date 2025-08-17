@@ -136,15 +136,19 @@ export default function BillViewPage() {
                             <SelectItem value="January">January</SelectItem>
                             <SelectItem value="February">February</SelectItem>
                             <SelectItem value="March">March</SelectItem>
+                            <SelectItem value="January-March">January-March</SelectItem>
                             <SelectItem value="April">April</SelectItem>
                             <SelectItem value="May">May</SelectItem>
                             <SelectItem value="June">June</SelectItem>
+                            <SelectItem value="April-June">April-June</SelectItem>
                             <SelectItem value="July">July</SelectItem>
                             <SelectItem value="August">August</SelectItem>
                             <SelectItem value="September">September</SelectItem>
+                             <SelectItem value="July-September">July-September</SelectItem>
                             <SelectItem value="October">October</SelectItem>
                             <SelectItem value="November">November</SelectItem>
                             <SelectItem value="December">December</SelectItem>
+                            <SelectItem value="October-December">October-December</SelectItem>
                         </SelectContent>
                     </Select>
                     <span className="font-bold">Examinattion</span>
@@ -174,10 +178,7 @@ export default function BillViewPage() {
                         <span className="font-medium text-muted-foreground">College Name:</span>
                         <span>{billDetails.collegeName}</span>
                     </div>
-                    <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium text-muted-foreground">PAN No.:</span>
-                        <span>{billDetails.panNo}</span>
-                    </div>
+                    
                      <div className="flex justify-between border-b pb-2 col-span-2">
                         <span className="font-medium text-muted-foreground">Address:</span>
                         <span>{billDetails.address}</span>
@@ -206,6 +207,10 @@ export default function BillViewPage() {
                         <div className="flex justify-between border-b pb-2">
                             <span className="font-medium text-muted-foreground">Branch:</span>
                             <span>{billDetails.branch}</span>
+                        </div>
+                         <div className="flex justify-between border-b pb-2">
+                            <span className="font-medium text-muted-foreground">PAN No.:</span>
+                            <span>{billDetails.panNo}</span>
                         </div>
                         <div className="flex justify-between border-b pb-2 col-span-2">
                             <span className="font-medium text-muted-foreground">Account No:</span>
