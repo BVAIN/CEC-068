@@ -99,9 +99,21 @@ export default function BillViewPage() {
                         <span className="font-medium text-muted-foreground">Evaluator Name:</span>
                         <span>{billDetails.evaluatorName}</span>
                     </div>
+                    <div className="flex justify-between border-b pb-2">
+                        <span className="font-medium text-muted-foreground">College Name:</span>
+                        <span>{billDetails.collegeName}</span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                        <span className="font-medium text-muted-foreground">PAN No.:</span>
+                        <span>{billDetails.panNo}</span>
+                    </div>
                      <div className="flex justify-between border-b pb-2 col-span-2">
                         <span className="font-medium text-muted-foreground">Address:</span>
                         <span>{billDetails.address}</span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                        <span className="font-medium text-muted-foreground">Email ID:</span>
+                        <span className="truncate">{billDetails.email}</span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
                         <span className="font-medium text-muted-foreground">Mobile No:</span>
@@ -128,8 +140,20 @@ export default function BillViewPage() {
                             <span className="font-medium text-muted-foreground">Account No:</span>
                             <span className="font-mono">{billDetails.bankAccountNo}</span>
                         </div>
+                        <div className="flex justify-between border-b pb-2 col-span-2">
+                            <span className="font-medium text-muted-foreground">IFSC Code:</span>
+                            <span className="font-mono">{billDetails.ifscCode}</span>
+                        </div>
                     </div>
                 </div>
+                 {billDetails.signature && (
+                    <div className="pt-6">
+                        <h3 className="font-semibold text-xl mb-4 text-center">Signature</h3>
+                        <div className="flex justify-center items-center border rounded-md p-4">
+                            <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-40" />
+                        </div>
+                    </div>
+                )}
             </CardContent>
         </Card>
       </div>
@@ -138,3 +162,4 @@ export default function BillViewPage() {
   );
 }
 
+    
