@@ -194,7 +194,6 @@ export default function BillViewPage() {
                 </div>
 
                 <div className="pt-2">
-                    <h3 className="font-bold text-lg mb-1 text-center">Bank Account Details</h3>
                      <div className="grid grid-cols-2 gap-x-8 gap-y-1">
                         <div className="flex justify-between border-b pb-1">
                             <span className="font-bold">Bank Name:</span>
@@ -345,4 +344,6 @@ export default function BillViewPage() {
 
 }
     
+    
+
     
