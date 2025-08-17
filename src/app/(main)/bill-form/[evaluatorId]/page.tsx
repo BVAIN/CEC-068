@@ -19,8 +19,6 @@ export default function BillViewPage() {
   const { toast } = useToast();
   const [billDetails, setBillDetails] = useState<BillFormValues | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedMonth, setSelectedMonth] = useState<string>('');
-  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
 
 
   useEffect(() => {
