@@ -243,12 +243,15 @@ export default function BillViewPage() {
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-medium border print-table" colSpan={2}>
-                                    Date of Visits: <span className="border-b border-dotted border-black inline-block w-[calc(100%-120px)]"></span>
+                                <TableCell className="font-medium border print-table py-4" colSpan={2}>
+                                    Date of Visits: 
                                 </TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
+                    <div className="text-center pt-4">
+                        <span className="font-bold underline">Optimum no. of Copies</span>
+                    </div>
                 </div>
             </CardContent>
         </Card>
@@ -257,3 +260,5 @@ export default function BillViewPage() {
     </div>
   );
 }
+
+  
