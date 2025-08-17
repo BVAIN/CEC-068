@@ -8,22 +8,37 @@ import { FilePlus, Settings, Sparkles, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
 import { askAi } from "@/ai/flows/conversational-flow";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
+type ChatMessage = {
+  role: 'user' | 'model';
+  content: string;
+};
 
 export default function HomePage() {
   const [aiPrompt, setAiPrompt] = useState("");
-  const [aiResponse, setAiResponse] = useState("");
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAskAi = async () => {
-    if (!aiPrompt.trim()) return; // Prevent sending empty prompts
+    if (!aiPrompt.trim()) return;
     setIsLoading(true);
-    setAiResponse("");
+    
+    const newHistory: ChatMessage[] = [...chatHistory, { role: 'user', content: aiPrompt }];
+    setChatHistory(newHistory);
+    setAiPrompt("");
+
     try {
-      const response = await askAi(aiPrompt);
-      setAiResponse(response);
+      const response = await askAi({
+          prompt: aiPrompt,
+          history: chatHistory.map(m => ({role: m.role, content: m.content}))
+      });
+      setChatHistory([...newHistory, { role: 'model', content: response }]);
     } catch (error) {
       console.error(error);
-      setAiResponse("Sorry, something went wrong. Please try again.");
+      const errorMessage = "Sorry, something went wrong. Please try again.";
+      setChatHistory([...newHistory, { role: 'model', content: errorMessage }]);
     } finally {
       setIsLoading(false);
     }
@@ -46,17 +61,39 @@ export default function HomePage() {
             <CardDescription>Have a question? Ask our AI assistant for help.</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow space-y-4">
+             {chatHistory.length > 0 && (
+                <ScrollArea className="h-60 w-full rounded-md border p-4 space-y-4">
+                    {chatHistory.map((message, index) => (
+                        <div key={index} className={`flex items-start gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
+                             {message.role === 'model' && (
+                                <Avatar className="w-8 h-8">
+                                    <AvatarFallback>AI</AvatarFallback>
+                                </Avatar>
+                             )}
+                            <div className={`rounded-lg p-3 max-w-[80%] ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                            </div>
+                            {message.role === 'user' && (
+                                <Avatar className="w-8 h-8">
+                                    <AvatarFallback>U</AvatarFallback>
+                                </Avatar>
+                            )}
+                        </div>
+                    ))}
+                </ScrollArea>
+            )}
             <Textarea 
               placeholder="Ask anything..."
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleAskAi();
+                }
+              }}
             />
-            {aiResponse && (
-              <div className="p-4 bg-muted/50 rounded-lg border">
-                <p className="text-sm">{aiResponse}</p>
-              </div>
-            )}
           </CardContent>
           <CardFooter>
             <Button onClick={handleAskAi} disabled={isLoading || !aiPrompt.trim()}>
@@ -84,7 +121,7 @@ export default function HomePage() {
           </CardContent>
           <CardFooter>
             <Link href="/issue-form" passHref>
-              <Button className="w-full">Go to Scripts Issue Form</Button>
+              <Button className="w-full">Go to Issue Packets</Button>
             </Link>
           </CardFooter>
         </Card>
@@ -95,7 +132,7 @@ export default function HomePage() {
               App Settings
             </CardTitle>
             <CardDescription>Configure your application and integrations.</CardDescription>
-          </CardHeader>
+          </Header>
           <CardContent className="flex-grow">
             <p>Manage your account settings and connect to services like Google Drive for data synchronization.</p>
           </CardContent>
