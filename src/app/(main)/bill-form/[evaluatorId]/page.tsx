@@ -240,7 +240,7 @@ export default function BillViewPage() {
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-bold border print-table py-8 align-top" colSpan={2}>
+                                <TableCell className="font-bold border print-table py-1 align-top" colSpan={2}>
                                     Date of Visits: 
                                 </TableCell>
                             </TableRow>
@@ -306,7 +306,7 @@ export default function BillViewPage() {
                             <span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
                             <span className="text-right">Rs. ______________________</span>
                         </div>
-                         <div className="flex justify-between items-center font-semibold">
+                         <div className="flex justify-between items-center">
                             <span>Net Payable :</span>
                             <span className="text-right">Rs. ______________________</span>
                         </div>
