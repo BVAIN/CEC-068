@@ -126,6 +126,9 @@ export default function BillViewPage() {
                 outline: none;
                 box-shadow: none;
             }
+            .date-of-visits-cell {
+                width: 25%;
+            }
         `}</style>
 
       <header className="flex items-center justify-between gap-4 no-print mb-8">
@@ -219,8 +222,8 @@ export default function BillViewPage() {
                         </div>
                     </div>
                      <div className="pt-2 flex justify-between">
-                        <span>Paper No. ..................................................................................................................</span>
-                        <span className="ml-4">Duration of Paper ..................</span>
+                        <span>Paper No.................................................................................................................</span>
+                        <span className="ml-4">Duration of Paper...................</span>
                     </div>
                 </div>
                 
@@ -229,20 +232,20 @@ export default function BillViewPage() {
                     <Table className="mt-1 border print-table w-full">
                          <TableHeader>
                             <TableRow>
-                                <TableHead className="font-bold border print-table">Total No. of Answer Scripts Evaluated</TableHead>
-                                <TableHead className="font-bold border print-table">Rate Per Answer Script</TableHead>
+                                <TableHead className="font-bold border print-table">Total No. of Ans. Scripts Evaluated</TableHead>
+                                <TableHead className="font-bold border print-table">Rate Per Ans. Script</TableHead>
                                 <TableHead className="font-bold border print-table">Remuneration Claimed</TableHead>
                                 <TableHead className="font-bold border print-table">Total No. of Visits</TableHead>
-                                <TableHead className="font-bold border print-table align-top">Date of Visits:</TableHead>
+                                <TableHead className="font-bold border print-table align-top date-of-visits-cell">Date of Visits:</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             <TableRow>
-                                <TableCell className="border print-table h-10"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
+                                <TableCell className="border print-table date-of-visits-cell"><div className="min-h-[4rem]"></div></TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
