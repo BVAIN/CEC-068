@@ -296,12 +296,6 @@ export default function BillFormPage() {
 
   return (
     <div className="space-y-8">
-      <style>{`
-        .signature-preview {
-            filter: grayscale(100%) contrast(500%) brightness(200%) invert(1);
-            mix-blend-mode: multiply;
-        }
-      `}</style>
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Bill Form</h1>
         <p className="text-lg text-muted-foreground mt-2">Manage your bill submissions here.</p>
@@ -342,7 +336,7 @@ export default function BillFormPage() {
                         <Upload className="mr-2 h-4 w-4" />
                         Choose File
                     </Button>
-                    {signaturePreview && <img src={signaturePreview} alt="Signature Preview" className="mt-2 h-20 border rounded-md signature-preview" />}
+                    {signaturePreview && <img src={signaturePreview} alt="Signature Preview" className="mt-2 h-20 border rounded-md" />}
                 </div>
              </CardContent>
           </Card>
