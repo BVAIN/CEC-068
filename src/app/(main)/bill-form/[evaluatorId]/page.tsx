@@ -177,9 +177,11 @@ export default function BillViewPage() {
                         <span className="font-bold">Evaluator Name:</span>
                         <span>{billDetails.evaluatorName}</span>
                     </div>
-                     <div className="flex justify-between border-b pb-1 col-span-2 gap-x-8">
-                        <div className="flex"><span className="font-bold mr-2">Address:</span> <span>{billDetails.address}</span></div>
-                        <div className="flex"><span className="font-bold mr-2">Course:</span> <span>{billDetails.course}</span></div>
+                     <div className="flex justify-between border-b pb-1">
+                        <span className="font-bold">Address:</span> <span>{billDetails.address}</span>
+                    </div>
+                     <div className="flex justify-between border-b pb-1">
+                        <span className="font-bold">Course:</span> <span>{billDetails.course}</span>
                     </div>
                     <div className="flex justify-between border-b pb-1">
                         <span className="font-bold">Email ID:</span>
@@ -348,6 +350,7 @@ export default function BillViewPage() {
     
 
     
+
 
 
 
