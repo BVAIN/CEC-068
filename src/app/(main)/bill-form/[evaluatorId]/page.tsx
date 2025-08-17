@@ -10,7 +10,6 @@ import { ArrowLeft, Printer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 const BILLS_STORAGE_KEY = 'cec068_bills';
@@ -21,10 +20,6 @@ export default function BillViewPage() {
   const { toast } = useToast();
   const [billDetails, setBillDetails] = useState<BillFormValues | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 11 }, (_, i) => currentYear - i);
-
 
   useEffect(() => {
     const evaluatorId = params.evaluatorId;
@@ -272,27 +267,27 @@ export default function BillViewPage() {
                         <span className="underline">Official Use</span>
                     </div>
                      <div className="pt-4">
-                        <div className="flex justify-between mb-8">
+                        <div className="flex justify-between mb-2">
                             <span className="w-3/5">I) Remuneration for the Scripts Valued :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between mb-8">
+                        <div className="flex justify-between mb-2">
                             <span className="w-3/5">II) Payment on account of Additional Examiner(If any) :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between mb-8">
+                        <div className="flex justify-between mb-2">
                            <span className="w-3/5">Total of (I+II) :</span>
                            <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                         <div className="flex justify-between mb-8">
+                         <div className="flex justify-between mb-2">
                             <span className="w-3/5">Less: 5% TWF :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between mb-8">
+                        <div className="flex justify-between mb-2">
                             <span className="w-3/5">Balance :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="mb-4">
+                        <div className="mb-2">
                            <div className="flex justify-between">
                                 <span className="w-3/5">Conveyance @ Rs. _________ Per day</span>
                                 <span className="w-2/5 text-right">Rs. ______________________________</span>
@@ -301,11 +296,11 @@ export default function BillViewPage() {
                                 <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
                             </div>
                         </div>
-                        <div className="flex justify-between mb-8">
+                        <div className="flex justify-between mb-2">
                             <span className="w-3/5">Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                         <div className="flex justify-between mb-8">
+                         <div className="flex justify-between mb-2">
                             <span className="w-3/5">Net Payable :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
@@ -318,16 +313,6 @@ export default function BillViewPage() {
                             <span className="font-bold">Coordinator</span>
                             <div className="flex items-center gap-2">
                                 <span>CEC</span>
-                                 <Select>
-                                    <SelectTrigger className="w-[120px] no-print">
-                                        <SelectValue placeholder="Year" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {years.map(year => (
-                                            <SelectItem key={year} value={String(year)}>{year}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
                             </div>
                         </div>
                         <span>Dealing Assistant</span>
@@ -341,5 +326,5 @@ export default function BillViewPage() {
   );
 
 }
-
+    
     
