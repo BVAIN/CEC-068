@@ -179,7 +179,7 @@ export default function BillViewPage() {
 
                 <div className="pt-4">
                     <h3 className="font-semibold text-lg mb-2 text-center">Bank Account Details</h3>
-                     <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                     <div className="grid grid-cols-1 gap-x-8 gap-y-2">
                         <div className="flex justify-between border-b pb-2">
                             <span className="font-semibold">Bank Name:</span>
                             <span>{billDetails.bankName}</span>
@@ -249,7 +249,7 @@ export default function BillViewPage() {
                 <div className="pt-4">
                     <div className="flex justify-between items-end">
                         <div className="w-2/3 space-y-2">
-                            <h3 className="text-left">Part II (for use of Head/Additional Head Examiner)</h3>
+                            <h3 className="text-left font-semibold">Part II (for use of Head/Additional Head Examiner)</h3>
                             <div className="pt-2">
                                 <span>Payment claimed Rs............................................................</span>
                             </div>
@@ -267,39 +267,39 @@ export default function BillViewPage() {
                     <div className="text-center font-bold">
                         <span className="underline">Official Use</span>
                     </div>
-                     <div className="pt-4 space-y-2">
-                        <div className="flex justify-between font-semibold">
+                     <div className="pt-4">
+                        <div className="flex justify-between font-semibold mb-4">
                             <span>I) Remuneration for the Scripts Valued :</span>
                             <span>Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between font-semibold">
+                        <div className="flex justify-between font-semibold mb-4">
                             <span>II) Payment on account of Additional Examiner(If any) :</span>
                             <span>Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between font-semibold">
+                        <div className="flex justify-between font-semibold mb-4">
                            <span>Total of (I+II) :</span>
                            <span>Rs. ______________________________</span>
                         </div>
-                         <div className="flex justify-between font-semibold">
+                         <div className="flex justify-between font-semibold mb-4">
                             <span>Less: 5% TWF :</span>
                             <span>Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between font-semibold">
+                        <div className="flex justify-between font-semibold mb-4">
                             <span>Balance :</span>
                             <span>Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between font-semibold">
+                        <div className="flex justify-between font-semibold mb-2">
                             <span>Conveyance @ Rs. _________ Per day</span>
                             <span></span>
                         </div>
-                        <div className="pl-4 font-semibold">
+                        <div className="pl-4 font-semibold mb-4">
                              <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
                         </div>
-                        <div className="flex justify-between font-semibold">
+                        <div className="flex justify-between font-semibold mb-4">
                             <span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
                             <span>Rs. ______________________________</span>
                         </div>
-                         <div className="flex justify-between font-semibold">
+                         <div className="flex justify-between font-semibold mb-4">
                             <span>Net Payable :</span>
                             <span>Rs. ______________________________</span>
                         </div>
