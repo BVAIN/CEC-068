@@ -219,8 +219,8 @@ export default function BillViewPage() {
                         </div>
                     </div>
                      <div className="pt-2 flex justify-between">
-                        <span>Paper No. ..................................................................................................................</span>
-                        <span className="ml-4">Duration of Paper ..................</span>
+                        <span>..................................................................................................................Paper No.</span>
+                        <span className="ml-4">..................Duration of Paper</span>
                     </div>
                 </div>
                 
@@ -233,7 +233,7 @@ export default function BillViewPage() {
                                 <TableHead className="font-bold border print-table">Rate Per Answer Script</TableHead>
                                 <TableHead className="font-bold border print-table">Remuneration Claimed</TableHead>
                                 <TableHead className="font-bold border print-table">Total No. of Visits</TableHead>
-                                <TableHead className="font-bold border print-table">Date of Visits:</TableHead>
+                                <TableHead className="font-bold border print-table align-top">Date of Visits:</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
