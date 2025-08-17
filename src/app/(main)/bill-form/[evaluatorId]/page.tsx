@@ -225,7 +225,7 @@ export default function BillViewPage() {
                         </div>
                     </div>
                      <div className="flex justify-between">
-                        <span>Paper No.................................................................................................................</span>
+                        <span>Paper No...............................................................................................................</span>
                         <span className="ml-4">Duration of Paper...................</span>
                     </div>
                 </div>
@@ -235,11 +235,11 @@ export default function BillViewPage() {
                     <Table className="mt-1 border print-table w-full">
                          <TableHeader>
                             <TableRow>
-                                <TableHead className="font-bold border print-table total-scripts-cell">Total No. of Ans. Scripts Evaluated</TableHead>
-                                <TableHead className="font-bold border print-table">Rate Per Ans. Script</TableHead>
-                                <TableHead className="font-bold border print-table">Remuneration Claimed</TableHead>
-                                <TableHead className="font-bold border print-table">Total No. of Visits</TableHead>
-                                <TableHead className="font-bold border print-table date-of-visits-cell">Date of Visits:</TableHead>
+                                <TableHead className="font-bold border print-table total-scripts-cell text-xs">Total No. of Ans. Scripts Evaluated</TableHead>
+                                <TableHead className="font-bold border print-table text-xs">Rate Per Ans. Script</TableHead>
+                                <TableHead className="font-bold border print-table text-xs">Remuneration Claimed</TableHead>
+                                <TableHead className="font-bold border print-table text-xs">Total No. of Visits</TableHead>
+                                <TableHead className="font-bold border print-table date-of-visits-cell text-xs">Date of Visits:</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
