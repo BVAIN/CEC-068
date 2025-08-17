@@ -264,7 +264,7 @@ export default function BillViewPage() {
                         )}
                     </div>
                     <hr className="my-4 border-t-2 border-gray-400" />
-                    <div className="text-center font-bold">
+                    <div className="text-center">
                         <span className="underline">Official Use</span>
                     </div>
                      <div className="pt-4">
@@ -308,9 +308,10 @@ export default function BillViewPage() {
                     </div>
                 </div>
 
-                <div className="pt-24">
-                    <div className="flex items-center gap-2">
+                <div className="pt-32">
+                    <div className="flex items-center justify-between gap-2">
                         <span className="font-bold">Coordinator</span>
+                        <span>Dealing Assistant</span>
                     </div>
                 </div>
             </CardContent>
