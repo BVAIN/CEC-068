@@ -132,7 +132,7 @@ export default function HomePage() {
               App Settings
             </CardTitle>
             <CardDescription>Configure your application and integrations.</CardDescription>
-          </Header>
+          </CardHeader>
           <CardContent className="flex-grow">
             <p>Manage your account settings and connect to services like Google Drive for data synchronization.</p>
           </CardContent>
