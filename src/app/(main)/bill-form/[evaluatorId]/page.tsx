@@ -64,7 +64,7 @@ export default function BillViewPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto">
         <style>{`
             @media print {
                 body, .main-layout {
@@ -112,7 +112,7 @@ export default function BillViewPage() {
             }
         `}</style>
 
-      <header className="flex items-center justify-between gap-4 no-print">
+      <header className="flex items-center justify-between gap-4 no-print mb-8">
         <div className="flex items-center gap-4">
             <Button variant="outline" size="icon" onClick={() => router.push('/bill-form')}>
             <ArrowLeft className="h-4 w-4" />
@@ -146,7 +146,7 @@ export default function BillViewPage() {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4 text-base p-4 md:p-6">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-2">
                     <div className="flex justify-between border-b pb-2">
                         <span className="font-semibold">Evaluator ID:</span>
                         <span>{billDetails.evaluatorId}</span>
@@ -178,8 +178,8 @@ export default function BillViewPage() {
                 </div>
 
                 <div className="pt-4">
-                    <h3 className="font-semibold text-lg mb-4 text-center">Bank Account Details</h3>
-                     <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                    <h3 className="font-semibold text-lg mb-2 text-center">Bank Account Details</h3>
+                     <div className="grid grid-cols-2 gap-x-8 gap-y-2">
                         <div className="flex justify-between border-b pb-2">
                             <span className="font-semibold">Bank Name:</span>
                             <span>{billDetails.bankName}</span>
@@ -189,7 +189,7 @@ export default function BillViewPage() {
                             <span>{billDetails.branch}</span>
                         </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-x-8 gap-y-4 mt-4">
+                    <div className="grid grid-cols-3 gap-x-8 gap-y-2 mt-2">
                         <div className="flex justify-between border-b pb-2">
                             <span className="font-semibold">PAN No.:</span>
                             <span>{billDetails.panNo}</span>
@@ -205,14 +205,14 @@ export default function BillViewPage() {
                     </div>
                 </div>
                 
-                 <div className="pt-6 flex justify-between items-center text-sm">
+                 <div className="pt-4 flex justify-between items-center text-sm">
                     <span>Paper No. ..................................................................................................................</span>
                     <span>Duration of Paper ..................</span>
                 </div>
 
-                <div className="pt-6">
+                <div className="pt-4">
                     <h3 className="text-center font-bold">Part I Examiner /Additional Examiner</h3>
-                    <Table className="mt-4 border print-table w-full">
+                    <Table className="mt-2 border print-table w-full">
                          <colgroup>
                             <col style={{ width: '40%' }} />
                             <col style={{ width: '60%' }} />
@@ -241,16 +241,16 @@ export default function BillViewPage() {
                             </TableRow>
                         </TableBody>
                     </Table>
-                    <div className="text-center pt-4">
+                    <div className="text-center pt-2">
                         <span className="font-bold underline">Optimum no. of Copies</span>
                     </div>
                 </div>
 
-                <div className="pt-8">
+                <div className="pt-4">
                     <div className="flex justify-between items-end">
-                        <div className="w-2/3">
-                            <h3 className="text-left font-semibold">Part II (for use of Head/Additional Head Examiner)</h3>
-                            <div className="pt-4">
+                        <div className="w-2/3 space-y-2">
+                            <h3 className="text-left">Part II (for use of Head/Additional Head Examiner)</h3>
+                            <div className="pt-2">
                                 <span>Payment claimed Rs............................................................</span>
                             </div>
                         </div>
@@ -264,7 +264,7 @@ export default function BillViewPage() {
                         )}
                     </div>
                     <hr className="my-4 border-t-2 border-gray-400" />
-                    <div className="text-center font-bold pt-4">
+                    <div className="text-center font-bold">
                         <span className="underline">Official Use</span>
                     </div>
                     <div className="pt-4 space-y-2">
