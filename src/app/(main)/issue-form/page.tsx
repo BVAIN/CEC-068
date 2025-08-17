@@ -229,7 +229,7 @@ export default function ScriptsIssueFormPage() {
       }
   }, [watchedQpNo, qpUpcMap, setValue]);
   
-  const { filteredIssues, totalScripts, totalMissing, totalExtra, totalEvaluatedScripts } = useMemo(() => {
+  const { filteredIssues, totalScripts, totalMissing, totalExtra, totalEvaluatedScripts, totalAbsent } = useMemo(() => {
     const filtered = issues.filter(issue => {
         const searchMatch = 
             issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -252,11 +252,12 @@ export default function ScriptsIssueFormPage() {
     });
 
     const totalScripts = filtered.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
+    const totalAbsent = filtered.reduce((acc, issue) => acc + (issue.noOfAbsent || 0), 0);
     const totalMissing = filtered.reduce((acc, issue) => acc + (issue.noOfMissing || 0), 0);
     const totalExtra = filtered.reduce((acc, issue) => acc + (issue.extraSheets || 0), 0);
     const totalEvaluatedScripts = filtered.filter(issue => issue.received).reduce((acc, issue) => acc + (issue.noOfScripts || 0) + (issue.extraSheets || 0), 0);
 
-    return { filteredIssues: filtered, totalScripts, totalMissing, totalExtra, totalEvaluatedScripts };
+    return { filteredIssues: filtered, totalScripts, totalMissing, totalExtra, totalEvaluatedScripts, totalAbsent };
   }, [issues, searchTerm, filters]);
 
 
@@ -832,6 +833,16 @@ export default function ScriptsIssueFormPage() {
                   </TableRow>
                 )})}
               </TableBody>
+              <TableFooter>
+                <TableRow>
+                    <TableCell colSpan={10} className="text-right font-bold">Total</TableCell>
+                    <TableCell className="font-bold">{totalScripts}</TableCell>
+                    <TableCell className="font-bold">{totalAbsent}</TableCell>
+                    <TableCell className="font-bold">{totalMissing}</TableCell>
+                    <TableCell className="font-bold">{totalExtra}</TableCell>
+                    <TableCell colSpan={2}></TableCell>
+                </TableRow>
+              </TableFooter>
             </Table>
             </div>
           </CardContent>
