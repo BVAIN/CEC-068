@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Printer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
 
 const BILLS_STORAGE_KEY = 'cec068_bills';
@@ -97,7 +98,12 @@ export default function BillViewPage() {
                     outline: none;
                     box-shadow: none;
                 }
-
+                .fill-in-blank {
+                    border-bottom: 1px dotted black;
+                    padding: 0 4px;
+                    display: inline-block;
+                    min-width: 100px;
+                }
             }
         `}</style>
 
@@ -195,8 +201,8 @@ export default function BillViewPage() {
                  {billDetails.signature && (
                     <div className="pt-6 flex justify-end">
                         <div className="text-center">
-                            <div className="flex justify-center items-center border rounded-md p-2 min-h-[6rem]">
-                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-20" />
+                            <div className="flex justify-center items-center rounded-md p-1 min-h-[4rem] border">
+                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12" />
                             </div>
                             <h3 className="font-semibold text-sm mt-2">Signature of examiner</h3>
                         </div>
@@ -205,6 +211,35 @@ export default function BillViewPage() {
                 <div className="pt-8 flex justify-between items-center text-sm">
                     <span>Paper No. ..................................................................................................................</span>
                     <span>Duration of Paper ..................</span>
+                </div>
+
+                <div className="pt-8">
+                    <h3 className="text-center font-bold">Part I Examiner /Additional Examiner</h3>
+                    <Table className="mt-4">
+                        <TableBody>
+                            <TableRow>
+                                <TableCell className="font-medium">Total No. of Ans. Scripts Evaluation</TableCell>
+                                <TableCell className="border-b border-dotted border-black"></TableCell>
+                            </TableRow>
+                             <TableRow>
+                                <TableCell className="font-medium">Rate Per Ans. Script</TableCell>
+                                <TableCell className="border-b border-dotted border-black"></TableCell>
+                            </TableRow>
+                             <TableRow>
+                                <TableCell className="font-medium">Remuneration Claimed</TableCell>
+                                <TableCell className="border-b border-dotted border-black"></TableCell>
+                            </TableRow>
+                             <TableRow>
+                                <TableCell className="font-medium">Total No. of Visits</TableCell>
+                                <TableCell className="border-b border-dotted border-black"></TableCell>
+                            </TableRow>
+                             <TableRow>
+                                <TableCell className="font-medium" colSpan={2}>
+                                    Date of Visits: <span className="border-b border-dotted border-black inline-block w-[calc(100%-120px)]"></span>
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
                 </div>
             </CardContent>
         </Card>
