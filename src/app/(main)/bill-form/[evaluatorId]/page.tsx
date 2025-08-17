@@ -239,6 +239,7 @@ export default function BillViewPage() {
                                 <TableHead className="font-bold border print-table">Rate Per Ans. Script</TableHead>
                                 <TableHead className="font-bold border print-table">Remuneration Claimed</TableHead>
                                 <TableHead className="font-bold border print-table">Total No. of Visits</TableHead>
+                                <TableHead className="font-bold border print-table date-of-visits-cell">Date of Visits:</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -247,16 +248,7 @@ export default function BillViewPage() {
                                 <TableCell className="border print-table"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
-                                <TableCell rowSpan={2} className="border print-table date-of-visits-cell align-top p-2">
-                                  <span className="font-bold">Date of Visits:</span>
-                                  <div className="min-h-[4rem]"></div>
-                                </TableCell>
-                            </TableRow>
-                             <TableRow>
-                                <TableCell className="border print-table total-scripts-cell"></TableCell>
-                                <TableCell className="border print-table"></TableCell>
-                                <TableCell className="border print-table"></TableCell>
-                                <TableCell className="border print-table"></TableCell>
+                                <TableCell className="border print-table date-of-visits-cell min-h-[4rem]"></TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
