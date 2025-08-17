@@ -281,7 +281,7 @@ export default function BillViewPage() {
                     </div>
                     <hr className="my-2 border-t border-gray-400" />
                     <div className="text-center">
-                        <span className="underline">Official Use</span>
+                        <span className="underline font-bold">Official Use</span>
                     </div>
                      <div className="pt-2 space-y-1">
                         <div className="flex justify-between items-center">
@@ -318,13 +318,13 @@ export default function BillViewPage() {
                             <span className="text-right">Rs. ______________________</span>
                         </div>
                          <div className="flex justify-between items-center">
-                            <span>Net Payable :</span>
+                            <span className="font-semibold">Net Payable :</span>
                             <span className="text-right">Rs. ______________________</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="pt-12">
+                <div className="pt-8">
                     <div className="flex items-start justify-between gap-2">
                         <div className="flex flex-col">
                             <span className="font-bold">Coordinator</span>
