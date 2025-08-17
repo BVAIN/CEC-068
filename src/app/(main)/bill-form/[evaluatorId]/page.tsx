@@ -115,6 +115,17 @@ export default function BillViewPage() {
                     border-collapse: collapse;
                 }
             }
+             .manual-input {
+                border: none;
+                border-radius: 0;
+                padding-left: 2px;
+                padding-right: 2px;
+                background: transparent;
+            }
+            .manual-input:focus {
+                outline: none;
+                box-shadow: none;
+            }
         `}</style>
 
       <header className="flex items-center justify-between gap-4 no-print mb-8">
