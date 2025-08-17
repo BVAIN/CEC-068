@@ -243,12 +243,12 @@ export default function BillViewPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow>
+                            <TableRow className="h-16">
                                 <TableCell className="border print-table total-scripts-cell"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
-                                <TableCell className="border print-table date-of-visits-cell min-h-[4rem]"></TableCell>
+                                <TableCell className="border print-table date-of-visits-cell"></TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
