@@ -308,7 +308,7 @@ export default function BillViewPage() {
                     </div>
                 </div>
 
-                <div className="pt-16">
+                <div className="pt-24">
                     <div className="flex items-center gap-2">
                         <span className="font-bold">Coordinator</span>
                     </div>
