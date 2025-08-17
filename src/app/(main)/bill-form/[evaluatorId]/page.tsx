@@ -219,11 +219,11 @@ export default function BillViewPage() {
                         </colgroup>
                         <TableBody>
                             <TableRow>
-                                <TableCell className="font-medium border print-table">Total No. of Ans. Scripts Evaluation</TableCell>
+                                <TableCell className="font-medium border print-table">Total No. of Answer Scripts Evaluated</TableCell>
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-medium border print-table">Rate Per Ans. Script</TableCell>
+                                <TableCell className="font-medium border print-table">Rate Per Answer Script</TableCell>
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
