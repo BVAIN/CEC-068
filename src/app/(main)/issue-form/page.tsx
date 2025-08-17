@@ -107,7 +107,13 @@ export default function ScriptsIssueFormPage() {
     try {
         const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
         if (storedIssues) {
-            setIssues(JSON.parse(storedIssues).sort((a: IssueFormValues, b: IssueFormValues) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime()));
+            const parsedIssues: IssueFormValues[] = JSON.parse(storedIssues);
+            // Ensure all issues have a unique ID
+            const issuesWithIds = parsedIssues.map(issue => ({
+                ...issue,
+                id: issue.id || `${Date.now()}-${issue.packetNo}-${Math.random()}`
+            }));
+            setIssues(issuesWithIds.sort((a, b) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime()));
         } else {
              localStorage.removeItem(ISSUES_STORAGE_KEY);
         }
@@ -253,12 +259,12 @@ export default function ScriptsIssueFormPage() {
   
   function onSubmit(data: IssueFormValues) {
     let newIssues;
-    const isUpdating = editingIndex !== null;
+    const isUpdating = editingIndex !== null && issues[editingIndex];
 
     if (isUpdating) {
       newIssues = [...issues];
-      const existingIssue = newIssues[editingIndex];
-      newIssues[editingIndex] = {...existingIssue, ...data};
+      const existingIssue = newIssues[editingIndex!];
+      newIssues[editingIndex!] = {...existingIssue, ...data};
       setEditingIndex(null);
     } else {
         const teacherCourseKey = data.course;
@@ -424,7 +430,7 @@ export default function ScriptsIssueFormPage() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Issue Details</CardTitle>
+              <CardTitle>{editingIndex !== null ? 'Update Issue' : 'Issue Details'}</CardTitle>
               <CardDescription>Fill in the details for the issue.</CardDescription>
             </CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-6">
@@ -460,20 +466,24 @@ export default function ScriptsIssueFormPage() {
                     <FormItem className="space-y-3">
                       <FormLabel>Campus</FormLabel>
                       <FormControl>
-                        <div className="flex gap-4">
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          className="flex gap-4"
+                        >
                            <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'North'} onCheckedChange={(checked) => field.onChange(checked ? 'North' : undefined)} />
+                              <RadioGroupItem value="North" />
                             </FormControl>
                             <FormLabel className="font-normal">North</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'South'} onCheckedChange={(checked) => field.onChange(checked ? 'South' : undefined)} />
+                              <RadioGroupItem value="South" />
                             </FormControl>
                             <FormLabel className="font-normal">South</FormLabel>
                           </FormItem>
-                        </div>
+                        </RadioGroup>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -486,26 +496,30 @@ export default function ScriptsIssueFormPage() {
                     <FormItem className="space-y-3">
                       <FormLabel>Type</FormLabel>
                       <FormControl>
-                         <div className="flex gap-4">
+                         <RadioGroup
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            className="flex gap-4"
+                         >
                           <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'Regular'} onCheckedChange={(checked) => field.onChange(checked ? 'Regular' : undefined)} />
+                              <RadioGroupItem value="Regular" />
                             </FormControl>
                             <FormLabel className="font-normal">Regular</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                               <Checkbox checked={field.value === 'NCWEB'} onCheckedChange={(checked) => field.onChange(checked ? 'NCWEB' : undefined)} />
+                               <RadioGroupItem value="NCWEB" />
                             </FormControl>
                             <FormLabel className="font-normal">NCWEB</FormLabel>
                           </FormItem>
                            <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
-                              <Checkbox checked={field.value === 'SOL'} onCheckedChange={(checked) => field.onChange(checked ? 'SOL' : undefined)} />
+                              <RadioGroupItem value="SOL" />
                             </FormControl>
                             <FormLabel className="font-normal">SOL</FormLabel>
                           </FormItem>
-                        </div>
+                        </RadioGroup>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -702,8 +716,8 @@ export default function ScriptsIssueFormPage() {
                   const originalIndex = issues.findIndex(i => i.id === issue.id);
                   const isSelected = issue.id ? selectedIssues.includes(issue.id) : false;
                   return (
-                  <TableRow key={issue.id} data-state={isSelected && "selected"}>
-                    <TableCell onClick={(e) => { e.stopPropagation(); }}>
+                  <TableRow key={issue.id} data-state={isSelected ? "selected" : "unselected"}>
+                    <TableCell>
                       <Checkbox
                         onCheckedChange={(checked) => issue.id && handleSelectIssue(issue.id, !!checked)}
                         checked={isSelected}
@@ -721,7 +735,7 @@ export default function ScriptsIssueFormPage() {
                     <TableCell>{issue.schoolType}</TableCell>
                     <TableCell>{issue.campus}</TableCell>
                     <TableCell>{issue.noOfScripts}</TableCell>
-                     <TableCell onClick={(e) => e.stopPropagation()}>
+                     <TableCell>
                       <Input 
                         type="number" 
                         value={issue.noOfAbsent || ''} 
@@ -729,7 +743,7 @@ export default function ScriptsIssueFormPage() {
                         className="w-20"
                       />
                     </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                    <TableCell>
                         <Input
                             type="number"
                             value={issue.noOfMissing || ''}
@@ -737,7 +751,7 @@ export default function ScriptsIssueFormPage() {
                             className="w-20"
                         />
                     </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                    <TableCell>
                         <Input
                             type="number"
                             value={issue.extraSheets || ''}
@@ -745,7 +759,7 @@ export default function ScriptsIssueFormPage() {
                             className="w-20"
                         />
                     </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                    <TableCell>
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id={`received-${originalIndex}`}
@@ -755,7 +769,7 @@ export default function ScriptsIssueFormPage() {
                         <Label htmlFor={`received-${originalIndex}`} className="sr-only">Received</Label>
                       </div>
                     </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                    <TableCell>
                       <div className="flex gap-2">
                         <Button variant="outline" size="icon" onClick={() => handleView(issue.teacherId)}>
                           <Eye className="h-4 w-4" />

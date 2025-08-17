@@ -97,7 +97,7 @@ export default function IssueViewPage() {
                         </TableHeader>
                         <TableBody>
                             {teacherIssues.map((issue, index) => (
-                                <TableRow key={issue.packetNo}>
+                                <TableRow key={issue.id || index}>
                                     <TableCell>{issue.packetNo}</TableCell>
                                     <TableCell>{issue.dateOfIssue}</TableCell>
                                     <TableCell>{issue.course}</TableCell>
@@ -123,7 +123,7 @@ export default function IssueViewPage() {
                     <div className="flex justify-between"><span>Total No. of Scripts:</span> <span>{totalScripts}</span></div>
                     <div className="flex justify-between"><span>Total No. of Absent:</span> <span>{totalAbsent}</span></div>
                     <hr className="my-2" />
-                    <div className="flex justify-between font-bold"><span>Net Total Scripts:</span> <span>{netScripts}</span></div>
+                    <div className="flex justify-between font-bold"><span>Total Present:</span> <span>{netScripts}</span></div>
                 </CardContent>
             </Card>
             <Card>
@@ -170,5 +170,3 @@ export default function IssueViewPage() {
     </div>
   );
 }
-
-    
