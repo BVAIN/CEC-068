@@ -10,6 +10,7 @@ import { ArrowLeft, Printer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 const BILLS_STORAGE_KEY = 'cec068_bills';
@@ -20,6 +21,9 @@ export default function BillViewPage() {
   const { toast } = useToast();
   const [billDetails, setBillDetails] = useState<BillFormValues | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 11 }, (_, i) => currentYear - i);
 
 
   useEffect(() => {
@@ -309,8 +313,23 @@ export default function BillViewPage() {
                 </div>
 
                 <div className="pt-32">
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="font-bold">Coordinator</span>
+                    <div className="flex items-start justify-between gap-2">
+                        <div className="flex flex-col">
+                            <span className="font-bold">Coordinator</span>
+                            <div className="flex items-center gap-2 mt-2">
+                                <span>CEC</span>
+                                 <Select>
+                                    <SelectTrigger className="w-[120px] no-print">
+                                        <SelectValue placeholder="Year" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {years.map(year => (
+                                            <SelectItem key={year} value={String(year)}>{year}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
                         <span>Dealing Assistant</span>
                     </div>
                 </div>
