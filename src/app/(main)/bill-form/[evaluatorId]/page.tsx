@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Printer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 
 const BILLS_STORAGE_KEY = 'cec068_bills';
@@ -54,15 +54,6 @@ export default function BillViewPage() {
   const handlePrint = () => {
     window.print();
   };
-  
-  const getYears = () => {
-    const currentYear = new Date().getFullYear();
-    const years = [];
-    for (let i = currentYear; i >= currentYear - 10; i--) {
-        years.push(i.toString());
-    }
-    return years;
-  };
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-full">Loading bill details...</div>;
@@ -97,6 +88,18 @@ export default function BillViewPage() {
                 .no-print {
                     display: none;
                 }
+                .manual-input {
+                    border: none;
+                    border-bottom: 1px dotted black;
+                    border-radius: 0;
+                    padding-left: 2px;
+                    padding-right: 2px;
+                }
+                .manual-input:focus {
+                    outline: none;
+                    box-shadow: none;
+                }
+
             }
         `}</style>
 
@@ -128,36 +131,9 @@ export default function BillViewPage() {
                 </div>
                  <div className="flex items-center justify-center gap-2 md:gap-4 pt-4">
                     <span className="font-bold">Bill,</span>
-                    <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select Month" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="January">January</SelectItem>
-                            <SelectItem value="February">February</SelectItem>
-                            <SelectItem value="March">March</SelectItem>
-                            <SelectItem value="April">April</SelectItem>
-                            <SelectItem value="May">May</SelectItem>
-                            <SelectItem value="June">June</SelectItem>
-                            <SelectItem value="July">July</SelectItem>
-                            <SelectItem value="August">August</SelectItem>
-                            <SelectItem value="September">September</SelectItem>
-                            <SelectItem value="October">October</SelectItem>
-                            <SelectItem value="November">November</SelectItem>
-                            <SelectItem value="December">December</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <span className="font-bold">Examinattion</span>
-                     <Select value={selectedYear} onValueChange={setSelectedYear}>
-                        <SelectTrigger className="w-[120px]">
-                            <SelectValue placeholder="Select Year" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {getYears().map(year => (
-                                <SelectItem key={year} value={year}>{year}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <Input className="w-[180px] manual-input" placeholder="Enter Month(s)" />
+                    <span className="font-bold">Examination</span>
+                    <Input className="w-[120px] manual-input" placeholder="Enter Year" />
                 </div>
             </CardHeader>
             <CardContent className="space-y-6 text-base p-4 md:p-6">
