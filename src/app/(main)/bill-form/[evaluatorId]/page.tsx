@@ -225,7 +225,7 @@ export default function BillViewPage() {
                         </div>
                     </div>
                      <div className="flex justify-between">
-                        <span>Paper No...............................................................................................................</span>
+                        <span>Paper No.........................................................................................................</span>
                         <span className="ml-4">Duration of Paper...................</span>
                     </div>
                 </div>
