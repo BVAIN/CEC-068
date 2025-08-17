@@ -313,7 +313,7 @@ export default function BillViewPage() {
                         <div className="flex flex-col">
                             <span className="font-bold">Coordinator</span>
                             <div className="flex items-center gap-2">
-                                <span>CEC</span>
+                                <span className="text-sm">CEC</span>
                                 <Input className="w-[100px] h-8 manual-input" />
                             </div>
                         </div>
