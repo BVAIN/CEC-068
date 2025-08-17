@@ -76,8 +76,10 @@ export default function BillViewPage() {
                 body * {
                     visibility: hidden;
                 }
-                #print-section, #print-section * {
+                #print-section, #print-section *, .manual-input, .print-table {
                     visibility: visible;
+                    color: black !important;
+                    background-color: white !important;
                 }
                 #print-section {
                     position: absolute;
@@ -110,8 +112,12 @@ export default function BillViewPage() {
                     min-width: 100px;
                 }
                  .print-table, .print-table th, .print-table td {
-                    border: 1px solid black;
+                    border: 1px solid black !important;
                     border-collapse: collapse;
+                }
+                 .signature-image {
+                    filter: grayscale(100%) contrast(500%) brightness(200%) invert(1);
+                    mix-blend-mode: multiply;
                 }
             }
              .manual-input {
@@ -343,3 +349,5 @@ export default function BillViewPage() {
   );
 
 }
+
+    
