@@ -154,7 +154,7 @@ export default function BillViewPage() {
                     <h1 className="text-xl md:text-2xl font-bold uppercase">University of Delhi</h1>
                     <h2 className="text-lg md:text-xl font-bold">Central Evaluation Centre, SGTB Khalsa College</h2>
                 </div>
-                 <div className="flex items-center justify-center gap-2 md:gap-4">
+                 <div className="flex items-center justify-center gap-2 md:gap-4 mt-1">
                     <span className="font-bold">Bill,</span>
                     <Input className="w-[180px] manual-input" />
                     <span className="font-bold">Examination</span>
@@ -195,7 +195,7 @@ export default function BillViewPage() {
 
                 <div className="pt-2">
                     <h3 className="font-bold text-lg mb-1 text-center">Bank Account Details</h3>
-                     <div className="grid grid-cols-1 gap-x-8 gap-y-1">
+                     <div className="grid grid-cols-2 gap-x-8 gap-y-1">
                         <div className="flex justify-between border-b pb-1">
                             <span className="font-bold">Bank Name:</span>
                             <span>{billDetails.bankName}</span>
@@ -281,7 +281,7 @@ export default function BillViewPage() {
                     </div>
                     <hr className="my-2 border-t border-gray-400" />
                     <div className="text-center">
-                        <span className="underline font-bold">Official Use</span>
+                        <span className="font-bold underline">Official Use</span>
                     </div>
                      <div className="pt-2 space-y-1">
                         <div className="flex justify-between items-center">
@@ -318,7 +318,7 @@ export default function BillViewPage() {
                             <span className="text-right">Rs. ______________________</span>
                         </div>
                          <div className="flex justify-between items-center">
-                            <span className="font-semibold">Net Payable :</span>
+                            <span className="font-regular">Net Payable :</span>
                             <span className="text-right">Rs. ______________________</span>
                         </div>
                     </div>
