@@ -10,7 +10,8 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 export async function askAi(prompt: string): Promise<string> {
-  return conversationalFlow(prompt);
+  // Ensure we don't pass null to the flow, which expects a string.
+  return conversationalFlow(prompt || '');
 }
 
 const conversationalFlow = ai.defineFlow(

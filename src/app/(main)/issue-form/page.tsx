@@ -24,6 +24,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 
 const issueFormSchema = z.object({
+  // Adding a unique ID for each issue to solve selection bugs
+  id: z.string().optional(),
   tokenNo: z.number().optional(),
   dateOfIssue: z.string().min(1, "Date of Issue is required"),
   packetNo: z.string().min(1, "Packet No. is required"),
@@ -83,7 +85,7 @@ export default function ScriptsIssueFormPage() {
   const [issues, setIssues] = useState<IssueFormValues[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedIssues, setSelectedIssues] = useState<number[]>([]);
+  const [selectedIssues, setSelectedIssues] = useState<string[]>([]);
   const [qpUpcMap, setQpUpcMap] = useState<Record<string, string>>({});
   const [teacherCourseTokenMap, setTeacherCourseTokenMap] = useState<Record<string, Record<string, number>>>({});
   const [isAutofilled, setIsAutofilled] = useState(false);
@@ -106,6 +108,8 @@ export default function ScriptsIssueFormPage() {
         const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
         if (storedIssues) {
             setIssues(JSON.parse(storedIssues).sort((a: IssueFormValues, b: IssueFormValues) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime()));
+        } else {
+             localStorage.removeItem(ISSUES_STORAGE_KEY);
         }
         const storedMap = localStorage.getItem(QP_UPC_MAP_KEY);
         if (storedMap) {
@@ -127,6 +131,7 @@ export default function ScriptsIssueFormPage() {
   const form = useForm<IssueFormValues>({
     resolver: zodResolver(issueFormSchema),
     defaultValues: {
+      id: undefined,
       dateOfIssue: "",
       packetNo: "",
       packetFrom: "",
@@ -253,7 +258,7 @@ export default function ScriptsIssueFormPage() {
     if (isUpdating) {
       newIssues = [...issues];
       const existingIssue = newIssues[editingIndex];
-      newIssues[editingIndex] = {...data, tokenNo: existingIssue.tokenNo, received: existingIssue.received, noOfAbsent: existingIssue.noOfAbsent, noOfMissing: existingIssue.noOfMissing, extraSheets: existingIssue.extraSheets};
+      newIssues[editingIndex] = {...existingIssue, ...data};
       setEditingIndex(null);
     } else {
         const teacherCourseKey = data.course;
@@ -273,7 +278,7 @@ export default function ScriptsIssueFormPage() {
             setTeacherCourseTokenMap(currentTokenMap);
             localStorage.setItem(TEACHER_COURSE_TOKEN_MAP_KEY, JSON.stringify(currentTokenMap));
         }
-      const newIssueWithToken = {...data, noOfAbsent: 0, noOfMissing: 0, extraSheets: 0, tokenNo: teacherToken};
+      const newIssueWithToken = {...data, id: `${Date.now()}-${data.packetNo}`, noOfAbsent: 0, noOfMissing: 0, extraSheets: 0, tokenNo: teacherToken};
       newIssues = [...issues, newIssueWithToken];
       if (data.qpNo && data.upc && !qpUpcMap[data.qpNo]) {
         const newMap = {...qpUpcMap, [data.qpNo]: data.upc};
@@ -289,6 +294,7 @@ export default function ScriptsIssueFormPage() {
     }
     updateIssuesStateAndLocalStorage(newIssues);
     form.reset({
+      id: undefined,
       dateOfIssue: "",
       packetNo: "",
       packetFrom: "",
@@ -331,8 +337,8 @@ export default function ScriptsIssueFormPage() {
   };
 
   const handleBulkDelete = () => {
-    const issuesToDelete = issues.filter((_, index) => selectedIssues.includes(index));
-    const newIssues = issues.filter((_, index) => !selectedIssues.includes(index));
+    const issuesToDelete = issues.filter((issue) => issue.id && selectedIssues.includes(issue.id));
+    const newIssues = issues.filter((issue) => !issue.id || !selectedIssues.includes(issue.id));
     updateIssuesStateAndLocalStorage(newIssues);
     
     const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
@@ -376,17 +382,17 @@ export default function ScriptsIssueFormPage() {
     updateIssuesStateAndLocalStorage(issues);
   }
   
-  const handleSelectIssue = (index: number, checked: boolean) => {
+  const handleSelectIssue = (issueId: string, checked: boolean) => {
     if (checked) {
-      setSelectedIssues(prev => [...prev, index]);
+      setSelectedIssues(prev => [...prev, issueId]);
     } else {
-      setSelectedIssues(prev => prev.filter(i => i !== index));
+      setSelectedIssues(prev => prev.filter(id => id !== issueId));
     }
   };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIssues(filteredIssues.map((issue) => issues.findIndex(i => i.packetNo === issue.packetNo)));
+      setSelectedIssues(filteredIssues.map((issue) => issue.id || '').filter(id => id));
     } else {
       setSelectedIssues([]);
     }
@@ -670,7 +676,7 @@ export default function ScriptsIssueFormPage() {
                   <TableHead>
                     <Checkbox
                       onCheckedChange={handleSelectAll}
-                      checked={selectedIssues.length === filteredIssues.length && filteredIssues.length > 0}
+                      checked={filteredIssues.length > 0 && selectedIssues.length === filteredIssues.length}
                       aria-label="Select all"
                     />
                   </TableHead>
@@ -693,15 +699,16 @@ export default function ScriptsIssueFormPage() {
               </TableHeader>
               <TableBody>
                 {filteredIssues.map((issue) => {
-                  const originalIndex = issues.findIndex(i => i.packetNo === issue.packetNo);
-                  const isSelected = selectedIssues.includes(originalIndex);
+                  const originalIndex = issues.findIndex(i => i.id === issue.id);
+                  const isSelected = issue.id ? selectedIssues.includes(issue.id) : false;
                   return (
-                  <TableRow key={originalIndex} data-state={isSelected && "selected"}>
+                  <TableRow key={issue.id || originalIndex} data-state={isSelected && "selected"}>
                     <TableCell onClick={(e) => { e.stopPropagation(); }}>
                       <Checkbox
-                        onCheckedChange={(checked) => handleSelectIssue(originalIndex, !!checked)}
+                        onCheckedChange={(checked) => issue.id && handleSelectIssue(issue.id, !!checked)}
                         checked={isSelected}
                         aria-label={`Select row ${originalIndex + 1}`}
+                        disabled={!issue.id}
                       />
                     </TableCell>
                     <TableCell>{issue.tokenNo}</TableCell>
@@ -792,9 +799,3 @@ export default function ScriptsIssueFormPage() {
     </div>
   );
 }
-
-    
-
-    
-
-    
