@@ -16,6 +16,7 @@ export default function BillViewPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [billDetails, setBillDetails] = useState<BillFormValues | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const evaluatorId = params.evaluatorId;
@@ -32,11 +33,16 @@ export default function BillViewPage() {
                 toast({ variant: "destructive", title: "Not Found", description: "No bill details found for this evaluator ID." });
                 router.push("/bill-form");
             }
+        } else if (!storedBills) {
+             toast({ variant: "destructive", title: "No Data", description: "No bill data found. Please submit a bill first." });
+             router.push("/bill-form");
         }
     } catch (error) {
         console.error("Error parsing localStorage data:", error);
         toast({ variant: "destructive", title: "Error", description: "Could not load bill details." });
         router.push("/bill-form");
+    } finally {
+        setIsLoading(false);
     }
   }, [params.evaluatorId, router, toast]);
   
@@ -44,8 +50,13 @@ export default function BillViewPage() {
     window.print();
   };
 
-  if (!billDetails) {
+  if (isLoading) {
     return <div className="flex justify-center items-center h-full">Loading bill details...</div>;
+  }
+
+  if (!billDetails) {
+    // This state could be reached if the bill was not found but before the router redirects.
+    return <div className="flex justify-center items-center h-full">No bill details found. Redirecting...</div>;
   }
 
   return (

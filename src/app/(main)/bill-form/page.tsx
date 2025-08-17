@@ -12,10 +12,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Trash2, Upload } from "lucide-react";
+import { Eye, Trash2, Upload, Edit } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-
+import { useGoogleDrive } from "@/hooks/use-google-drive";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const billFormSchema = z.object({
   id: z.string().optional(),
@@ -37,25 +38,47 @@ const billFormSchema = z.object({
 export type BillFormValues = z.infer<typeof billFormSchema>;
 
 const BILLS_STORAGE_KEY = 'cec068_bills';
+const BILLS_FILE_NAME = 'DriveSync_Bills.json';
 
 export default function BillFormPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [bills, setBills] = useState<BillFormValues[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedBills, setSelectedBills] = useState<string[]>([]);
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
 
+  const { isConnected, files, readFile, writeFile } = useGoogleDrive();
+
   useEffect(() => {
-    try {
-      const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
-      if (storedBills) {
-        setBills(JSON.parse(storedBills));
+    const loadData = async () => {
+      if (isConnected) {
+        try {
+          const fileContent = await readFile(BILLS_FILE_NAME);
+          if (fileContent) {
+            const driveBills = JSON.parse(fileContent);
+            setBills(driveBills);
+            localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(driveBills));
+          } else {
+            // If no file on drive, check local storage
+            const localBills = localStorage.getItem(BILLS_STORAGE_KEY);
+            if (localBills) {
+              setBills(JSON.parse(localBills));
+            }
+          }
+        } catch (e) {
+            console.error("Failed to load from Drive, using local fallback", e);
+            const localBills = localStorage.getItem(BILLS_STORAGE_KEY);
+            if (localBills) setBills(JSON.parse(localBills));
+        }
+      } else {
+         const localBills = localStorage.getItem(BILLS_STORAGE_KEY);
+         if (localBills) setBills(JSON.parse(localBills));
       }
-    } catch (error) {
-      console.error("Error parsing localStorage data for bills:", error);
-      localStorage.removeItem(BILLS_STORAGE_KEY);
-    }
-  }, []);
+    };
+    loadData();
+  }, [isConnected, readFile]);
+
 
   const form = useForm<BillFormValues>({
     resolver: zodResolver(billFormSchema),
@@ -91,13 +114,21 @@ export default function BillFormPage() {
   };
 
 
-  const updateBillsStateAndLocalStorage = (newBills: BillFormValues[]) => {
+  const updateBillsStateAndStorage = async (newBills: BillFormValues[]) => {
     setBills(newBills);
     localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(newBills));
+    if (isConnected) {
+        try {
+            await writeFile(BILLS_FILE_NAME, JSON.stringify(newBills, null, 2));
+        } catch (e) {
+            console.error("Failed to save to drive", e);
+            toast({ variant: "destructive", title: "Sync Error", description: "Could not save bill to Google Drive."});
+        }
+    }
   };
 
 
-  function onSubmit(data: BillFormValues) {
+  async function onSubmit(data: BillFormValues) {
     let newBills;
     if (editingId) {
         newBills = bills.map(bill => bill.id === editingId ? { ...data, id: editingId } : bill);
@@ -106,7 +137,7 @@ export default function BillFormPage() {
         const newBill = { ...data, id: `${Date.now()}-${data.evaluatorId}` };
         newBills = [...bills, newBill];
     }
-    updateBillsStateAndLocalStorage(newBills);
+    await updateBillsStateAndStorage(newBills);
     toast({ title: editingId ? "Bill Updated" : "Bill Saved", description: "The bill details have been saved successfully." });
     form.reset();
     setSignaturePreview(null);
@@ -116,10 +147,34 @@ export default function BillFormPage() {
     router.push(`/bill-form/${encodeURIComponent(evaluatorId)}`);
   };
 
-  const handleDelete = (id: string) => {
-    const newBills = bills.filter(bill => bill.id !== id);
-    updateBillsStateAndLocalStorage(newBills);
-    toast({ title: "Bill Deleted", description: "The bill has been removed." });
+  const handleDelete = async (ids: string[]) => {
+    const newBills = bills.filter(bill => !ids.includes(bill.id!));
+    await updateBillsStateAndStorage(newBills);
+    toast({ title: "Bill(s) Deleted", description: "The selected bills have been removed." });
+    setSelectedBills([]);
+  };
+
+  const handleEdit = (bill: BillFormValues) => {
+    setEditingId(bill.id!);
+    form.reset(bill);
+    setSignaturePreview(bill.signature || null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const handleSelectBill = (billId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedBills(prev => [...prev, billId]);
+    } else {
+      setSelectedBills(prev => prev.filter(id => id !== billId));
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedBills(bills.map((bill) => bill.id || '').filter(id => id));
+    } else {
+      setSelectedBills([]);
+    }
   };
 
 
@@ -168,7 +223,8 @@ export default function BillFormPage() {
                 </div>
              </CardContent>
           </Card>
-           <div className="flex justify-end">
+           <div className="flex justify-end gap-4">
+             {editingId && <Button type="button" variant="outline" size="lg" onClick={() => { setEditingId(null); form.reset(); setSignaturePreview(null); }}>Cancel Edit</Button>}
             <Button type="submit" size="lg">{editingId ? 'Update Bill' : 'Save Bill'}</Button>
           </div>
         </form>
@@ -177,14 +233,47 @@ export default function BillFormPage() {
        {bills.length > 0 && (
         <Card>
             <CardHeader>
-                <CardTitle>Submitted Bills</CardTitle>
-                <CardDescription>View and manage submitted bill forms.</CardDescription>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>Submitted Bills</CardTitle>
+                        <CardDescription>View and manage submitted bill forms.</CardDescription>
+                    </div>
+                    {selectedBills.length > 0 && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                             <Button variant="destructive">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete Selected ({selectedBills.length})
+                              </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action will permanently delete {selectedBills.length} bill(s).
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(selectedBills)}>Continue</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                    )}
+                </div>
             </CardHeader>
             <CardContent>
                  <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead className="w-12">
+                                     <Checkbox
+                                      onCheckedChange={handleSelectAll}
+                                      checked={selectedBills.length === bills.length && bills.length > 0}
+                                      aria-label="Select all"
+                                    />
+                                </TableHead>
                                 <TableHead>Evaluator ID</TableHead>
                                 <TableHead>Evaluator Name</TableHead>
                                 <TableHead>Mobile No.</TableHead>
@@ -194,7 +283,15 @@ export default function BillFormPage() {
                         </TableHeader>
                         <TableBody>
                             {bills.map((bill) => (
-                                <TableRow key={bill.id}>
+                                <TableRow key={bill.id} data-state={selectedBills.includes(bill.id!) ? "selected" : "unselected"}>
+                                    <TableCell>
+                                        <Checkbox
+                                          onCheckedChange={(checked) => bill.id && handleSelectBill(bill.id, !!checked)}
+                                          checked={bill.id ? selectedBills.includes(bill.id) : false}
+                                          aria-label={`Select bill for ${bill.evaluatorName}`}
+                                          disabled={!bill.id}
+                                        />
+                                    </TableCell>
                                     <TableCell>{bill.evaluatorId}</TableCell>
                                     <TableCell>{bill.evaluatorName}</TableCell>
                                     <TableCell>{bill.mobileNo}</TableCell>
@@ -203,6 +300,9 @@ export default function BillFormPage() {
                                         <div className="flex gap-2">
                                             <Button variant="outline" size="icon" onClick={() => handleView(bill.evaluatorId)}>
                                                 <Eye className="h-4 w-4" />
+                                            </Button>
+                                             <Button variant="outline" size="icon" onClick={() => handleEdit(bill)}>
+                                                <Edit className="h-4 w-4" />
                                             </Button>
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
@@ -219,7 +319,7 @@ export default function BillFormPage() {
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
                                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={() => handleDelete(bill.id!)}>Continue</AlertDialogAction>
+                                                    <AlertDialogAction onClick={() => handleDelete([bill.id!])}>Continue</AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
                                             </AlertDialog>
