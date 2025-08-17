@@ -62,7 +62,7 @@ export default function BillViewPage() {
         years.push(i.toString());
     }
     return years;
-  }
+  };
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-full">Loading bill details...</div>;
@@ -136,19 +136,15 @@ export default function BillViewPage() {
                             <SelectItem value="January">January</SelectItem>
                             <SelectItem value="February">February</SelectItem>
                             <SelectItem value="March">March</SelectItem>
-                            <SelectItem value="January-March">January-March</SelectItem>
                             <SelectItem value="April">April</SelectItem>
                             <SelectItem value="May">May</SelectItem>
                             <SelectItem value="June">June</SelectItem>
-                            <SelectItem value="April-June">April-June</SelectItem>
                             <SelectItem value="July">July</SelectItem>
                             <SelectItem value="August">August</SelectItem>
                             <SelectItem value="September">September</SelectItem>
-                             <SelectItem value="July-September">July-September</SelectItem>
                             <SelectItem value="October">October</SelectItem>
                             <SelectItem value="November">November</SelectItem>
                             <SelectItem value="December">December</SelectItem>
-                            <SelectItem value="October-December">October-December</SelectItem>
                         </SelectContent>
                     </Select>
                     <span className="font-bold">Examinattion</span>
