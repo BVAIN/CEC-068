@@ -267,6 +267,9 @@ export default function BillViewPage() {
                     <div className="text-center font-bold pt-4">
                         <span className="underline">Official Use</span>
                     </div>
+                    <div className="pt-4">
+                        <span className="font-semibold">I) Remuneration for the Scripts Valued : Rs. ______________________________</span>
+                    </div>
                 </div>
             </CardContent>
         </Card>
