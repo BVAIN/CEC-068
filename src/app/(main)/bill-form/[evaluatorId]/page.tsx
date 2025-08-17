@@ -203,16 +203,7 @@ export default function BillViewPage() {
                         </div>
                     </div>
                 </div>
-                 {billDetails.signature && (
-                    <div className="pt-4 flex justify-end">
-                        <div className="text-center">
-                            <div className="flex justify-center items-center rounded-md p-1 min-h-[4rem] border">
-                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12" />
-                            </div>
-                            <h3 className="font-semibold text-sm mt-2">Signature of examiner</h3>
-                        </div>
-                    </div>
-                )}
+
                 <div className="pt-6 flex justify-between items-center text-sm">
                     <span>Paper No. ..................................................................................................................</span>
                     <span>Duration of Paper ..................</span>
@@ -254,11 +245,21 @@ export default function BillViewPage() {
                     </div>
                 </div>
 
-                <div className="pt-4">
-                    <h3 className="text-center font-bold">Part II (for use of Head/Additional Head Examiner)</h3>
-                     <div className="pt-2">
-                        <span>Payment claimed Rs............................................................</span>
+                <div className="pt-8 flex justify-between items-end">
+                    <div className="w-2/3">
+                        <h3 className="text-left font-semibold">Part II (for use of Head/Additional Head Examiner)</h3>
+                        <div className="pt-4">
+                            <span>Payment claimed Rs............................................................</span>
+                        </div>
                     </div>
+                    {billDetails.signature && (
+                        <div className="text-center">
+                            <div className="flex justify-center items-center rounded-md p-1 min-h-[4rem] border">
+                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12" />
+                            </div>
+                            <h3 className="font-semibold text-sm mt-2">Signature of examiner</h3>
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>
