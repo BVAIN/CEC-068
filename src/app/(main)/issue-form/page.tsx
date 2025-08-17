@@ -21,7 +21,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { sendEmail } from "@/ai/flows/send-email-flow";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ISSUES_STORAGE_KEY, TRASH_STORAGE_KEY, QP_UPC_MAP_KEY, TEACHER_COURSE_TOKEN_MAP_KEY } from "@/lib/constants";
+import { ISSUES_STORAGE_KEY, TRASH_STORAGE_KEY, QP_UPC_MAP_KEY, TEACHER_COURSE_TOKEN_MAP_KEY, ISSUES_FILE_NAME } from "@/lib/constants";
+import { useGoogleDrive } from "@/hooks/use-google-drive";
+import { useToast } from "@/hooks/use-toast";
 
 
 const issueFormSchema = z.object({
@@ -78,6 +80,7 @@ type FilterValues = {
 
 export default function ScriptsIssueFormPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [issues, setIssues] = useState<IssueFormValues[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -96,23 +99,12 @@ export default function ScriptsIssueFormPage() {
     teacherName: "",
     receivedStatus: "all",
   });
+  const { isConnected, readFile, writeFile } = useGoogleDrive();
 
 
   useEffect(() => {
     seedQpUpcMap();
     try {
-        const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
-        if (storedIssues) {
-            const parsedIssues: IssueFormValues[] = JSON.parse(storedIssues);
-            // Ensure all issues have a unique ID
-            const issuesWithIds = parsedIssues.map(issue => ({
-                ...issue,
-                id: issue.id || `${Date.now()}-${issue.packetNo}-${Math.random()}`
-            }));
-            setIssues(issuesWithIds.sort((a, b) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime()));
-        } else {
-             localStorage.removeItem(ISSUES_STORAGE_KEY);
-        }
         const storedMap = localStorage.getItem(QP_UPC_MAP_KEY);
         if (storedMap) {
             setQpUpcMap(JSON.parse(storedMap));
@@ -123,12 +115,44 @@ export default function ScriptsIssueFormPage() {
         }
     } catch (error) {
         console.error("Error parsing localStorage data:", error);
-        // Clear potentially corrupted data
-        localStorage.removeItem(ISSUES_STORAGE_KEY);
         localStorage.removeItem(QP_UPC_MAP_KEY);
         localStorage.removeItem(TEACHER_COURSE_TOKEN_MAP_KEY);
     }
   }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+        let loadedIssues: IssueFormValues[] = [];
+        if (isConnected) {
+            try {
+                const fileContent = await readFile(ISSUES_FILE_NAME);
+                if (fileContent) {
+                    const driveIssues = JSON.parse(fileContent);
+                    loadedIssues = driveIssues;
+                    localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(driveIssues));
+                } else {
+                    const localIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+                    if (localIssues) loadedIssues = JSON.parse(localIssues);
+                }
+            } catch (e) {
+                console.error("Failed to load from Drive, using local fallback", e);
+                const localIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+                if (localIssues) loadedIssues = JSON.parse(localIssues);
+            }
+        } else {
+            const localIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+            if (localIssues) loadedIssues = JSON.parse(localIssues);
+        }
+        
+        const issuesWithIds = loadedIssues.map(issue => ({
+            ...issue,
+            id: issue.id || `${Date.now()}-${issue.packetNo}-${Math.random()}`
+        }));
+        setIssues(issuesWithIds.sort((a, b) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime()));
+    };
+    loadData();
+  }, [isConnected, readFile]);
+
 
   const form = useForm<IssueFormValues>({
     resolver: zodResolver(issueFormSchema),
@@ -236,10 +260,18 @@ export default function ScriptsIssueFormPage() {
   }, [issues, searchTerm, filters]);
 
 
-  const updateIssuesStateAndLocalStorage = (newIssues: IssueFormValues[]) => {
+  const updateIssuesStateAndStorage = async (newIssues: IssueFormValues[]) => {
     const sortedIssues = newIssues.sort((a, b) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime());
     setIssues(sortedIssues);
     localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(sortedIssues));
+    if (isConnected) {
+        try {
+            await writeFile(ISSUES_FILE_NAME, JSON.stringify(sortedIssues, null, 2));
+        } catch (e) {
+            console.error("Failed to save issues to drive", e);
+            toast({ variant: "destructive", title: "Sync Error", description: "Could not save issues to Google Drive."});
+        }
+    }
   };
 
   const generateEmailBody = (issue: IssueFormValues, title: string) => {
@@ -253,7 +285,7 @@ export default function ScriptsIssueFormPage() {
     `;
   }
   
-  function onSubmit(data: IssueFormValues) {
+  async function onSubmit(data: IssueFormValues) {
     let newIssues;
     const isUpdating = editingIndex !== null && issues[editingIndex];
 
@@ -294,7 +326,7 @@ export default function ScriptsIssueFormPage() {
           body: generateEmailBody(newIssueWithToken, 'New Script Packet Issued')
       });
     }
-    updateIssuesStateAndLocalStorage(newIssues);
+    await updateIssuesStateAndStorage(newIssues);
     form.reset({
       id: undefined,
       dateOfIssue: "",
@@ -329,7 +361,7 @@ export default function ScriptsIssueFormPage() {
   const handleDelete = (index: number) => {
     const issueToDelete = issues[index];
     const newIssues = issues.filter((_, i) => i !== index);
-    updateIssuesStateAndLocalStorage(newIssues);
+    updateIssuesStateAndStorage(newIssues);
 
     const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
     const trash = storedTrash ? JSON.parse(storedTrash) : [];
@@ -341,7 +373,7 @@ export default function ScriptsIssueFormPage() {
   const handleBulkDelete = () => {
     const issuesToDelete = issues.filter((issue) => issue.id && selectedIssues.includes(issue.id));
     const newIssues = issues.filter((issue) => !issue.id || !selectedIssues.includes(issue.id));
-    updateIssuesStateAndLocalStorage(newIssues);
+    updateIssuesStateAndStorage(newIssues);
     
     const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
     const trash = storedTrash ? JSON.parse(storedTrash) : [];
@@ -381,7 +413,7 @@ export default function ScriptsIssueFormPage() {
   };
   
   const handleSaveRow = (index: number) => {
-    updateIssuesStateAndLocalStorage(issues);
+    updateIssuesStateAndStorage(issues);
   }
   
   const handleSelectIssue = (issueId: string, checked: boolean) => {

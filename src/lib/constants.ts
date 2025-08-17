@@ -7,3 +7,4 @@ export const TEACHER_COURSE_TOKEN_MAP_KEY = 'cec068_teacher_course_token_map';
 export const DRIVE_TOKEN_KEY = "google_drive_token_placeholder";
 export const DRIVE_STORAGE_KEY = "google_drive_files_placeholder";
 export const BILLS_FILE_NAME = 'DriveSync_Bills.json';
+export const ISSUES_FILE_NAME = 'DriveSync_Issues.json';
