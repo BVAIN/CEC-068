@@ -4,11 +4,13 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import type { IssueFormValues } from "../issue-form/page";
-import { ISSUES_STORAGE_KEY } from "@/lib/constants";
+import type { BillFormValues } from "../bill-form/page";
+import { ISSUES_STORAGE_KEY, BILLS_STORAGE_KEY } from "@/lib/constants";
 
 export default function HomePage() {
   const [totalScripts, setTotalScripts] = useState(0);
   const [totalEvaluatedScripts, setTotalEvaluatedScripts] = useState(0);
+  const [totalBills, setTotalBills] = useState(0);
 
   useEffect(() => {
     try {
@@ -23,6 +25,13 @@ export default function HomePage() {
         setTotalScripts(totalScriptsCount);
         setTotalEvaluatedScripts(totalEvaluatedScriptsCount);
       }
+
+      const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
+      if (storedBills) {
+        const bills: BillFormValues[] = JSON.parse(storedBills);
+        setTotalBills(bills.length);
+      }
+
     } catch (error) {
       console.error("Error calculating totals from localStorage:", error);
     }
@@ -35,7 +44,7 @@ export default function HomePage() {
         <p className="text-lg text-muted-foreground mt-2">Your data management dashboard.</p>
       </header>
       
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card>
             <CardHeader>
                 <CardTitle>Total Scripts Issued</CardTitle>
@@ -50,6 +59,14 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
                 <p className="text-4xl font-bold">{totalEvaluatedScripts}</p>
+            </CardContent>
+        </Card>
+        <Card>
+            <CardHeader>
+                <CardTitle>Total Bills Submitted</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="text-4xl font-bold">{totalBills}</p>
             </CardContent>
         </Card>
       </div>
