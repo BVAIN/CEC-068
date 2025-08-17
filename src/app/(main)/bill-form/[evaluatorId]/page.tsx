@@ -284,28 +284,28 @@ export default function BillViewPage() {
                      <div className="pt-2 space-y-1">
                         <div className="flex justify-between items-center">
                             <span>I) Remuneration for the Scripts Valued :</span>
-                            <span className="text-right">Rs. ______________________</span>
+                            <span className="text-right">Rs. ____________________________</span>
                         </div>
                         <div className="flex justify-between items-center">
                             <span>II) Payment on account of Additional Examiner(If any) :</span>
-                            <span className="text-right">Rs. ______________________</span>
+                            <span className="text-right">Rs. ____________________________</span>
                         </div>
                         <div className="flex justify-between items-center">
                            <span>Total of (I+II) :</span>
-                           <span className="text-right">Rs. ______________________</span>
+                           <span className="text-right">Rs. ____________________________</span>
                         </div>
                          <div className="flex justify-between items-center">
                             <span>Less: 5% TWF :</span>
-                            <span className="text-right">Rs. ______________________</span>
+                            <span className="text-right">Rs. ____________________________</span>
                         </div>
                         <div className="flex justify-between items-center">
                             <span>Balance :</span>
-                            <span className="text-right">Rs. ______________________</span>
+                            <span className="text-right">Rs. ____________________________</span>
                         </div>
                         <div>
                            <div className="flex justify-between items-center">
                                 <span>Conveyance @ Rs. _________ Per day</span>
-                                <span className="text-right">Rs. ______________________</span>
+                                <span className="text-right">Rs. ____________________________</span>
                             </div>
                              <div className="pl-4">
                                 <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
@@ -313,11 +313,11 @@ export default function BillViewPage() {
                         </div>
                         <div className="flex justify-between items-center">
                             <span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
-                            <span className="text-right">Rs. ______________________</span>
+                            <span className="text-right">Rs. ____________________________</span>
                         </div>
                          <div className="flex justify-between items-center">
                             <span className="font-regular">Net Payable :</span>
-                            <span className="text-right">Rs. ______________________</span>
+                            <span className="text-right">Rs. ____________________________</span>
                         </div>
                     </div>
                 </div>
@@ -343,6 +343,8 @@ export default function BillViewPage() {
 
 }
     
+    
+
     
 
     
