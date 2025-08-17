@@ -93,6 +93,7 @@ export default function BillViewPage() {
                     border-radius: 0;
                     padding-left: 2px;
                     padding-right: 2px;
+                    background: transparent;
                 }
                 .manual-input:focus {
                     outline: none;
@@ -103,6 +104,10 @@ export default function BillViewPage() {
                     padding: 0 4px;
                     display: inline-block;
                     min-width: 100px;
+                }
+                 .print-table, .print-table th, .print-table td {
+                    border: 1px solid black;
+                    border-collapse: collapse;
                 }
             }
         `}</style>
@@ -135,9 +140,9 @@ export default function BillViewPage() {
                 </div>
                  <div className="flex items-center justify-center gap-2 md:gap-4 pt-4">
                     <span className="font-bold">Bill,</span>
-                    <Input className="w-[180px] manual-input" placeholder="" />
+                    <Input className="w-[180px] manual-input" />
                     <span className="font-bold">Examination</span>
-                    <Input className="w-[120px] manual-input" placeholder="" />
+                    <Input className="w-[120px] manual-input" />
                 </div>
             </CardHeader>
             <CardContent className="space-y-6 text-base p-4 md:p-6">
@@ -215,26 +220,26 @@ export default function BillViewPage() {
 
                 <div className="pt-8">
                     <h3 className="text-center font-bold">Part I Examiner /Additional Examiner</h3>
-                    <Table className="mt-4">
+                    <Table className="mt-4 border print-table">
                         <TableBody>
                             <TableRow>
-                                <TableCell className="font-medium">Total No. of Ans. Scripts Evaluation</TableCell>
-                                <TableCell className="border-b border-dotted border-black"></TableCell>
+                                <TableCell className="font-medium border print-table">Total No. of Ans. Scripts Evaluation</TableCell>
+                                <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-medium">Rate Per Ans. Script</TableCell>
-                                <TableCell className="border-b border-dotted border-black"></TableCell>
+                                <TableCell className="font-medium border print-table">Rate Per Ans. Script</TableCell>
+                                <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-medium">Remuneration Claimed</TableCell>
-                                <TableCell className="border-b border-dotted border-black"></TableCell>
+                                <TableCell className="font-medium border print-table">Remuneration Claimed</TableCell>
+                                <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-medium">Total No. of Visits</TableCell>
-                                <TableCell className="border-b border-dotted border-black"></TableCell>
+                                <TableCell className="font-medium border print-table">Total No. of Visits</TableCell>
+                                <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-medium" colSpan={2}>
+                                <TableCell className="font-medium border print-table" colSpan={2}>
                                     Date of Visits: <span className="border-b border-dotted border-black inline-block w-[calc(100%-120px)]"></span>
                                 </TableCell>
                             </TableRow>
