@@ -189,24 +189,21 @@ export default function BillViewPage() {
                             <span className="font-medium text-muted-foreground">Branch:</span>
                             <span>{billDetails.branch}</span>
                         </div>
-                         <div className="flex justify-between border-b pb-2">
+                    </div>
+                    <div className="grid grid-cols-3 gap-x-8 gap-y-4 mt-4">
+                        <div className="flex justify-between border-b pb-2">
                             <span className="font-medium text-muted-foreground">PAN No.:</span>
                             <span>{billDetails.panNo}</span>
                         </div>
-                        <div className="flex justify-between border-b pb-2 col-span-2">
+                        <div className="flex justify-between border-b pb-2">
                             <span className="font-medium text-muted-foreground">Account No:</span>
                             <span className="font-mono">{billDetails.bankAccountNo}</span>
                         </div>
-                        <div className="flex justify-between border-b pb-2 col-span-2">
+                        <div className="flex justify-between border-b pb-2">
                             <span className="font-medium text-muted-foreground">IFSC Code:</span>
                             <span className="font-mono">{billDetails.ifscCode}</span>
                         </div>
                     </div>
-                </div>
-
-                <div className="pt-6 flex justify-between items-center text-sm">
-                    <span>Paper No. ..................................................................................................................</span>
-                    <span>Duration of Paper ..................</span>
                 </div>
 
                 <div className="pt-6">
@@ -260,6 +257,10 @@ export default function BillViewPage() {
                             <h3 className="font-semibold text-sm mt-2">Signature of examiner</h3>
                         </div>
                     )}
+                </div>
+                 <div className="pt-6 flex justify-between items-center text-sm">
+                    <span>Paper No. ..................................................................................................................</span>
+                    <span>Duration of Paper ..................</span>
                 </div>
             </CardContent>
         </Card>
