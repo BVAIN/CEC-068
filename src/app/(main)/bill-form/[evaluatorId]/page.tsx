@@ -220,11 +220,6 @@ export default function BillViewPage() {
                     </div>
                 </div>
                 
-                 <div className="flex justify-between items-center text-sm">
-                    <span>Paper No. ..................................................................................................................</span>
-                    <span>Duration of Paper ..................</span>
-                </div>
-
                 <div className="pt-2">
                     <h3 className="text-center font-bold">Part I Examiner /Additional Examiner</h3>
                     <Table className="mt-1 border print-table w-full">
@@ -344,6 +339,8 @@ export default function BillViewPage() {
 
 }
     
+    
+
     
 
     
