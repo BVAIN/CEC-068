@@ -251,6 +251,7 @@ export default function BillViewPage() {
                         <h3 className="text-left font-semibold">Part II (for use of Head/Additional Head Examiner)</h3>
                         <div className="pt-4">
                             <span>Payment claimed Rs............................................................</span>
+                            <div className="pt-2">__________________________________________________________________________________________________</div>
                         </div>
                     </div>
                     {billDetails.signature && (
