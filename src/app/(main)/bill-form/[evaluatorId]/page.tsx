@@ -235,7 +235,7 @@ export default function BillViewPage() {
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-semibold border print-table py-4" colSpan={2}>
+                                <TableCell className="font-semibold border print-table py-12" colSpan={2}>
                                     Date of Visits: 
                                 </TableCell>
                             </TableRow>
@@ -269,39 +269,39 @@ export default function BillViewPage() {
                     </div>
                      <div className="pt-4">
                         <div className="flex justify-between font-semibold mb-4">
-                            <span>I) Remuneration for the Scripts Valued :</span>
-                            <span>Rs. ______________________________</span>
+                            <span className="w-3/5">I) Remuneration for the Scripts Valued :</span>
+                            <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
                         <div className="flex justify-between font-semibold mb-4">
-                            <span>II) Payment on account of Additional Examiner(If any) :</span>
-                            <span>Rs. ______________________________</span>
+                            <span className="w-3/5">II) Payment on account of Additional Examiner(If any) :</span>
+                            <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
                         <div className="flex justify-between font-semibold mb-4">
-                           <span>Total of (I+II) :</span>
-                           <span>Rs. ______________________________</span>
+                           <span className="w-3/5">Total of (I+II) :</span>
+                           <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
                          <div className="flex justify-between font-semibold mb-4">
-                            <span>Less: 5% TWF :</span>
-                            <span>Rs. ______________________________</span>
+                            <span className="w-3/5">Less: 5% TWF :</span>
+                            <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
                         <div className="flex justify-between font-semibold mb-4">
-                            <span>Balance :</span>
-                            <span>Rs. ______________________________</span>
+                            <span className="w-3/5">Balance :</span>
+                            <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
                         <div className="flex justify-between font-semibold mb-2">
-                            <span>Conveyance @ Rs. _________ Per day</span>
+                            <span className="w-3/5">Conveyance @ Rs. _________ Per day</span>
                             <span></span>
                         </div>
                         <div className="pl-4 font-semibold mb-4">
                              <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
                         </div>
                         <div className="flex justify-between font-semibold mb-4">
-                            <span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
-                            <span>Rs. ______________________________</span>
+                            <span className="w-3/5">Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
+                            <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
                          <div className="flex justify-between font-semibold mb-4">
-                            <span>Net Payable :</span>
-                            <span>Rs. ______________________________</span>
+                            <span className="w-3/5">Net Payable :</span>
+                            <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
                     </div>
                 </div>
