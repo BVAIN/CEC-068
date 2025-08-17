@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Printer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "@/components/ui/table";
 
 
 const BILLS_STORAGE_KEY = 'cec068_bills';
@@ -220,7 +220,11 @@ export default function BillViewPage() {
 
                 <div className="pt-8">
                     <h3 className="text-center font-bold">Part I Examiner /Additional Examiner</h3>
-                    <Table className="mt-4 border print-table">
+                    <Table className="mt-4 border print-table w-full">
+                         <colgroup>
+                            <col style={{ width: '40%' }} />
+                            <col style={{ width: '60%' }} />
+                        </colgroup>
                         <TableBody>
                             <TableRow>
                                 <TableCell className="font-medium border print-table">Total No. of Ans. Scripts Evaluation</TableCell>
