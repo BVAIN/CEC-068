@@ -227,31 +227,22 @@ export default function BillViewPage() {
                 <div className="pt-2">
                     <h3 className="text-center font-bold">Part I Examiner /Additional Examiner</h3>
                     <Table className="mt-1 border print-table w-full">
-                         <colgroup>
-                            <col style={{ width: '40%' }} />
-                            <col style={{ width: '60%' }} />
-                        </colgroup>
+                         <TableHeader>
+                            <TableRow>
+                                <TableHead className="font-bold border print-table">Total No. of Answer Scripts Evaluated</TableHead>
+                                <TableHead className="font-bold border print-table">Rate Per Answer Script</TableHead>
+                                <TableHead className="font-bold border print-table">Remuneration Claimed</TableHead>
+                                <TableHead className="font-bold border print-table">Total No. of Visits</TableHead>
+                                <TableHead className="font-bold border print-table">Date of Visits:</TableHead>
+                            </TableRow>
+                        </TableHeader>
                         <TableBody>
                             <TableRow>
-                                <TableCell className="font-bold border print-table py-1">Total No. of Answer Scripts Evaluated</TableCell>
+                                <TableCell className="border print-table h-10"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
-                            </TableRow>
-                             <TableRow>
-                                <TableCell className="font-bold border print-table py-1">Rate Per Answer Script</TableCell>
                                 <TableCell className="border print-table"></TableCell>
-                            </TableRow>
-                             <TableRow>
-                                <TableCell className="font-bold border print-table py-1">Remuneration Claimed</TableCell>
                                 <TableCell className="border print-table"></TableCell>
-                            </TableRow>
-                             <TableRow>
-                                <TableCell className="font-bold border print-table py-1">Total No. of Visits</TableCell>
                                 <TableCell className="border print-table"></TableCell>
-                            </TableRow>
-                             <TableRow>
-                                <TableCell className="font-bold border print-table py-1 align-top" colSpan={2}>
-                                    Date of Visits: 
-                                </TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
