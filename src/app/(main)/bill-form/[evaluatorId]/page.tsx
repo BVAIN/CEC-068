@@ -243,7 +243,7 @@ export default function BillViewPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow className="h-16">
+                            <TableRow className="h-24">
                                 <TableCell className="border print-table total-scripts-cell"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
