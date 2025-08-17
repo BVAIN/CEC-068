@@ -267,8 +267,16 @@ export default function BillViewPage() {
                     <div className="text-center font-bold pt-4">
                         <span className="underline">Official Use</span>
                     </div>
-                    <div className="pt-4">
-                        <span className="font-semibold">I) Remuneration for the Scripts Valued : Rs. ______________________________</span>
+                    <div className="pt-4 space-y-2">
+                        <div className="font-semibold">I) Remuneration for the Scripts Valued : Rs. ______________________________</div>
+                        <div className="font-semibold">II) Payment on account of Additional Examiner(If any) : Rs. ______________________________</div>
+                        <div className="font-semibold">Total of (I+II) : Rs. ______________________________</div>
+                        <div className="font-semibold">Less: 5% TWF : Rs. ______________________________</div>
+                        <div className="font-semibold">Balance : Rs. ______________________________</div>
+                        <div className="font-semibold">Conveyance @ Rs. _________ Per day</div>
+                        <div className="font-semibold pl-4">(Up to-30 Km Rs.450/- & above Rs. 600/-)</div>
+                        <div className="font-semibold">Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) : Rs. ______________________________</div>
+                        <div className="font-semibold">Net Payable : Rs. ______________________________</div>
                     </div>
                 </div>
             </CardContent>
