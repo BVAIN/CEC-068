@@ -1,53 +1,57 @@
 
 "use client";
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { FilePlus, Settings } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import type { IssueFormValues } from "../issue-form/page";
+
+const ISSUES_STORAGE_KEY = 'cec068_issues';
 
 export default function HomePage() {
+  const [totalScripts, setTotalScripts] = useState(0);
+  const [totalEvaluatedScripts, setTotalEvaluatedScripts] = useState(0);
+
+  useEffect(() => {
+    try {
+      const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+      if (storedIssues) {
+        const issues: IssueFormValues[] = JSON.parse(storedIssues);
+        const totalScriptsCount = issues.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
+        const totalEvaluatedScriptsCount = issues
+          .filter(issue => issue.received)
+          .reduce((acc, issue) => acc + (issue.noOfScripts || 0) + (issue.extraSheets || 0), 0);
+        
+        setTotalScripts(totalScriptsCount);
+        setTotalEvaluatedScripts(totalEvaluatedScriptsCount);
+      }
+    } catch (error) {
+      console.error("Error calculating totals from localStorage:", error);
+    }
+  }, []);
+
   return (
     <div className="space-y-8 animate-fade-in">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline lg:text-5xl">Welcome to CEC-068</h1>
-        <p className="text-lg text-muted-foreground mt-2">Manage your data with ease, online and offline.</p>
+        <p className="text-lg text-muted-foreground mt-2">Your data management dashboard.</p>
       </header>
       
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="flex flex-col">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FilePlus className="w-6 h-6 text-primary" />
-              Create New Issue
-            </CardTitle>
-            <CardDescription>Start generating a new issue for a teacher.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-grow">
-            <p>Go to the Scripts Issue Form page to get started with creating issue records.</p>
-          </CardContent>
-          <CardFooter>
-            <Link href="/issue-form" passHref>
-              <Button className="w-full">Go to Issue Packets</Button>
-            </Link>
-          </CardFooter>
+        <Card>
+            <CardHeader>
+                <CardTitle>Total Scripts Issued</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="text-4xl font-bold">{totalScripts}</p>
+            </CardContent>
         </Card>
-        <Card className="flex flex-col">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="w-6 h-6 text-primary" />
-              App Settings
-            </CardTitle>
-            <CardDescription>Configure your application and integrations.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-grow">
-            <p>Manage your account settings and connect to services like Google Drive for data synchronization.</p>
-          </CardContent>
-          <CardFooter>
-            <Link href="/settings" passHref>
-                <Button className="w-full">Go to Settings</Button>
-            </Link>
-          </CardFooter>
+        <Card>
+            <CardHeader>
+                <CardTitle>Total Evaluated scripts at CEC</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="text-4xl font-bold">{totalEvaluatedScripts}</p>
+            </CardContent>
         </Card>
       </div>
     </div>
