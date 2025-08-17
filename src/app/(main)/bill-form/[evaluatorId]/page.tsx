@@ -269,11 +269,11 @@ export default function BillViewPage() {
                     </div>
                      <div className="pt-4">
                         <div className="flex justify-between mb-4">
-                            <span className="w-3/5">Remuneration for the Scripts Valued :</span>
+                            <span className="w-3/5">I) Remuneration for the Scripts Valued :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
                         <div className="flex justify-between mb-4">
-                            <span className="w-3/5">Payment on account of Additional Examiner(If any) :</span>
+                            <span className="w-3/5">II) Payment on account of Additional Examiner(If any) :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
                         <div className="flex justify-between mb-4">
@@ -311,7 +311,6 @@ export default function BillViewPage() {
                 <div className="pt-16">
                     <div className="flex items-center gap-2">
                         <span className="font-bold">Coordinator</span>
-                        <span>(CEC add blank field button to write text)</span>
                     </div>
                 </div>
             </CardContent>
