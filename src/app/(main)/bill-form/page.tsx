@@ -24,6 +24,7 @@ const billFormSchema = z.object({
   evaluatorId: z.string().min(1, "Evaluator ID is required"),
   evaluatorName: z.string().min(1, "Evaluator Name is required"),
   collegeName: z.string().min(1, "College Name is required"),
+  course: z.string().min(1, "Course is required"),
   email: z.string().email("A valid email is required"),
   panNo: z.string().min(1, "PAN No. is required"),
   address: z.string().min(1, "Address is required"),
@@ -99,6 +100,7 @@ export default function BillFormPage() {
       evaluatorId: "",
       evaluatorName: "",
       collegeName: "",
+      course: "",
       email: "",
       panNo: "",
       address: "",
@@ -219,6 +221,7 @@ export default function BillFormPage() {
                 <FormField control={form.control} name="evaluatorId" render={({ field }) => (<FormItem><FormLabel>Evaluator ID</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="evaluatorName" render={({ field }) => (<FormItem><FormLabel>Evaluator Name</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="collegeName" render={({ field }) => (<FormItem><FormLabel>College Name</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <FormField control={form.control} name="course" render={({ field }) => (<FormItem><FormLabel>Course</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email ID</FormLabel><FormControl><Input type="email" placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="mobileNo" render={({ field }) => (<FormItem><FormLabel>Mobile No.</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="address" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
