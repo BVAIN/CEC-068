@@ -148,31 +148,31 @@ export default function BillViewPage() {
             <CardContent className="space-y-4 text-base p-4 md:p-6">
                 <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium text-muted-foreground">Evaluator ID:</span>
+                        <span className="font-semibold">Evaluator ID:</span>
                         <span>{billDetails.evaluatorId}</span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium text-muted-foreground">Evaluator Name:</span>
+                        <span className="font-semibold">Evaluator Name:</span>
                         <span>{billDetails.evaluatorName}</span>
                     </div>
                      <div className="flex justify-between border-b pb-2 col-span-2">
-                        <span className="font-medium text-muted-foreground">Address:</span>
+                        <span className="font-semibold">Address:</span>
                         <span>{billDetails.address}</span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium text-muted-foreground">Email ID:</span>
+                        <span className="font-semibold">Email ID:</span>
                         <span className="truncate">{billDetails.email}</span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium text-muted-foreground">Mobile No:</span>
+                        <span className="font-semibold">Mobile No:</span>
                         <span>{billDetails.mobileNo}</span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium text-muted-foreground">College Name:</span>
+                        <span className="font-semibold">College Name:</span>
                         <span>{billDetails.collegeName}</span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium text-muted-foreground">Distance (Km) Up-Down:</span>
+                        <span className="font-semibold">Distance (Km) Up-Down:</span>
                         <span>{billDetails.distance}</span>
                     </div>
                 </div>
@@ -181,25 +181,25 @@ export default function BillViewPage() {
                     <h3 className="font-semibold text-lg mb-4 text-center">Bank Account Details</h3>
                      <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                         <div className="flex justify-between border-b pb-2">
-                            <span className="font-medium text-muted-foreground">Bank Name:</span>
+                            <span className="font-semibold">Bank Name:</span>
                             <span>{billDetails.bankName}</span>
                         </div>
                         <div className="flex justify-between border-b pb-2">
-                            <span className="font-medium text-muted-foreground">Branch:</span>
+                            <span className="font-semibold">Branch:</span>
                             <span>{billDetails.branch}</span>
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-x-8 gap-y-4 mt-4">
                         <div className="flex justify-between border-b pb-2">
-                            <span className="font-medium text-muted-foreground">PAN No.:</span>
+                            <span className="font-semibold">PAN No.:</span>
                             <span>{billDetails.panNo}</span>
                         </div>
                         <div className="flex justify-between border-b pb-2">
-                            <span className="font-medium text-muted-foreground">Account No:</span>
+                            <span className="font-semibold">Account No:</span>
                             <span className="font-mono">{billDetails.bankAccountNo}</span>
                         </div>
                         <div className="flex justify-between border-b pb-2">
-                            <span className="font-medium text-muted-foreground">IFSC Code:</span>
+                            <span className="font-semibold">IFSC Code:</span>
                             <span className="font-mono">{billDetails.ifscCode}</span>
                         </div>
                     </div>
@@ -219,23 +219,23 @@ export default function BillViewPage() {
                         </colgroup>
                         <TableBody>
                             <TableRow>
-                                <TableCell className="font-medium border print-table">Total No. of Answer Scripts Evaluated</TableCell>
+                                <TableCell className="font-semibold border print-table">Total No. of Answer Scripts Evaluated</TableCell>
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-medium border print-table">Rate Per Answer Script</TableCell>
+                                <TableCell className="font-semibold border print-table">Rate Per Answer Script</TableCell>
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-medium border print-table">Remuneration Claimed</TableCell>
+                                <TableCell className="font-semibold border print-table">Remuneration Claimed</TableCell>
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-medium border print-table">Total No. of Visits</TableCell>
+                                <TableCell className="font-semibold border print-table">Total No. of Visits</TableCell>
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-medium border print-table py-4" colSpan={2}>
+                                <TableCell className="font-semibold border print-table py-4" colSpan={2}>
                                     Date of Visits: 
                                 </TableCell>
                             </TableRow>
@@ -259,7 +259,7 @@ export default function BillViewPage() {
                                 <div className="flex justify-center items-center rounded-md p-1 min-h-[4rem]">
                                     <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12" />
                                 </div>
-                                <h3 className="font-semibold text-sm mt-2">Signature of examiner</h3>
+                                <h3 className="font-semibold text-sm mt-2">Signature of Examiner</h3>
                             </div>
                         )}
                     </div>
