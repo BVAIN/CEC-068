@@ -139,11 +139,11 @@ export default function BillViewPage() {
                         <span>Reg. No. ....................</span>
                     </div>
                 </div>
-                <div className="text-center space-y-1 mt-2">
+                <div className="text-center space-y-1">
                     <h1 className="text-xl md:text-2xl font-bold uppercase">University of Delhi</h1>
                     <h2 className="text-lg md:text-xl font-bold">Central Evaluation Centre, SGTB Khalsa College</h2>
                 </div>
-                 <div className="flex items-center justify-center gap-2 md:gap-4 pt-2">
+                 <div className="flex items-center justify-center gap-2 md:gap-4">
                     <span className="font-bold">Bill,</span>
                     <Input className="w-[180px] manual-input" />
                     <span className="font-bold">Examination</span>
@@ -306,14 +306,14 @@ export default function BillViewPage() {
                             <span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
                             <span className="text-right">Rs. ______________________</span>
                         </div>
-                         <div className="flex justify-between items-center">
+                         <div className="flex justify-between items-center font-semibold">
                             <span>Net Payable :</span>
                             <span className="text-right">Rs. ______________________</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="pt-8">
+                <div className="pt-12">
                     <div className="flex items-start justify-between gap-2">
                         <div className="flex flex-col">
                             <span className="font-bold">Coordinator</span>
