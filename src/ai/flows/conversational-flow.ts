@@ -26,6 +26,7 @@ const conversationalFlow = ai.defineFlow(
         return "Please provide a prompt.";
     }
     const {output} = await ai.generate({
+      model: 'googleai/gemini-2.0-flash',
       prompt: prompt,
     });
     // The 'output' can be null if the model returns no content, so we safeguard against that.
