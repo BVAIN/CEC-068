@@ -264,6 +264,9 @@ export default function BillViewPage() {
                         )}
                     </div>
                     <hr className="my-4 border-t-2 border-gray-400" />
+                    <div className="text-center font-bold pt-4">
+                        <span className="underline">Official Use</span>
+                    </div>
                 </div>
             </CardContent>
         </Card>
