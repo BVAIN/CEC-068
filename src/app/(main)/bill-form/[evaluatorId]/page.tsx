@@ -131,6 +131,10 @@ export default function BillViewPage() {
             .date-of-visits-cell {
                 width: 40%;
             }
+            .signature-image {
+                filter: grayscale(100%) contrast(500%) brightness(200%) invert(1);
+                mix-blend-mode: multiply;
+            }
         `}</style>
 
       <header className="flex items-center justify-between gap-4 no-print mb-8">
@@ -268,7 +272,7 @@ export default function BillViewPage() {
                         {billDetails.signature && (
                             <div className="text-center">
                                 <div className="flex justify-center items-center rounded-md p-1 min-h-[3rem]">
-                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-10" />
+                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-10 signature-image" />
                                 </div>
                                 <h3 className="font-bold text-sm mt-1">Signature of Examiner</h3>
                             </div>
