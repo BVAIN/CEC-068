@@ -145,7 +145,7 @@ export default function BillViewPage() {
                     <Input className="w-[120px] manual-input" />
                 </div>
             </CardHeader>
-            <CardContent className="space-y-6 text-base p-4 md:p-6">
+            <CardContent className="space-y-4 text-base p-4 md:p-6">
                 <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                     <div className="flex justify-between border-b pb-2">
                         <span className="font-medium text-muted-foreground">Evaluator ID:</span>
@@ -178,7 +178,7 @@ export default function BillViewPage() {
                     </div>
                 </div>
 
-                <div className="pt-6">
+                <div className="pt-4">
                     <h3 className="font-semibold text-lg mb-4 text-center">Bank Account Details</h3>
                      <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                         <div className="flex justify-between border-b pb-2">
@@ -204,7 +204,7 @@ export default function BillViewPage() {
                     </div>
                 </div>
                  {billDetails.signature && (
-                    <div className="pt-6 flex justify-end">
+                    <div className="pt-4 flex justify-end">
                         <div className="text-center">
                             <div className="flex justify-center items-center rounded-md p-1 min-h-[4rem] border">
                                 <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12" />
@@ -213,12 +213,12 @@ export default function BillViewPage() {
                         </div>
                     </div>
                 )}
-                <div className="pt-8 flex justify-between items-center text-sm">
+                <div className="pt-6 flex justify-between items-center text-sm">
                     <span>Paper No. ..................................................................................................................</span>
                     <span>Duration of Paper ..................</span>
                 </div>
 
-                <div className="pt-8">
+                <div className="pt-6">
                     <h3 className="text-center font-bold">Part I Examiner /Additional Examiner</h3>
                     <Table className="mt-4 border print-table w-full">
                          <colgroup>
@@ -253,6 +253,13 @@ export default function BillViewPage() {
                         <span className="font-bold underline">Optimum no. of Copies</span>
                     </div>
                 </div>
+
+                <div className="pt-4">
+                    <h3 className="text-center font-bold">Part II (for use of Head/Additional Head Examiner)</h3>
+                     <div className="pt-2">
+                        <span>Payment claimed Rs............................................................</span>
+                    </div>
+                </div>
             </CardContent>
         </Card>
       </div>
@@ -260,5 +267,3 @@ export default function BillViewPage() {
     </div>
   );
 }
-
-  
