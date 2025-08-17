@@ -213,7 +213,7 @@ export default function BillFormPage() {
                 <FormField control={form.control} name="ifscCode" render={({ field }) => (<FormItem><FormLabel>IFSC Code</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="panNo" render={({ field }) => (<FormItem><FormLabel>PAN No.</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
                  <div className="space-y-2">
-                    <FormLabel>Upload Signature</FormLabel>
+                    <FormLabel>Signature of examiner</FormLabel>
                     <Input id="signature-upload" type="file" accept="image/jpeg,image/jpg,application/pdf" onChange={handleSignatureUpload} className="hidden" />
                     <Button type="button" onClick={() => document.getElementById('signature-upload')?.click()} variant="outline">
                         <Upload className="mr-2 h-4 w-4" />
