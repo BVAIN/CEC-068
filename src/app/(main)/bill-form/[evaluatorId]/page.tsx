@@ -129,9 +129,9 @@ export default function BillViewPage() {
                 </div>
                  <div className="flex items-center justify-center gap-2 md:gap-4 pt-4">
                     <span className="font-bold">Bill,</span>
-                    <Input className="w-[180px] manual-input" placeholder="Enter Month(s)" />
+                    <Input className="w-[180px] manual-input" placeholder="" />
                     <span className="font-bold">Examination</span>
-                    <Input className="w-[120px] manual-input" placeholder="Enter Year" />
+                    <Input className="w-[120px] manual-input" placeholder="" />
                 </div>
             </CardHeader>
             <CardContent className="space-y-6 text-base p-4 md:p-6">
