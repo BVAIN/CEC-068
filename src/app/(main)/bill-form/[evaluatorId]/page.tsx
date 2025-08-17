@@ -202,6 +202,10 @@ export default function BillViewPage() {
                         </div>
                     </div>
                 )}
+                <div className="pt-8 flex justify-between items-center text-sm">
+                    <span>Paper No. ..................................................................................................................</span>
+                    <span>Duration of Paper ..................</span>
+                </div>
             </CardContent>
         </Card>
       </div>
