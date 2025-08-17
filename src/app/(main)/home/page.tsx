@@ -15,7 +15,7 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAskAi = async () => {
-    if (!aiPrompt) return;
+    if (!aiPrompt.trim()) return; // Prevent sending empty prompts
     setIsLoading(true);
     setAiResponse("");
     try {
@@ -59,7 +59,7 @@ export default function HomePage() {
             )}
           </CardContent>
           <CardFooter>
-            <Button onClick={handleAskAi} disabled={isLoading || !aiPrompt}>
+            <Button onClick={handleAskAi} disabled={isLoading || !aiPrompt.trim()}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
