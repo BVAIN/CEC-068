@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter, Share2, Copy } from "lucide-react";
+import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter, Share2, Copy, PencilRuler } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +23,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { BILLS_STORAGE_KEY, BILLS_FILE_NAME } from "@/lib/constants";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 const billFormSchema = z.object({
   id: z.string().optional(),
@@ -46,6 +48,23 @@ export type BillFormValues = z.infer<typeof billFormSchema>;
 
 type FilterValues = Partial<Omit<BillFormValues, 'id' | 'signature' | 'distance'>> & { distance: string };
 
+const editableFields = [
+    { value: 'evaluatorId', label: 'Evaluator ID' },
+    { value: 'evaluatorName', label: 'Evaluator Name' },
+    { value: 'collegeName', label: 'College Name' },
+    { value: 'course', label: 'Course' },
+    { value: 'email', label: 'Email ID' },
+    { value: 'panNo', label: 'PAN No.' },
+    { value: 'address', label: 'Address' },
+    { value: 'distance', label: 'Distance (Km)' },
+    { value: 'mobileNo', label: 'Mobile No.' },
+    { value: 'bankName', label: 'Bank Name' },
+    { value: 'branch', label: 'Branch' },
+    { value: 'bankAccountNo', label: 'Bank Account No.' },
+    { value: 'ifscCode', label: 'IFSC Code' },
+] as const;
+
+type EditableField = typeof editableFields[number]['value'];
 
 export default function BillFormPage() {
   const router = useRouter();
@@ -57,6 +76,9 @@ export default function BillFormPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<FilterValues>({});
   const [publicFormUrl, setPublicFormUrl] = useState("");
+  const [isBulkEditOpen, setIsBulkEditOpen] = useState(false);
+  const [bulkEditField, setBulkEditField] = useState<EditableField>('course');
+  const [bulkEditValue, setBulkEditValue] = useState('');
 
 
   const { isConnected, files, readFile, writeFile } = useGoogleDrive();
@@ -239,6 +261,22 @@ export default function BillFormPage() {
     navigator.clipboard.writeText(publicFormUrl);
     toast({ title: "Copied!", description: "The link has been copied to your clipboard." });
   };
+  
+  const handleBulkUpdate = async () => {
+    const valueToSet = bulkEditField === 'distance' ? Number(bulkEditValue) : bulkEditValue;
+    const newBills = bills.map(bill => {
+      if (selectedBills.includes(bill.id!)) {
+        return { ...bill, [bulkEditField]: valueToSet };
+      }
+      return bill;
+    });
+    await updateBillsStateAndStorage(newBills);
+    toast({ title: 'Bills Updated', description: `${selectedBills.length} bill(s) have been updated.` });
+    setSelectedBills([]);
+    setIsBulkEditOpen(false);
+    setBulkEditValue('');
+  };
+
 
   const filterFields: { name: keyof FilterValues, label: string, type: string }[] = [
     { name: 'evaluatorId', label: 'Evaluator ID', type: 'text' },
@@ -357,6 +395,48 @@ export default function BillFormPage() {
                             </PopoverContent>
                         </Popover>
                         {selectedBills.length > 0 && (
+                            <>
+                            <Dialog open={isBulkEditOpen} onOpenChange={setIsBulkEditOpen}>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline"><PencilRuler className="mr-2 h-4 w-4" />Bulk Edit</Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Bulk Edit Bills</DialogTitle>
+                                        <DialogDescription>Update a field for all {selectedBills.length} selected bills.</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="grid gap-4 py-4">
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                            <Label htmlFor="bulk-edit-field" className="text-right">Field</Label>
+                                            <Select value={bulkEditField} onValueChange={(v) => setBulkEditField(v as EditableField)}>
+                                                <SelectTrigger className="col-span-3">
+                                                    <SelectValue placeholder="Select a field" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {editableFields.map(field => (
+                                                        <SelectItem key={field.value} value={field.value}>{field.label}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                            <Label htmlFor="bulk-edit-value" className="text-right">New Value</Label>
+                                            <Input
+                                                id="bulk-edit-value"
+                                                value={bulkEditValue}
+                                                onChange={(e) => setBulkEditValue(e.target.value)}
+                                                className="col-span-3"
+                                                type={bulkEditField === 'distance' ? 'number' : 'text'}
+                                            />
+                                        </div>
+                                    </div>
+                                    <DialogFooter>
+                                        <Button type="button" variant="outline" onClick={() => setIsBulkEditOpen(false)}>Cancel</Button>
+                                        <Button type="button" onClick={handleBulkUpdate}>Update Bills</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+
                             <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <Button variant="destructive">
@@ -377,6 +457,7 @@ export default function BillFormPage() {
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                             </AlertDialog>
+                            </>
                         )}
                         <Button onClick={handleExport}><FileDown className="mr-2 h-4 w-4" /> Export to Excel</Button>
                          <Dialog>
@@ -490,3 +571,5 @@ export default function BillFormPage() {
     </div>
   );
 }
+
+    
