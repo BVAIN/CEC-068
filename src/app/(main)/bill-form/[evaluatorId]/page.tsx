@@ -288,12 +288,14 @@ export default function BillViewPage() {
                             <span className="w-3/5">Balance :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between font-semibold mb-2">
-                            <span className="w-3/5">Conveyance @ Rs. _________ Per day</span>
-                            <span></span>
-                        </div>
-                        <div className="pl-4 font-semibold mb-4">
-                             <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
+                        <div className="mb-4">
+                            <div className="flex justify-between font-semibold">
+                                <span className="w-3/5">Conveyance @ Rs. _________ Per day</span>
+                                <span></span>
+                            </div>
+                            <div className="pl-4 font-semibold">
+                                <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
+                            </div>
                         </div>
                         <div className="flex justify-between font-semibold mb-4">
                             <span className="w-3/5">Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
