@@ -267,16 +267,42 @@ export default function BillViewPage() {
                     <div className="text-center font-bold">
                         <span className="underline">Official Use</span>
                     </div>
-                    <div className="pt-4 space-y-2">
-                        <div className="font-semibold">I) Remuneration for the Scripts Valued : Rs. ______________________________</div>
-                        <div className="font-semibold">II) Payment on account of Additional Examiner(If any) : Rs. ______________________________</div>
-                        <div className="font-semibold">Total of (I+II) : Rs. ______________________________</div>
-                        <div className="font-semibold">Less: 5% TWF : Rs. ______________________________</div>
-                        <div className="font-semibold">Balance : Rs. ______________________________</div>
-                        <div className="font-semibold">Conveyance @ Rs. _________ Per day</div>
-                        <div className="font-semibold pl-4">(Up to-30 Km Rs.450/- & above Rs. 600/-)</div>
-                        <div className="font-semibold">Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) : Rs. ______________________________</div>
-                        <div className="font-semibold">Net Payable : Rs. ______________________________</div>
+                     <div className="pt-4 space-y-2">
+                        <div className="flex justify-between font-semibold">
+                            <span>I) Remuneration for the Scripts Valued :</span>
+                            <span>Rs. ______________________________</span>
+                        </div>
+                        <div className="flex justify-between font-semibold">
+                            <span>II) Payment on account of Additional Examiner(If any) :</span>
+                            <span>Rs. ______________________________</span>
+                        </div>
+                        <div className="flex justify-between font-semibold">
+                           <span>Total of (I+II) :</span>
+                           <span>Rs. ______________________________</span>
+                        </div>
+                         <div className="flex justify-between font-semibold">
+                            <span>Less: 5% TWF :</span>
+                            <span>Rs. ______________________________</span>
+                        </div>
+                        <div className="flex justify-between font-semibold">
+                            <span>Balance :</span>
+                            <span>Rs. ______________________________</span>
+                        </div>
+                        <div className="flex justify-between font-semibold">
+                            <span>Conveyance @ Rs. _________ Per day</span>
+                            <span></span>
+                        </div>
+                        <div className="pl-4 font-semibold">
+                             <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
+                        </div>
+                        <div className="flex justify-between font-semibold">
+                            <span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
+                            <span>Rs. ______________________________</span>
+                        </div>
+                         <div className="flex justify-between font-semibold">
+                            <span>Net Payable :</span>
+                            <span>Rs. ______________________________</span>
+                        </div>
                     </div>
                 </div>
             </CardContent>
