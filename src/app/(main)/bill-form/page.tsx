@@ -6,13 +6,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+import * as XLSX from "xlsx";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Trash2, Upload, Edit, Search } from "lucide-react";
+import { Eye, Trash2, Upload, Edit, Search, FileDown } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
@@ -188,6 +189,13 @@ export default function BillFormPage() {
     }
   };
 
+  const handleExport = () => {
+    const worksheet = XLSX.utils.json_to_sheet(bills);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Bills");
+    XLSX.writeFile(workbook, "BillsData.xlsx");
+  };
+
 
   return (
     <div className="space-y-8">
@@ -281,6 +289,7 @@ export default function BillFormPage() {
                             </AlertDialogContent>
                             </AlertDialog>
                         )}
+                        <Button onClick={handleExport}><FileDown className="mr-2 h-4 w-4" /> Export to Excel</Button>
                     </div>
                 </div>
             </CardHeader>
