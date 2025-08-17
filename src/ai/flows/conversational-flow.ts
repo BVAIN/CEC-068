@@ -48,19 +48,16 @@ const conversationalFlow = ai.defineFlow(
     
     Be concise, helpful, and friendly. Answer questions about the application's functionality. If asked about a topic outside the app, politely decline.`;
 
-    const messages = [
-        ...history.map(msg => ({
-            role: msg.role as Role,
-            content: [{text: msg.content}]
-        })),
-        {role: 'user' as Role, content: [{text: prompt}]}
-    ];
+    const messages = history.map(msg => ({
+        role: msg.role as Role,
+        content: [{text: msg.content}]
+    }));
 
     const {output} = await ai.generate({
       model: 'googleai/gemini-1.5-flash-latest',
-      prompt: prompt,
       system: systemPrompt,
       history: messages,
+      prompt: prompt,
     });
     
     return output ?? "Sorry, I couldn't generate a response. Please try again.";
