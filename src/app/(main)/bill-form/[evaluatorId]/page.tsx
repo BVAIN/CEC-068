@@ -148,58 +148,58 @@ export default function BillViewPage() {
             <CardContent className="space-y-4 text-base p-4 md:p-6">
                 <div className="grid grid-cols-2 gap-x-8 gap-y-2">
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-semibold">Evaluator ID:</span>
+                        <span className="font-bold">Evaluator ID:</span>
                         <span>{billDetails.evaluatorId}</span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-semibold">Evaluator Name:</span>
+                        <span className="font-bold">Evaluator Name:</span>
                         <span>{billDetails.evaluatorName}</span>
                     </div>
                      <div className="flex justify-between border-b pb-2 col-span-2">
-                        <span className="font-semibold">Address:</span>
+                        <span className="font-bold">Address:</span>
                         <span>{billDetails.address}</span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-semibold">Email ID:</span>
+                        <span className="font-bold">Email ID:</span>
                         <span className="truncate">{billDetails.email}</span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-semibold">Mobile No:</span>
+                        <span className="font-bold">Mobile No:</span>
                         <span>{billDetails.mobileNo}</span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-semibold">College Name:</span>
+                        <span className="font-bold">College Name:</span>
                         <span>{billDetails.collegeName}</span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
-                        <span className="font-semibold">Distance (Km) Up-Down:</span>
+                        <span className="font-bold">Distance (Km) Up-Down:</span>
                         <span>{billDetails.distance}</span>
                     </div>
                 </div>
 
                 <div className="pt-4">
-                    <h3 className="font-semibold text-lg mb-2 text-center">Bank Account Details</h3>
+                    <h3 className="font-bold text-lg mb-2 text-center">Bank Account Details</h3>
                      <div className="grid grid-cols-1 gap-x-8 gap-y-2">
                         <div className="flex justify-between border-b pb-2">
-                            <span className="font-semibold">Bank Name:</span>
+                            <span className="font-bold">Bank Name:</span>
                             <span>{billDetails.bankName}</span>
                         </div>
                         <div className="flex justify-between border-b pb-2">
-                            <span className="font-semibold">Branch:</span>
+                            <span className="font-bold">Branch:</span>
                             <span>{billDetails.branch}</span>
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-x-8 gap-y-2 mt-2">
                         <div className="flex justify-between border-b pb-2">
-                            <span className="font-semibold">PAN No.:</span>
+                            <span className="font-bold">PAN No.:</span>
                             <span>{billDetails.panNo}</span>
                         </div>
                         <div className="flex justify-between border-b pb-2">
-                            <span className="font-semibold">Account No:</span>
+                            <span className="font-bold">Account No:</span>
                             <span className="font-mono">{billDetails.bankAccountNo}</span>
                         </div>
                         <div className="flex justify-between border-b pb-2">
-                            <span className="font-semibold">IFSC Code:</span>
+                            <span className="font-bold">IFSC Code:</span>
                             <span className="font-mono">{billDetails.ifscCode}</span>
                         </div>
                     </div>
@@ -219,23 +219,23 @@ export default function BillViewPage() {
                         </colgroup>
                         <TableBody>
                             <TableRow>
-                                <TableCell className="font-semibold border print-table">Total No. of Answer Scripts Evaluated</TableCell>
+                                <TableCell className="font-bold border print-table">Total No. of Answer Scripts Evaluated</TableCell>
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-semibold border print-table">Rate Per Answer Script</TableCell>
+                                <TableCell className="font-bold border print-table">Rate Per Answer Script</TableCell>
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-semibold border print-table">Remuneration Claimed</TableCell>
+                                <TableCell className="font-bold border print-table">Remuneration Claimed</TableCell>
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-semibold border print-table">Total No. of Visits</TableCell>
+                                <TableCell className="font-bold border print-table">Total No. of Visits</TableCell>
                                 <TableCell className="border print-table"></TableCell>
                             </TableRow>
                              <TableRow>
-                                <TableCell className="font-semibold border print-table py-12" colSpan={2}>
+                                <TableCell className="font-bold border print-table py-12" colSpan={2}>
                                     Date of Visits: 
                                 </TableCell>
                             </TableRow>
@@ -249,7 +249,7 @@ export default function BillViewPage() {
                 <div className="pt-4">
                     <div className="flex justify-between items-end">
                         <div className="w-2/3 space-y-2">
-                            <h3 className="text-left font-semibold">Part II (for use of Head/Additional Head Examiner)</h3>
+                            <h3 className="text-left font-bold">Part II (for use of Head/Additional Head Examiner)</h3>
                             <div className="pt-2">
                                 <span>Payment claimed Rs............................................................</span>
                             </div>
@@ -259,7 +259,7 @@ export default function BillViewPage() {
                                 <div className="flex justify-center items-center rounded-md p-1 min-h-[4rem]">
                                     <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12" />
                                 </div>
-                                <h3 className="font-semibold text-sm mt-2">Signature of Examiner</h3>
+                                <h3 className="font-bold text-sm mt-2">Signature of Examiner</h3>
                             </div>
                         )}
                     </div>
@@ -268,27 +268,27 @@ export default function BillViewPage() {
                         <span className="underline">Official Use</span>
                     </div>
                      <div className="pt-4">
-                        <div className="flex justify-between font-semibold mb-4">
+                        <div className="flex justify-between mb-4">
                             <span className="w-3/5">I) Remuneration for the Scripts Valued :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between font-semibold mb-4">
+                        <div className="flex justify-between mb-4">
                             <span className="w-3/5">II) Payment on account of Additional Examiner(If any) :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between font-semibold mb-4">
+                        <div className="flex justify-between mb-4">
                            <span className="w-3/5">Total of (I+II) :</span>
                            <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                         <div className="flex justify-between font-semibold mb-4">
+                         <div className="flex justify-between mb-4">
                             <span className="w-3/5">Less: 5% TWF :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between font-semibold mb-4">
+                        <div className="flex justify-between mb-4">
                             <span className="w-3/5">Balance :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="font-semibold mb-4">
+                        <div className="mb-4">
                            <div className="flex justify-between">
                                 <span className="w-3/5">Conveyance @ Rs. _________ Per day</span>
                                 <span className="w-2/5 text-right">Rs. ______________________________</span>
@@ -297,11 +297,11 @@ export default function BillViewPage() {
                                 <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
                             </div>
                         </div>
-                        <div className="flex justify-between font-semibold mb-4">
+                        <div className="flex justify-between mb-4">
                             <span className="w-3/5">Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                         <div className="flex justify-between font-semibold mb-4">
+                         <div className="flex justify-between mb-4">
                             <span className="w-3/5">Net Payable :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
