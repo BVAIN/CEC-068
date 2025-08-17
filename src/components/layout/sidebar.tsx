@@ -13,6 +13,7 @@ const menuItems = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/issue-form", label: "Issue Packets", icon: FilePlus },
   { href: "/bill-form", label: "Bill Form", icon: FileText },
+  { href: "/bill-form-2", label: "Bill Form 2", icon: FileText },
   { href: "/trash", label: "Trash", icon: Trash2 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
