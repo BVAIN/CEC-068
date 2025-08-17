@@ -190,12 +190,16 @@ export default function BillViewPage() {
                         <span>{billDetails.mobileNo}</span>
                     </div>
                 </div>
-                <div className="flex justify-between border-b pb-1 col-span-2">
-                    <div className="flex gap-x-8">
+                <div className="flex justify-between items-center border-b pb-1 col-span-2">
+                    <div className="flex items-center gap-x-4">
                         <div className="flex"><span className="font-bold mr-2">College Name:</span> <span>{billDetails.collegeName}</span></div>
+                        <span className="text-muted-foreground">|</span>
                         <div className="flex"><span className="font-bold mr-2">Course:</span> <span>{billDetails.course}</span></div>
                     </div>
-                    <div><span className="font-bold mr-2">Distance (Km) Up-Down:</span> <span>{billDetails.distance}</span></div>
+                     <div className="flex items-center gap-x-4">
+                        <span className="text-muted-foreground">|</span>
+                        <div><span className="font-bold mr-2">Distance (Km) Up-Down:</span> <span>{billDetails.distance}</span></div>
+                    </div>
                 </div>
 
 
@@ -313,7 +317,7 @@ export default function BillViewPage() {
                             <span className="text-right">Rs. ____________________________</span>
                         </div>
                          <div className="flex justify-between items-center">
-                            <span className="font-bold">Net Payable :</span>
+                            <span>Net Payable :</span>
                             <span className="text-right">Rs. ____________________________</span>
                         </div>
                     </div>
@@ -351,3 +355,4 @@ export default function BillViewPage() {
     
 
     
+
