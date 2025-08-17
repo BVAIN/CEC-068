@@ -190,7 +190,11 @@ export default function BillFormPage() {
   };
 
   const handleExport = () => {
-    const worksheet = XLSX.utils.json_to_sheet(bills);
+    const dataToExport = bills.map(bill => {
+        const { signature, ...rest } = bill;
+        return rest;
+    });
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Bills");
     XLSX.writeFile(workbook, "BillsData.xlsx");
@@ -367,5 +371,3 @@ export default function BillFormPage() {
     </div>
   );
 }
-
-    
