@@ -218,6 +218,10 @@ export default function BillViewPage() {
                             <span className="font-mono">{billDetails.ifscCode}</span>
                         </div>
                     </div>
+                     <div className="pt-2 flex justify-between">
+                        <span>Paper No. ..................................................................................................................</span>
+                        <span className="ml-4">Duration of Paper ..................</span>
+                    </div>
                 </div>
                 
                 <div className="pt-2">
