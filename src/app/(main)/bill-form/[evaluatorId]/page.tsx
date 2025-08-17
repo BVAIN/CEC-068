@@ -126,8 +126,11 @@ export default function BillViewPage() {
                 outline: none;
                 box-shadow: none;
             }
+            .total-scripts-cell {
+                width: 15%;
+            }
             .date-of-visits-cell {
-                width: 25%;
+                width: 40%;
             }
         `}</style>
 
@@ -232,7 +235,7 @@ export default function BillViewPage() {
                     <Table className="mt-1 border print-table w-full">
                          <TableHeader>
                             <TableRow>
-                                <TableHead className="font-bold border print-table">Total No. of Ans. Scripts Evaluated</TableHead>
+                                <TableHead className="font-bold border print-table total-scripts-cell">Total No. of Ans. Scripts Evaluated</TableHead>
                                 <TableHead className="font-bold border print-table">Rate Per Ans. Script</TableHead>
                                 <TableHead className="font-bold border print-table">Remuneration Claimed</TableHead>
                                 <TableHead className="font-bold border print-table">Total No. of Visits</TableHead>
@@ -241,11 +244,11 @@ export default function BillViewPage() {
                         </TableHeader>
                         <TableBody>
                             <TableRow>
+                                <TableCell className="border print-table total-scripts-cell"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
                                 <TableCell className="border print-table"></TableCell>
-                                <TableCell className="border print-table"></TableCell>
-                                <TableCell className="border print-table date-of-visits-cell"><div className="min-h-[4rem]"></div></TableCell>
+                                <TableCell className="border print-table date-of-visits-cell align-top"><div className="min-h-[4rem]"></div></TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
@@ -310,7 +313,7 @@ export default function BillViewPage() {
                             <span className="text-right">Rs. ____________________________</span>
                         </div>
                          <div className="flex justify-between items-center">
-                            <span className="font-regular">Net Payable :</span>
+                            <span className="font-bold">Net Payable :</span>
                             <span className="text-right">Rs. ____________________________</span>
                         </div>
                     </div>
