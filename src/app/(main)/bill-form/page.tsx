@@ -13,11 +13,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Trash2, Upload, Edit, Search, FileDown } from "lucide-react";
+import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
 
 const billFormSchema = z.object({
   id: z.string().optional(),
@@ -39,6 +41,9 @@ const billFormSchema = z.object({
 
 export type BillFormValues = z.infer<typeof billFormSchema>;
 
+type FilterValues = Partial<Omit<BillFormValues, 'id' | 'signature' | 'distance'>> & { distance: string };
+
+
 const BILLS_STORAGE_KEY = 'cec068_bills';
 const BILLS_FILE_NAME = 'DriveSync_Bills.json';
 
@@ -50,6 +55,8 @@ export default function BillFormPage() {
   const [selectedBills, setSelectedBills] = useState<string[]>([]);
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState<FilterValues>({});
+
 
   const { isConnected, files, readFile, writeFile } = useGoogleDrive();
 
@@ -84,13 +91,28 @@ export default function BillFormPage() {
 
   const filteredBills = useMemo(() => {
     const lowercasedTerm = searchTerm.toLowerCase();
-    return bills.filter(bill =>
-        bill.evaluatorName.toLowerCase().includes(lowercasedTerm) ||
-        bill.evaluatorId.toLowerCase().includes(lowercasedTerm) ||
-        bill.mobileNo.toLowerCase().includes(lowercasedTerm) ||
-        bill.email.toLowerCase().includes(lowercasedTerm)
-    );
-  }, [bills, searchTerm]);
+    return bills.filter(bill => {
+        const searchMatch =
+            bill.evaluatorName.toLowerCase().includes(lowercasedTerm) ||
+            bill.evaluatorId.toLowerCase().includes(lowercasedTerm) ||
+            bill.mobileNo.toLowerCase().includes(lowercasedTerm) ||
+            bill.email.toLowerCase().includes(lowercasedTerm);
+
+        const filterMatch = Object.entries(filters).every(([key, value]) => {
+            if (!value) return true;
+            const billValue = bill[key as keyof BillFormValues];
+            if (typeof billValue === 'string') {
+                return billValue.toLowerCase().includes((value as string).toLowerCase());
+            }
+            if (typeof billValue === 'number') {
+                return billValue.toString().includes(value as string);
+            }
+            return true;
+        });
+
+        return searchMatch && filterMatch;
+    });
+  }, [bills, searchTerm, filters]);
 
 
   const form = useForm<BillFormValues>({
@@ -202,6 +224,25 @@ export default function BillFormPage() {
     XLSX.writeFile(workbook, "BillsData.xlsx");
   };
 
+  const handleFilterChange = (field: keyof FilterValues, value: string) => {
+    setFilters(prev => ({ ...prev, [field]: value }));
+  };
+
+  const filterFields: { name: keyof FilterValues, label: string, type: string }[] = [
+    { name: 'evaluatorId', label: 'Evaluator ID', type: 'text' },
+    { name: 'evaluatorName', label: 'Evaluator Name', type: 'text' },
+    { name: 'collegeName', label: 'College Name', type: 'text' },
+    { name: 'course', label: 'Course', type: 'text' },
+    { name: 'email', label: 'Email ID', type: 'email' },
+    { name: 'mobileNo', label: 'Mobile No.', type: 'text' },
+    { name: 'address', label: 'Address', type: 'text' },
+    { name: 'distance', label: 'Distance (Km)', type: 'number' },
+    { name: 'bankName', label: 'Bank Name', type: 'text' },
+    { name: 'branch', label: 'Branch', type: 'text' },
+    { name: 'bankAccountNo', label: 'Bank Account No.', type: 'text' },
+    { name: 'ifscCode', label: 'IFSC Code', type: 'text' },
+    { name: 'panNo', label: 'PAN No.', type: 'text' },
+  ];
 
   return (
     <div className="space-y-8">
@@ -261,7 +302,7 @@ export default function BillFormPage() {
             <CardHeader>
                 <div className="flex justify-between items-center gap-4 flex-wrap">
                     <div>
-                        <CardTitle>Submitted Bills</CardTitle>
+                        <CardTitle>Submitted Bills ({filteredBills.length})</CardTitle>
                         <CardDescription>View and manage submitted bill forms.</CardDescription>
                     </div>
                      <div className="flex items-center gap-2">
@@ -274,6 +315,35 @@ export default function BillFormPage() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-96 max-h-[80vh] overflow-y-auto">
+                                <div className="grid gap-4">
+                                <div className="space-y-2">
+                                    <h4 className="font-medium leading-none">Filters</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                    Filter bills by the following criteria.
+                                    </p>
+                                </div>
+                                <div className="grid gap-2">
+                                    {filterFields.map(field => (
+                                        <div key={field.name} className="grid grid-cols-3 items-center gap-4">
+                                            <Label htmlFor={`filter-${field.name}`}>{field.label}</Label>
+                                            <Input
+                                                id={`filter-${field.name}`}
+                                                type={field.type}
+                                                value={filters[field.name] || ''}
+                                                onChange={(e) => handleFilterChange(field.name, e.target.value)}
+                                                className="col-span-2 h-8"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
                         {selectedBills.length > 0 && (
                             <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -312,6 +382,7 @@ export default function BillFormPage() {
                                       aria-label="Select all"
                                     />
                                 </TableHead>
+                                <TableHead>S. No.</TableHead>
                                 <TableHead>Evaluator ID</TableHead>
                                 <TableHead>Evaluator Name</TableHead>
                                 <TableHead>Mobile No.</TableHead>
@@ -320,7 +391,7 @@ export default function BillFormPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredBills.map((bill) => (
+                            {filteredBills.map((bill, index) => (
                                 <TableRow key={bill.id} data-state={selectedBills.includes(bill.id!) ? "selected" : "unselected"}>
                                     <TableCell>
                                         <Checkbox
@@ -330,6 +401,7 @@ export default function BillFormPage() {
                                           disabled={!bill.id}
                                         />
                                     </TableCell>
+                                    <TableCell>{index + 1}</TableCell>
                                     <TableCell>{bill.evaluatorId}</TableCell>
                                     <TableCell>{bill.evaluatorName}</TableCell>
                                     <TableCell>{bill.mobileNo}</TableCell>
