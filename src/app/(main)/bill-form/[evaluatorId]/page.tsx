@@ -195,10 +195,10 @@ export default function BillViewPage() {
                  {billDetails.signature && (
                     <div className="pt-6 flex justify-end">
                         <div className="text-center">
-                            <h3 className="font-semibold text-sm mb-2">Signature of examiner</h3>
-                            <div className="flex justify-center items-center border rounded-md p-2">
+                            <div className="flex justify-center items-center border rounded-md p-2 min-h-[6rem]">
                                 <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-20" />
                             </div>
+                            <h3 className="font-semibold text-sm mt-2">Signature of examiner</h3>
                         </div>
                     </div>
                 )}
