@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Printer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 const BILLS_STORAGE_KEY = 'cec068_bills';
 
@@ -17,6 +19,9 @@ export default function BillViewPage() {
   const { toast } = useToast();
   const [billDetails, setBillDetails] = useState<BillFormValues | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState<string>('');
+  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
+
 
   useEffect(() => {
     const evaluatorId = params.evaluatorId;
@@ -49,6 +54,15 @@ export default function BillViewPage() {
   const handlePrint = () => {
     window.print();
   };
+  
+  const getYears = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = currentYear; i >= currentYear - 10; i--) {
+        years.push(i.toString());
+    }
+    return years;
+  }
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-full">Loading bill details...</div>;
@@ -63,6 +77,9 @@ export default function BillViewPage() {
     <div className="space-y-8 max-w-4xl mx-auto">
         <style>{`
             @media print {
+                body, .main-layout {
+                    background-color: white !important;
+                }
                 body * {
                     visibility: hidden;
                 }
@@ -74,6 +91,8 @@ export default function BillViewPage() {
                     left: 0;
                     top: 0;
                     width: 100%;
+                    margin: 0;
+                    padding: 0;
                 }
                 .no-print {
                     display: none;
@@ -95,12 +114,53 @@ export default function BillViewPage() {
       </header>
       
       <div id="print-section">
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-center text-2xl">Remuneration Bill</CardTitle>
-                <CardDescription className="text-center">For the Evaluation of Answer Scripts</CardDescription>
+        <Card className="shadow-none border-none">
+            <CardHeader className="p-4 md:p-6">
+                 <div className="flex justify-end text-sm">
+                    <div className="grid grid-cols-1 gap-1 text-right">
+                        <span>Page No. .................</span>
+                        <span>Reg. No. ....................</span>
+                    </div>
+                </div>
+                <div className="text-center space-y-1 mt-4">
+                    <h1 className="text-xl md:text-2xl font-bold uppercase">University of Delhi</h1>
+                    <h2 className="text-lg md:text-xl font-bold">Central Evaluation Centre, SGTB Khalsa College</h2>
+                </div>
+                 <div className="flex items-center justify-center gap-2 md:gap-4 pt-4">
+                    <span className="font-bold">Bill,</span>
+                    <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select Month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="January">January</SelectItem>
+                            <SelectItem value="February">February</SelectItem>
+                            <SelectItem value="March">March</SelectItem>
+                            <SelectItem value="April">April</SelectItem>
+                            <SelectItem value="May">May</SelectItem>
+                            <SelectItem value="June">June</SelectItem>
+                            <SelectItem value="July">July</SelectItem>
+                            <SelectItem value="August">August</SelectItem>
+                            <SelectItem value="September">September</SelectItem>
+                            <SelectItem value="October">October</SelectItem>
+                            <SelectItem value="November">November</SelectItem>
+                            <SelectItem value="December">December</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <span className="font-bold">Examinattion</span>
+                     <Select value={selectedYear} onValueChange={setSelectedYear}>
+                        <SelectTrigger className="w-[120px]">
+                            <SelectValue placeholder="Select Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {getYears().map(year => (
+                                <SelectItem key={year} value={year}>{year}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
             </CardHeader>
-            <CardContent className="space-y-6 text-lg p-8">
+            <CardContent className="space-y-6 text-base p-4 md:p-6">
                 <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                     <div className="flex justify-between border-b pb-2">
                         <span className="font-medium text-muted-foreground">Evaluator ID:</span>
@@ -137,7 +197,7 @@ export default function BillViewPage() {
                 </div>
 
                 <div className="pt-6">
-                    <h3 className="font-semibold text-xl mb-4 text-center">Bank Account Details</h3>
+                    <h3 className="font-semibold text-lg mb-4 text-center">Bank Account Details</h3>
                      <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                         <div className="flex justify-between border-b pb-2">
                             <span className="font-medium text-muted-foreground">Bank Name:</span>
@@ -159,7 +219,7 @@ export default function BillViewPage() {
                 </div>
                  {billDetails.signature && (
                     <div className="pt-6">
-                        <h3 className="font-semibold text-xl mb-4 text-center">Signature</h3>
+                        <h3 className="font-semibold text-lg mb-4 text-center">Signature</h3>
                         <div className="flex justify-center items-center border rounded-md p-4">
                             <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-40" />
                         </div>
@@ -172,5 +232,3 @@ export default function BillViewPage() {
     </div>
   );
 }
-
-    
