@@ -66,6 +66,10 @@ export default function BillViewPage() {
   return (
     <div className="max-w-4xl mx-auto">
         <style>{`
+            @page {
+                size: auto;
+                margin: 0mm;
+            }
             @media print {
                 body, .main-layout {
                     background-color: white !important;
@@ -302,8 +306,8 @@ export default function BillViewPage() {
                             <span className="text-right">Rs. ______________________________</span>
                         </div>
                          <div className="flex justify-between items-center mb-3">
-                            <span>Net Payable :</span>
-                            <span className="text-right">Rs. ______________________________</span>
+                            <span className="font-semibold">Net Payable :</span>
+                            <span className="text-right font-semibold">Rs. ______________________________</span>
                         </div>
                     </div>
                 </div>
