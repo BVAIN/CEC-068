@@ -119,7 +119,7 @@ export default function BillViewPage() {
             <CardHeader className="p-4 md:p-6">
                  <div className="flex justify-end text-sm">
                     <div className="grid grid-cols-1 gap-1 text-right">
-                        <span>Page No. .................</span>
+                        <span>Page No. ....................</span>
                         <span>Reg. No. ....................</span>
                     </div>
                 </div>
@@ -193,10 +193,12 @@ export default function BillViewPage() {
                     </div>
                 </div>
                  {billDetails.signature && (
-                    <div className="pt-6">
-                        <h3 className="font-semibold text-lg mb-4 text-center">Signature</h3>
-                        <div className="flex justify-center items-center border rounded-md p-4">
-                            <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-40" />
+                    <div className="pt-6 flex justify-end">
+                        <div className="text-center">
+                            <h3 className="font-semibold text-sm mb-2">Signature</h3>
+                            <div className="flex justify-center items-center border rounded-md p-2">
+                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-20" />
+                            </div>
                         </div>
                     </div>
                 )}
