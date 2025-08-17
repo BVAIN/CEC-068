@@ -11,7 +11,7 @@ import {z} from 'genkit';
 
 export async function askAi(prompt: string): Promise<string> {
   // Ensure we don't pass null to the flow, which expects a string.
-  return conversationalFlow(prompt || '');
+  return conversationalFlow(prompt ?? '');
 }
 
 const conversationalFlow = ai.defineFlow(
@@ -21,12 +21,14 @@ const conversationalFlow = ai.defineFlow(
     outputSchema: z.string(),
   },
   async (prompt) => {
-    if (!prompt) {
+    // This check prevents the flow from crashing if it somehow receives an empty or null prompt.
+    if (!prompt || prompt.trim() === '') {
         return "Please provide a prompt.";
     }
     const {output} = await ai.generate({
       prompt: prompt,
     });
-    return output!;
+    // The 'output' can be null if the model returns no content, so we safeguard against that.
+    return output ?? "Sorry, I couldn't generate a response. Please try again.";
   }
 );
