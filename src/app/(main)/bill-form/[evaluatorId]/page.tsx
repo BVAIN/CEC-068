@@ -263,7 +263,7 @@ export default function BillViewPage() {
                             </div>
                         )}
                     </div>
-                    <div className="pt-2">__________________________________________________________________________________________________</div>
+                    <hr className="my-4 border-t-2 border-gray-400" />
                 </div>
             </CardContent>
         </Card>
