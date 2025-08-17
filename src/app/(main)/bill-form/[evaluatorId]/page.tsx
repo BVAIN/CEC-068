@@ -272,23 +272,23 @@ export default function BillViewPage() {
                         <span className="underline">Official Use</span>
                     </div>
                      <div className="pt-4">
-                        <div className="flex justify-between mb-4">
+                        <div className="flex justify-between mb-8">
                             <span className="w-3/5">I) Remuneration for the Scripts Valued :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between mb-4">
+                        <div className="flex justify-between mb-8">
                             <span className="w-3/5">II) Payment on account of Additional Examiner(If any) :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between mb-4">
+                        <div className="flex justify-between mb-8">
                            <span className="w-3/5">Total of (I+II) :</span>
                            <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                         <div className="flex justify-between mb-4">
+                         <div className="flex justify-between mb-8">
                             <span className="w-3/5">Less: 5% TWF :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                        <div className="flex justify-between mb-4">
+                        <div className="flex justify-between mb-8">
                             <span className="w-3/5">Balance :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
@@ -301,11 +301,11 @@ export default function BillViewPage() {
                                 <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
                             </div>
                         </div>
-                        <div className="flex justify-between mb-4">
+                        <div className="flex justify-between mb-8">
                             <span className="w-3/5">Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
-                         <div className="flex justify-between mb-4">
+                         <div className="flex justify-between mb-8">
                             <span className="w-3/5">Net Payable :</span>
                             <span className="w-2/5 text-right">Rs. ______________________________</span>
                         </div>
@@ -316,7 +316,7 @@ export default function BillViewPage() {
                     <div className="flex items-start justify-between gap-2">
                         <div className="flex flex-col">
                             <span className="font-bold">Coordinator</span>
-                            <div className="flex items-center gap-2 mt-2">
+                            <div className="flex items-center gap-2">
                                 <span>CEC</span>
                                  <Select>
                                     <SelectTrigger className="w-[120px] no-print">
