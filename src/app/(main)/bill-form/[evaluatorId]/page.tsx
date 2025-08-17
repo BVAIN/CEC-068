@@ -189,19 +189,15 @@ export default function BillViewPage() {
                         <span className="font-bold">Mobile No:</span>
                         <span>{billDetails.mobileNo}</span>
                     </div>
-                    <div className="flex justify-between border-b pb-1">
-                        <span className="font-bold">College Name:</span>
-                        <span>{billDetails.collegeName}</span>
-                    </div>
-                     <div className="flex justify-between border-b pb-1">
-                        <span className="font-bold">Course:</span>
-                        <span>{billDetails.course}</span>
-                    </div>
-                    <div className="flex justify-between border-b pb-1 col-span-2">
-                        <span className="font-bold">Distance (Km) Up-Down:</span>
-                        <span>{billDetails.distance}</span>
-                    </div>
                 </div>
+                <div className="flex justify-between border-b pb-1 col-span-2">
+                    <div className="flex gap-x-8">
+                        <div className="flex"><span className="font-bold mr-2">College Name:</span> <span>{billDetails.collegeName}</span></div>
+                        <div className="flex"><span className="font-bold mr-2">Course:</span> <span>{billDetails.course}</span></div>
+                    </div>
+                    <div><span className="font-bold mr-2">Distance (Km) Up-Down:</span> <span>{billDetails.distance}</span></div>
+                </div>
+
 
                 <div className="pt-2">
                      <div className="grid grid-cols-2 gap-x-8 gap-y-1">
