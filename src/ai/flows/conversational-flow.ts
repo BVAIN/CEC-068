@@ -21,6 +21,9 @@ const conversationalFlow = ai.defineFlow(
     outputSchema: z.string(),
   },
   async (prompt) => {
+    if (!prompt) {
+        return "Please provide a prompt.";
+    }
     const {output} = await ai.generate({
       prompt: prompt,
     });

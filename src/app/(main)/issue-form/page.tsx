@@ -702,7 +702,7 @@ export default function ScriptsIssueFormPage() {
                   const originalIndex = issues.findIndex(i => i.id === issue.id);
                   const isSelected = issue.id ? selectedIssues.includes(issue.id) : false;
                   return (
-                  <TableRow key={issue.id || originalIndex} data-state={isSelected && "selected"}>
+                  <TableRow key={issue.id} data-state={isSelected && "selected"}>
                     <TableCell onClick={(e) => { e.stopPropagation(); }}>
                       <Checkbox
                         onCheckedChange={(checked) => issue.id && handleSelectIssue(issue.id, !!checked)}
