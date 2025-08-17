@@ -154,7 +154,7 @@ export default function BillViewPage() {
                     <h1 className="text-xl md:text-2xl font-bold uppercase">University of Delhi</h1>
                     <h2 className="text-lg md:text-xl font-bold">Central Evaluation Centre, SGTB Khalsa College</h2>
                 </div>
-                 <div className="flex items-center justify-center gap-2 md:gap-4 mt-1">
+                 <div className="flex items-center justify-center gap-2 md:gap-4">
                     <span className="font-bold">Bill,</span>
                     <Input className="w-[180px] manual-input" />
                     <span className="font-bold">Examination</span>
@@ -219,8 +219,8 @@ export default function BillViewPage() {
                         </div>
                     </div>
                      <div className="pt-2 flex justify-between">
-                        <span>..................................................................................................................Paper No.</span>
-                        <span className="ml-4">..................Duration of Paper</span>
+                        <span>Paper No. ..................................................................................................................</span>
+                        <span className="ml-4">Duration of Paper ..................</span>
                     </div>
                 </div>
                 
