@@ -204,6 +204,11 @@ export default function BillViewPage() {
                         </div>
                     </div>
                 </div>
+                
+                 <div className="pt-6 flex justify-between items-center text-sm">
+                    <span>Paper No. ..................................................................................................................</span>
+                    <span>Duration of Paper ..................</span>
+                </div>
 
                 <div className="pt-6">
                     <h3 className="text-center font-bold">Part I Examiner /Additional Examiner</h3>
@@ -257,10 +262,6 @@ export default function BillViewPage() {
                             <h3 className="font-semibold text-sm mt-2">Signature of examiner</h3>
                         </div>
                     )}
-                </div>
-                 <div className="pt-6 flex justify-between items-center text-sm">
-                    <span>Paper No. ..................................................................................................................</span>
-                    <span>Duration of Paper ..................</span>
                 </div>
             </CardContent>
         </Card>
