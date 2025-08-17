@@ -7,19 +7,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import * as XLSX from "xlsx";
+import QRCode from "qrcode.react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter } from "lucide-react";
+import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter, Share2, Copy } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
+import { BILLS_STORAGE_KEY, BILLS_FILE_NAME } from "@/lib/constants";
 
 const billFormSchema = z.object({
   id: z.string().optional(),
@@ -44,9 +47,6 @@ export type BillFormValues = z.infer<typeof billFormSchema>;
 type FilterValues = Partial<Omit<BillFormValues, 'id' | 'signature' | 'distance'>> & { distance: string };
 
 
-const BILLS_STORAGE_KEY = 'cec068_bills';
-const BILLS_FILE_NAME = 'DriveSync_Bills.json';
-
 export default function BillFormPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -56,9 +56,16 @@ export default function BillFormPage() {
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<FilterValues>({});
+  const [publicFormUrl, setPublicFormUrl] = useState("");
 
 
   const { isConnected, files, readFile, writeFile } = useGoogleDrive();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setPublicFormUrl(`${window.location.origin}/entry`);
+    }
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -228,6 +235,11 @@ export default function BillFormPage() {
     setFilters(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(publicFormUrl);
+    toast({ title: "Copied!", description: "The link has been copied to your clipboard." });
+  };
+
   const filterFields: { name: keyof FilterValues, label: string, type: string }[] = [
     { name: 'evaluatorId', label: 'Evaluator ID', type: 'text' },
     { name: 'evaluatorName', label: 'Evaluator Name', type: 'text' },
@@ -367,6 +379,38 @@ export default function BillFormPage() {
                             </AlertDialog>
                         )}
                         <Button onClick={handleExport}><FileDown className="mr-2 h-4 w-4" /> Export to Excel</Button>
+                         <Dialog>
+                            <DialogTrigger asChild>
+                                <Button><Share2 className="mr-2 h-4 w-4" /> Share Form</Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                                <DialogHeader>
+                                <DialogTitle>Share Public Form</DialogTitle>
+                                <DialogDescription>
+                                    Anyone with this link can submit their bill information.
+                                </DialogDescription>
+                                </DialogHeader>
+                                <div className="flex items-center space-x-2">
+                                <div className="grid flex-1 gap-2">
+                                    <Label htmlFor="link" className="sr-only">
+                                    Link
+                                    </Label>
+                                    <Input
+                                    id="link"
+                                    defaultValue={publicFormUrl}
+                                    readOnly
+                                    />
+                                </div>
+                                <Button type="button" size="sm" className="px-3" onClick={handleCopyToClipboard}>
+                                    <span className="sr-only">Copy</span>
+                                    <Copy className="h-4 w-4" />
+                                </Button>
+                                </div>
+                                <div className="flex justify-center p-4 bg-white rounded-md">
+                                    <QRCode value={publicFormUrl} size={200} />
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 </div>
             </CardHeader>

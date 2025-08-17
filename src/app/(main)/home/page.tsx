@@ -4,8 +4,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import type { IssueFormValues } from "../issue-form/page";
-
-const ISSUES_STORAGE_KEY = 'cec068_issues';
+import { ISSUES_STORAGE_KEY } from "@/lib/constants";
 
 export default function HomePage() {
   const [totalScripts, setTotalScripts] = useState(0);

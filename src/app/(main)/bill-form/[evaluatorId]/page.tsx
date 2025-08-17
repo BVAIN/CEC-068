@@ -10,9 +10,8 @@ import { ArrowLeft, Printer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "@/components/ui/table";
+import { BILLS_STORAGE_KEY } from "@/lib/constants";
 
-
-const BILLS_STORAGE_KEY = 'cec068_bills';
 
 export default function BillViewPage() {
   const params = useParams();
@@ -314,7 +313,7 @@ export default function BillViewPage() {
                             <span className="text-right">Rs. ____________________________</span>
                         </div>
                          <div className="flex justify-between items-center">
-                            <span className="font-bold">Net Payable :</span>
+                            <span>Net Payable :</span>
                             <span className="text-right">Rs. ____________________________</span>
                         </div>
                     </div>
@@ -340,20 +339,3 @@ export default function BillViewPage() {
   );
 
 }
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-
-
-
-

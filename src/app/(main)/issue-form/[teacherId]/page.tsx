@@ -12,8 +12,7 @@ import { ArrowLeft } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-
-const ISSUES_STORAGE_KEY = 'cec068_issues';
+import { ISSUES_STORAGE_KEY } from "@/lib/constants";
 
 export default function IssueViewPage() {
   const params = useParams();

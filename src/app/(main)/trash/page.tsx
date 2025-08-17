@@ -10,10 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import type { IssueFormValues } from "../issue-form/page";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { ISSUES_STORAGE_KEY, TRASH_STORAGE_KEY } from "@/lib/constants";
 
-
-const ISSUES_STORAGE_KEY = 'cec068_issues';
-const TRASH_STORAGE_KEY = 'cec068_trash';
 
 export default function TrashPage() {
   const [trashedIssues, setTrashedIssues] = useState<IssueFormValues[]>([]);

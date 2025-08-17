@@ -3,6 +3,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useToast } from "./use-toast";
+import { DRIVE_TOKEN_KEY, DRIVE_STORAGE_KEY } from "@/lib/constants";
 
 type DriveFile = {
   id: string;
@@ -12,9 +13,6 @@ type DriveFile = {
 
 // This is a more advanced placeholder hook. It simulates file operations
 // using localStorage to better mimic real-world Google Drive interactions.
-
-const DRIVE_TOKEN_KEY = "google_drive_token_placeholder";
-const DRIVE_STORAGE_KEY = "google_drive_files_placeholder";
 
 export function useGoogleDrive() {
   const { toast } = useToast();
@@ -115,5 +113,3 @@ export function useGoogleDrive() {
 
   return { isConnected, isLoading, error, files, connect, disconnect, readFile, writeFile };
 }
-
-    

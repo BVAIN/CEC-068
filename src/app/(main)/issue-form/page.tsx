@@ -21,6 +21,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { sendEmail } from "@/ai/flows/send-email-flow";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ISSUES_STORAGE_KEY, TRASH_STORAGE_KEY, QP_UPC_MAP_KEY, TEACHER_COURSE_TOKEN_MAP_KEY } from "@/lib/constants";
 
 
 const issueFormSchema = z.object({
@@ -49,11 +50,6 @@ const issueFormSchema = z.object({
 });
 
 export type IssueFormValues = z.infer<typeof issueFormSchema>;
-
-const ISSUES_STORAGE_KEY = 'cec068_issues';
-const TRASH_STORAGE_KEY = 'cec068_trash';
-const QP_UPC_MAP_KEY = 'cec068_qp_upc_map';
-const TEACHER_COURSE_TOKEN_MAP_KEY = 'cec068_teacher_course_token_map';
 
 // Populate with some initial data for demonstration
 const seedQpUpcMap = () => {
