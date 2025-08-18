@@ -142,7 +142,7 @@ export default function BillViewPage() {
                  .signature-image {
                     filter: none;
                     mix-blend-mode: normal;
-                }
+                 }
                 .undertaking-page {
                     page-break-before: always;
                 }
@@ -243,7 +243,7 @@ export default function BillViewPage() {
                     <h1 className="text-xl md:text-2xl font-bold uppercase">University of Delhi</h1>
                     <h2 className="text-lg md:text-xl font-bold">Central Evaluation Centre, SGTB Khalsa College</h2>
                 </div>
-                 <div className="flex items-center justify-center gap-2 md:gap-4">
+                 <div className="flex items-center justify-center gap-2 md:gap-4 flex-nowrap whitespace-nowrap">
                     <span className="font-bold">Bill,</span>
                     <Input className="w-[180px] manual-input font-bold text-center" value={globalSettings.billName} readOnly />
                     <span className="font-bold">Examination</span>
@@ -352,7 +352,7 @@ export default function BillViewPage() {
                         {billDetails.signature && (
                             <div className="text-center">
                                 <div className="flex justify-center items-center rounded-md p-1 min-h-[3rem]">
-                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-10" />
+                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-10 signature-image" />
                                 </div>
                                 <h3 className="font-bold text-sm mt-1">Signature of Examiner</h3>
                             </div>
@@ -438,7 +438,7 @@ export default function BillViewPage() {
                      {billDetails.signature && (
                         <div className="text-center">
                             <div className="flex justify-center items-center p-1 min-h-[3rem]">
-                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12" />
+                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12 signature-image" />
                             </div>
                             <h3 className="font-bold text-sm mt-1">(Signature of the Teacher)</h3>
                         </div>
