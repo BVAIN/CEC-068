@@ -243,7 +243,7 @@ export default function BillViewPage() {
                     <h1 className="text-xl md:text-2xl font-bold uppercase">University of Delhi</h1>
                     <h2 className="text-lg md:text-xl font-bold">Central Evaluation Centre, SGTB Khalsa College</h2>
                 </div>
-                 <div className="flex items-center justify-center gap-2 md:gap-4 flex-nowrap whitespace-nowrap">
+                 <div className="flex items-center justify-center gap-2 flex-nowrap whitespace-nowrap">
                     <span className="font-bold">Bill,</span>
                     <Input className="w-[180px] manual-input font-bold text-center" value={globalSettings.billName} readOnly />
                     <span className="font-bold">Examination</span>
