@@ -76,10 +76,8 @@ export default function BillViewPage() {
                 body * {
                     visibility: hidden;
                 }
-                #print-section, #print-section *, .manual-input, .print-table {
+                #print-section, #print-section * {
                     visibility: visible;
-                    color: black !important;
-                    background-color: white !important;
                 }
                 #print-section {
                     position: absolute;
@@ -378,5 +376,3 @@ export default function BillViewPage() {
   );
 
 }
-
-    

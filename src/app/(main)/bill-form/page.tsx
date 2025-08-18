@@ -693,7 +693,7 @@ export default function BillFormPage() {
                                             <Button variant="outline" size="icon" onClick={() => handleView(bill.evaluatorId)}>
                                                 <Eye className="h-4 w-4" />
                                             </Button>
-                                             <Button variant="outline" size="icon" onClick={() => handleEdit(bill)}>
+                                             <Button variant="outline" size="icon" onClick={() => handleEdit(bill)} style={{backgroundColor: 'green', color: 'white'}}>
                                                 <Edit className="h-4 w-4" />
                                             </Button>
                                             <AlertDialog>
