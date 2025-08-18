@@ -10,9 +10,10 @@ import { useToast } from "@/hooks/use-toast";
 import type { BillFormValues } from "../../bill-form/page";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { BILLS_STORAGE_KEY, BILL_TRASH_STORAGE_KEY } from "@/lib/constants";
+import { BILLS_STORAGE_KEY, BILL_TRASH_STORAGE_KEY, BILLS_FILE_NAME } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useGoogleDrive } from "@/hooks/use-google-drive";
 
 
 export default function BillTrashPage() {
@@ -20,6 +21,7 @@ export default function BillTrashPage() {
   const [selectedTrash, setSelectedTrash] = useState<string[]>([]);
   const { toast } = useToast();
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const { isConnected, writeFile } = useGoogleDrive();
 
   useEffect(() => {
     const storedTrash = localStorage.getItem(BILL_TRASH_STORAGE_KEY);
@@ -33,13 +35,23 @@ export default function BillTrashPage() {
     localStorage.setItem(BILL_TRASH_STORAGE_KEY, JSON.stringify(newTrash));
   };
 
-  const handleRestore = (ids: string[]) => {
+  const handleRestore = async (ids: string[]) => {
     const billsToRestore = trashedBills.filter((bill) => ids.includes(bill.id!));
     const newTrash = trashedBills.filter((bill) => !ids.includes(bill.id!));
     
     const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
     const bills = storedBills ? JSON.parse(storedBills) : [];
-    localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify([...bills, ...billsToRestore]));
+    const updatedBills = [...bills, ...billsToRestore];
+    
+    localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(updatedBills));
+    if (isConnected) {
+        try {
+            await writeFile(BILLS_FILE_NAME, JSON.stringify(updatedBills, null, 2));
+        } catch (e) {
+            console.error("Failed to save restored bills to drive", e);
+            toast({ variant: "destructive", title: "Sync Error", description: "Could not save restored bill(s) to Google Drive."});
+        }
+    }
     
     updateAndSaveTrash(newTrash);
     toast({ title: "Bills Restored", description: `${ids.length} bill(s) have been restored.`});
