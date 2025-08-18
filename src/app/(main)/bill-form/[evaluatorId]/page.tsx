@@ -234,7 +234,7 @@ export default function BillViewPage() {
       <div id="print-section">
         <Card className="shadow-none border-none">
             <CardHeader className="p-4 md:p-6 print:p-0">
-                 <div className="flex justify-end text-sm">
+                <div className="flex justify-end text-sm">
                     <div className="grid grid-cols-1 gap-1 text-right">
                         <span>Page No. ....................</span>
                         <span>Reg. No. ....................</span>
@@ -243,12 +243,12 @@ export default function BillViewPage() {
                 <div className="text-center space-y-1">
                     <h1 className="text-xl md:text-2xl font-bold uppercase">University of Delhi</h1>
                     <h2 className="text-lg md:text-xl font-bold">Central Evaluation Centre, SGTB Khalsa College</h2>
-                </div>
-                 <div className="flex items-center justify-center gap-2 flex-nowrap whitespace-nowrap">
-                    <span className="font-bold">Bill,</span>
-                    <Input className="w-auto manual-input font-bold text-center" value={globalSettings.billName} readOnly />
-                    <span className="font-bold">Examination</span>
-                    <Input className="w-auto manual-input font-bold text-center" value={globalSettings.examinationName} readOnly />
+                    <div className="flex items-center justify-center gap-2 flex-nowrap whitespace-nowrap pt-2">
+                        <span className="font-bold">Bill,</span>
+                        <Input className="w-auto manual-input font-bold text-center" value={globalSettings.billName} readOnly />
+                        <span className="font-bold">Examination</span>
+                        <Input className="w-auto manual-input font-bold text-center" value={globalSettings.examinationName} readOnly />
+                    </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-2 text-base p-4 md:p-6 print:p-0 print:text-sm">
@@ -405,7 +405,7 @@ export default function BillViewPage() {
                 </div>
 
                 <div className="pt-12">
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start justify-between">
                         <div className="flex flex-col">
                             <span className="font-bold">Coordinator</span>
                             <div className="flex items-center">
@@ -454,3 +454,5 @@ export default function BillViewPage() {
   );
 
 }
+
+    
