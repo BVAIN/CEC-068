@@ -98,6 +98,7 @@ export default function BillViewPage() {
             @media print {
                 body, .main-layout {
                     background-color: white !important;
+                    color: black !important;
                 }
                 body * {
                     visibility: hidden;
@@ -245,9 +246,9 @@ export default function BillViewPage() {
                 </div>
                  <div className="flex items-center justify-center gap-2 flex-nowrap whitespace-nowrap">
                     <span className="font-bold">Bill,</span>
-                    <Input className="w-[180px] manual-input font-bold text-center" value={globalSettings.billName} readOnly />
+                    <Input className="w-auto manual-input font-bold text-center" value={globalSettings.billName} readOnly />
                     <span className="font-bold">Examination</span>
-                    <Input className="w-[120px] manual-input font-bold text-center" value={globalSettings.examinationName} readOnly />
+                    <Input className="w-auto manual-input font-bold text-center" value={globalSettings.examinationName} readOnly />
                 </div>
             </CardHeader>
             <CardContent className="space-y-2 text-base p-4 md:p-6 print:p-0 print:text-sm">
@@ -407,7 +408,7 @@ export default function BillViewPage() {
                     <div className="flex items-start justify-between gap-2">
                         <div className="flex flex-col">
                             <span className="font-bold">Coordinator</span>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center">
                                 <span className="text-sm">CEC</span>
                                 <Input className="w-[100px] h-8 manual-input font-bold text-center" value={globalSettings.coordinatorName} readOnly />
                             </div>
