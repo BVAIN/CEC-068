@@ -24,10 +24,10 @@ const publicBillFormSchema = z.object({
   panNo: z.string().min(1, "PAN No. is required"),
   address: z.string().min(1, "Address is required"),
   distance: z.coerce.number().min(1, "Distance is required"),
-  mobileNo: z.string().min(1, "Mobile No. is required"),
+  mobileNo: z.string().regex(/^\d+$/, "Mobile No. must contain only digits.").min(1, "Mobile No. is required"),
   bankName: z.string().min(1, "Bank Name is required"),
   branch: z.string().min(1, "Branch is required"),
-  bankAccountNo: z.string().min(1, "Bank Account No. is required"),
+  bankAccountNo: z.string().regex(/^\d+$/, "Bank Account No. must contain only digits.").min(1, "Bank Account No. is required"),
   ifscCode: z.string().min(1, "IFSC Code is required"),
   signature: z.string().min(1, "Signature is required"),
 });
@@ -221,15 +221,15 @@ export default function PublicBillEntryPage() {
                         <FormItem>
                             <FormLabel>Upload Signature</FormLabel>
                              <FormControl>
-                                <div>
-                                    <Input id="signature-upload" type="file" accept="image/jpeg,image/jpg,image/png" onChange={handleSignatureUpload} className="hidden" />
+                                <div className="flex items-center gap-4">
                                     <Button type="button" onClick={() => document.getElementById('signature-upload')?.click()} variant="outline">
                                         <Upload className="mr-2 h-4 w-4" />
                                         Choose File
                                     </Button>
+                                    <Input id="signature-upload" type="file" accept="image/jpeg,image/jpg,image/png" onChange={handleSignatureUpload} className="hidden" />
+                                    {signaturePreview && <img src={signaturePreview} alt="Signature Preview" className="h-16 w-32 object-contain border rounded-md p-1 bg-white" />}
                                 </div>
                             </FormControl>
-                            {signaturePreview && <img src={signaturePreview} alt="Signature Preview" className="mt-2 h-20 border rounded-md" />}
                             <FormMessage />
                         </FormItem>
                     )} />
@@ -244,5 +244,3 @@ export default function PublicBillEntryPage() {
     </main>
   );
 }
-
-    

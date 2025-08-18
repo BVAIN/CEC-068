@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop } from "lucide-react";
+import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-provider";
@@ -13,7 +13,15 @@ const menuItems = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/issue-form", label: "Issue Packets", icon: FilePlus },
   { href: "/bill-form", label: "Bill Form", icon: FileText },
-  { href: "/trash", label: "Trash", icon: Trash2 },
+  { 
+      href: "/trash", 
+      label: "Trash", 
+      icon: Trash2,
+      subItems: [
+        { href: "/trash/issues", label: "Issue Trash", icon: Trash2 },
+        { href: "/trash/bills", label: "Bill Trash", icon: FileArchive },
+      ] 
+  },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -30,8 +38,40 @@ export default function Sidebar() {
       <nav className="flex-1 p-4 space-y-2 flex flex-col justify-between">
         <div className="space-y-2">
             {menuItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
-            return (
+             const isActive = item.subItems 
+                ? item.subItems.some(sub => pathname.startsWith(sub.href))
+                : pathname.startsWith(item.href);
+
+              if (item.subItems) {
+                return (
+                   <DropdownMenu key={item.href}>
+                    <DropdownMenuTrigger asChild>
+                       <Button
+                          variant={isActive ? "default" : "ghost"}
+                          className={cn(
+                            'w-full justify-start text-base py-6',
+                            isActive && 'text-primary-foreground'
+                          )}
+                        >
+                          <item.icon className="mr-3 h-5 w-5" />
+                          <span>{item.label}</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      {item.subItems.map(subItem => (
+                         <Link key={subItem.href} href={subItem.href} passHref>
+                          <DropdownMenuItem>
+                            <subItem.icon className="mr-2 h-4 w-4" />
+                            <span>{subItem.label}</span>
+                          </DropdownMenuItem>
+                         </Link>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )
+              }
+              
+              return (
                 <Link key={item.href} href={item.href} passHref>
                 <Button
                     variant={isActive ? "default" : "ghost"}
