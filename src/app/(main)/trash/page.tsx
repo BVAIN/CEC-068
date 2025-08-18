@@ -11,12 +11,15 @@ import type { IssueFormValues } from "../issue-form/page";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ISSUES_STORAGE_KEY, TRASH_STORAGE_KEY } from "@/lib/constants";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 
 export default function TrashPage() {
   const [trashedIssues, setTrashedIssues] = useState<IssueFormValues[]>([]);
   const [selectedTrash, setSelectedTrash] = useState<number[]>([]);
   const { toast } = useToast();
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
 
   useEffect(() => {
     const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
@@ -38,11 +41,13 @@ export default function TrashPage() {
     const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
     const issues = storedIssues ? JSON.parse(storedIssues) : [];
     localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify([...issues, issueToRestore]));
+    toast({ title: "Issue Restored", description: "The issue has been restored successfully." });
   };
   
   const handleDeletePermanent = (index: number) => {
     const newTrash = trashedIssues.filter((_, i) => i !== index);
     updateAndSaveTrash(newTrash);
+    toast({ variant: "destructive", title: "Issue Deleted", description: "The issue has been permanently deleted." });
   };
   
   const handleSelectTrash = (index: number, checked: boolean) => {
@@ -70,6 +75,7 @@ export default function TrashPage() {
     localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify([...issues, ...issuesToRestore]));
     
     updateAndSaveTrash(newTrash);
+    toast({ title: "Issues Restored", description: `${selectedTrash.length} issue(s) have been restored.`});
     setSelectedTrash([]);
   };
 
@@ -77,6 +83,7 @@ export default function TrashPage() {
     const newTrash = trashedIssues.filter((_, index) => !selectedTrash.includes(index));
     updateAndSaveTrash(newTrash);
     const count = selectedTrash.length;
+    toast({ variant: "destructive", title: "Issues Deleted", description: `${count} issue(s) have been permanently deleted.`});
     setSelectedTrash([]);
   };
 
@@ -99,12 +106,29 @@ export default function TrashPage() {
                           <AlertDialogHeader>
                               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                  This action will permanently delete {selectedTrash.length} issue(s). This cannot be undone.
+                                  This action will permanently delete {selectedTrash.length} issue(s). This cannot be undone. To confirm, type "DELETE".
                               </AlertDialogDescription>
                           </AlertDialogHeader>
+                            <div className="space-y-2">
+                                <Label htmlFor="delete-confirm">Confirmation</Label>
+                                <Input
+                                    id="delete-confirm"
+                                    value={deleteConfirmation}
+                                    onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                    placeholder='Type "DELETE" to confirm'
+                                />
+                            </div>
                           <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={handleBulkDelete}>Continue</AlertDialogAction>
+                              <AlertDialogCancel onClick={() => setDeleteConfirmation('')}>Cancel</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={() => {
+                                    handleBulkDelete();
+                                    setDeleteConfirmation('');
+                                }}
+                                disabled={deleteConfirmation !== 'DELETE'}
+                              >
+                                Continue
+                              </AlertDialogAction>
                           </AlertDialogFooter>
                       </AlertDialogContent>
                   </AlertDialog>
@@ -144,7 +168,7 @@ export default function TrashPage() {
                   {trashedIssues.map((issue, index) => {
                      const isSelected = selectedTrash.includes(index);
                     return (
-                    <TableRow key={index} data-state={isSelected && "selected"}>
+                    <TableRow key={index} data-state={isSelected ? "selected" : "unselected"}>
                        <TableCell>
                           <Checkbox
                             onCheckedChange={(checked) => handleSelectTrash(index, !!checked)}
@@ -166,7 +190,7 @@ export default function TrashPage() {
                             </Button>
                              <AlertDialog>
                                <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="sm">
+                                <Button variant="destructive" size="sm" onClick={() => setDeleteConfirmation('')}>
                                   <Trash2 className="mr-2 h-4 w-4" /> Delete
                                 </Button>
                               </AlertDialogTrigger>
@@ -174,12 +198,29 @@ export default function TrashPage() {
                                 <AlertDialogHeader>
                                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    This action will permanently delete this issue. This cannot be undone.
+                                    This action will permanently delete this issue. This cannot be undone. To confirm, type "DELETE".
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
+                                <div className="space-y-2">
+                                    <Label htmlFor={`delete-confirm-${index}`}>Confirmation</Label>
+                                    <Input
+                                        id={`delete-confirm-${index}`}
+                                        value={deleteConfirmation}
+                                        onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                        placeholder='Type "DELETE" to confirm'
+                                    />
+                                </div>
                                 <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDeletePermanent(index)}>Continue</AlertDialogAction>
+                                  <AlertDialogCancel onClick={() => setDeleteConfirmation('')}>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction 
+                                    onClick={() => {
+                                        handleDeletePermanent(index);
+                                        setDeleteConfirmation('');
+                                    }}
+                                    disabled={deleteConfirmation !== 'DELETE'}
+                                   >
+                                    Continue
+                                   </AlertDialogAction>
                                 </AlertDialogFooter>
                               </AlertDialogContent>
                             </AlertDialog>

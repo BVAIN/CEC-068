@@ -37,13 +37,13 @@ const billFormSchema = z.object({
   email: z.string().email("A valid email is required"),
   panNo: z.string().min(1, "PAN No. is required"),
   address: z.string().min(1, "Address is required"),
-  distance: z.coerce.number().min(0, "Distance must be a positive number"),
+  distance: z.coerce.number().min(1, "Distance is required"),
   mobileNo: z.string().min(1, "Mobile No. is required"),
   bankName: z.string().min(1, "Bank Name is required"),
   branch: z.string().min(1, "Branch is required"),
   bankAccountNo: z.string().min(1, "Bank Account No. is required"),
   ifscCode: z.string().min(1, "IFSC Code is required"),
-  signature: z.string().optional(),
+  signature: z.string().min(1, "Signature is required"),
 });
 
 export type BillFormValues = z.infer<typeof billFormSchema>;
@@ -80,7 +80,8 @@ export default function BillFormPage() {
   const [publicFormUrl, setPublicFormUrl] = useState("");
   const [isBulkEditOpen, setIsBulkEditOpen] = useState(false);
   const [bulkEditField, setBulkEditField] = useState<EditableField>('course');
-  const [bulkEditValue, setBulkEditValue] = useState('');
+  const [bulkFindValue, setBulkFindValue] = useState('');
+  const [bulkReplaceValue, setBulkReplaceValue] = useState('');
 
 
   const { isConnected, files, readFile, writeFile } = useGoogleDrive();
@@ -199,13 +200,14 @@ export default function BillFormPage() {
     let newBills;
     if (editingId) {
         newBills = bills.map(bill => bill.id === editingId ? { ...data, id: editingId } : bill);
+        toast({ title: "Bill Updated", description: "The bill details have been updated successfully." });
         setEditingId(null);
     } else {
         const newBill = { ...data, id: `${Date.now()}-${data.evaluatorId}` };
         newBills = [...bills, newBill];
+        toast({ title: "Bill Saved", description: "The bill details have been saved successfully." });
     }
     await updateBillsStateAndStorage(newBills);
-    toast({ title: editingId ? "Bill Updated" : "Bill Saved", description: "The bill details have been saved successfully." });
     form.reset();
     setSignaturePreview(null);
   }
@@ -217,7 +219,7 @@ export default function BillFormPage() {
   const handleDelete = async (ids: string[]) => {
     const newBills = bills.filter(bill => !ids.includes(bill.id!));
     await updateBillsStateAndStorage(newBills);
-    toast({ title: "Bill(s) Deleted", description: "The selected bills have been removed." });
+    toast({ title: "Bill(s) Deleted", description: "The selected bills have been moved." });
     setSelectedBills([]);
   };
 
@@ -265,18 +267,26 @@ export default function BillFormPage() {
   };
   
   const handleBulkUpdate = async () => {
-    const valueToSet = bulkEditField === 'distance' ? Number(bulkEditValue) : bulkEditValue;
+    if (!bulkFindValue) {
+        toast({ variant: "destructive", title: '"Text to find" is required.' });
+        return;
+    }
     const newBills = bills.map(bill => {
-      if (selectedBills.includes(bill.id!)) {
-        return { ...bill, [bulkEditField]: valueToSet };
-      }
-      return bill;
+        if (selectedBills.includes(bill.id!)) {
+            const originalValue = bill[bulkEditField];
+            if (typeof originalValue === 'string') {
+                const updatedValue = originalValue.replace(new RegExp(bulkFindValue, 'gi'), bulkReplaceValue);
+                return { ...bill, [bulkEditField]: updatedValue };
+            }
+        }
+        return bill;
     });
     await updateBillsStateAndStorage(newBills);
     toast({ title: 'Bills Updated', description: `${selectedBills.length} bill(s) have been updated.` });
     setSelectedBills([]);
     setIsBulkEditOpen(false);
-    setBulkEditValue('');
+    setBulkFindValue('');
+    setBulkReplaceValue('');
   };
 
 
@@ -420,7 +430,7 @@ export default function BillFormPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-4xl font-bold tracking-tight font-headline">Bill Form</h1>
+        <h1 className="text-4xl font-bold tracking-tight font-headline">Bill Form And Undertaking</h1>
         <p className="text-lg text-muted-foreground mt-2">Manage your bill submissions here.</p>
       </header>
 
@@ -453,13 +463,22 @@ export default function BillFormPage() {
                 <FormField control={form.control} name="ifscCode" render={({ field }) => (<FormItem><FormLabel>IFSC Code</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="panNo" render={({ field }) => (<FormItem><FormLabel>PAN No.</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
                  <div className="space-y-2">
-                    <FormLabel>Signature of examiner</FormLabel>
-                    <Input id="signature-upload" type="file" accept="image/jpeg,image/jpg,application/pdf,image/png" onChange={handleSignatureUpload} className="hidden" />
-                    <Button type="button" onClick={() => document.getElementById('signature-upload')?.click()} variant="outline">
-                        <Upload className="mr-2 h-4 w-4" />
-                        Choose File
-                    </Button>
-                    {signaturePreview && <img src={signaturePreview} alt="Signature Preview" className="mt-2 h-20 border rounded-md" />}
+                    <FormField control={form.control} name="signature" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Signature of examiner</FormLabel>
+                             <FormControl>
+                                <>
+                                <Input id="signature-upload" type="file" accept="image/jpeg,image/jpg,application/pdf,image/png" onChange={handleSignatureUpload} className="hidden" />
+                                <Button type="button" onClick={() => document.getElementById('signature-upload')?.click()} variant="outline">
+                                    <Upload className="mr-2 h-4 w-4" />
+                                    Choose File
+                                </Button>
+                                </>
+                            </FormControl>
+                             {signaturePreview && <img src={signaturePreview} alt="Signature Preview" className="mt-2 h-20 border rounded-md" />}
+                            <FormMessage />
+                        </FormItem>
+                    )} />
                 </div>
              </CardContent>
           </Card>
@@ -524,11 +543,11 @@ export default function BillFormPage() {
                             </Button>
                             <Dialog open={isBulkEditOpen} onOpenChange={setIsBulkEditOpen}>
                                 <DialogTrigger asChild>
-                                    <Button variant="outline"><PencilRuler className="mr-2 h-4 w-4" />Bulk Edit</Button>
+                                    <Button variant="outline"><PencilRuler className="mr-2 h-4 w-4" />Find and Replace</Button>
                                 </DialogTrigger>
                                 <DialogContent>
                                     <DialogHeader>
-                                        <DialogTitle>Bulk Edit Bills</DialogTitle>
+                                        <DialogTitle>Find and Replace in Bills</DialogTitle>
                                         <DialogDescription>Update a field for all {selectedBills.length} selected bills.</DialogDescription>
                                     </DialogHeader>
                                     <div className="grid gap-4 py-4">
@@ -546,13 +565,21 @@ export default function BillFormPage() {
                                             </Select>
                                         </div>
                                         <div className="grid grid-cols-4 items-center gap-4">
-                                            <Label htmlFor="bulk-edit-value" className="text-right">New Value</Label>
+                                            <Label htmlFor="bulk-find-value" className="text-right">Find</Label>
                                             <Input
-                                                id="bulk-edit-value"
-                                                value={bulkEditValue}
-                                                onChange={(e) => setBulkEditValue(e.target.value)}
+                                                id="bulk-find-value"
+                                                value={bulkFindValue}
+                                                onChange={(e) => setBulkFindValue(e.target.value)}
                                                 className="col-span-3"
-                                                type={bulkEditField === 'distance' ? 'number' : 'text'}
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                            <Label htmlFor="bulk-replace-value" className="text-right">Replace</Label>
+                                            <Input
+                                                id="bulk-replace-value"
+                                                value={bulkReplaceValue}
+                                                onChange={(e) => setBulkReplaceValue(e.target.value)}
+                                                className="col-span-3"
                                             />
                                         </div>
                                     </div>
