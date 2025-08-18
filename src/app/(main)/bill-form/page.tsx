@@ -374,7 +374,7 @@ export default function BillFormPage() {
           <div style="text-align: center;"><span style="font-weight: bold; text-decoration: underline;">Official Use</span></div>
           <div style="padding-top: 8px; space-y: 4px;">
             <div style="display: flex; justify-content: space-between; align-items: center;"><span>I) Remuneration for the Scripts Valued :</span><span style="text-align: right;">Rs. ____________________________</span></div>
-            <div style="display: flex; justify-content: space-between; align-items: center;"><span>II) Payment on account of Additional Examiner(If any) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center;"><span>II) Payment on account of Additional Examiner (If any) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
             <div style="display: flex; justify-content: space-between; align-items: center;"><span>Total of (I+II) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
             <div style="display: flex; justify-content: space-between; align-items: center;"><span>Less: 5% TWF :</span><span style="text-align: right;">Rs. ____________________________</span></div>
             <div style="display: flex; justify-content: space-between; align-items: center;"><span>Balance :</span><span style="text-align: right;">Rs. ____________________________</span></div>
@@ -465,16 +465,16 @@ export default function BillFormPage() {
                  <FormField control={form.control} name="signature" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Signature of examiner</FormLabel>
-                            <FormControl>
-                            <div >
-                            <Input id="signature-upload" type="file" accept="image/jpeg,image/jpg,application/pdf,image/png" onChange={handleSignatureUpload} className="hidden" />
-                            <Button type="button" onClick={() => document.getElementById('signature-upload')?.click()} variant="outline">
-                                <Upload className="mr-2 h-4 w-4" />
-                                Choose File
-                            </Button>
+                        <FormControl>
+                            <div>
+                                <Input id="signature-upload" type="file" accept="image/jpeg,image/jpg,application/pdf,image/png" onChange={handleSignatureUpload} className="hidden" />
+                                <Button type="button" onClick={() => document.getElementById('signature-upload')?.click()} variant="outline">
+                                    <Upload className="mr-2 h-4 w-4" />
+                                    Choose File
+                                </Button>
                             </div>
                         </FormControl>
-                            {signaturePreview && <img src={signaturePreview} alt="Signature Preview" className="mt-2 h-20 border rounded-md" />}
+                        {signaturePreview && <img src={signaturePreview} alt="Signature Preview" className="mt-2 h-20 border rounded-md" />}
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -722,3 +722,5 @@ export default function BillFormPage() {
     </div>
   );
 }
+
+    

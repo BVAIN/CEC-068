@@ -277,7 +277,7 @@ export default function BillViewPage() {
                         {billDetails.signature && (
                             <div className="text-center">
                                 <div className="flex justify-center items-center rounded-md p-1 min-h-[3rem]">
-                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-10 signature-image" />
+                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-10" />
                                 </div>
                                 <h3 className="font-bold text-sm mt-1">Signature of Examiner</h3>
                             </div>
@@ -293,7 +293,7 @@ export default function BillViewPage() {
                             <span className="text-right">Rs. ____________________________</span>
                         </div>
                         <div className="flex justify-between items-center">
-                            <span>II) Payment on account of Additional Examiner(If any) :</span>
+                            <span>II) Payment on account of Additional Examiner (If any) :</span>
                             <span className="text-right">Rs. ____________________________</span>
                         </div>
                         <div className="flex justify-between items-center">
@@ -349,28 +349,21 @@ export default function BillViewPage() {
                 <p>
                     I, <span className="font-bold">{billDetails.evaluatorName}</span>, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
                 </p>
-                <div className="grid grid-cols-2 gap-x-16 gap-y-4 pt-8">
-                    <div>
-                        <span className="font-bold">Teacher ID:</span> {billDetails.evaluatorId}
-                    </div>
-                    <div>
-                        <span className="font-bold">Teacher Name:</span> {billDetails.evaluatorName}
-                    </div>
-                    <div>
-                        <span className="font-bold">College Name:</span> {billDetails.collegeName}
-                    </div>
-                    <div>
-                        <span className="font-bold">Mobile No.:</span> {billDetails.mobileNo}
-                    </div>
-                    <div className="col-span-2">
-                        <span className="font-bold">Email ID:</span> {billDetails.email}
+                <div className="flex justify-end pt-8">
+                    <div className="text-left space-y-1">
+                        <div>Teacher ID: {billDetails.evaluatorId}</div>
+                        <div>Teacher Name: {billDetails.evaluatorName}</div>
+                        <div>College Name: {billDetails.collegeName}</div>
+                        <div>Mobile No.: {billDetails.mobileNo}</div>
+                        <div>Email ID: {billDetails.email}</div>
                     </div>
                 </div>
+
                 <div className="flex justify-end pt-16">
                      {billDetails.signature && (
                         <div className="text-center">
                             <div className="flex justify-center items-center p-1 min-h-[3rem]">
-                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12 signature-image" />
+                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12" />
                             </div>
                             <h3 className="font-bold text-sm mt-1">(Signature of the Teacher)</h3>
                         </div>
@@ -385,3 +378,5 @@ export default function BillViewPage() {
   );
 
 }
+
+    
