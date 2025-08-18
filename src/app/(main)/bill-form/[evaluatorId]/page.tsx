@@ -119,6 +119,9 @@ export default function BillViewPage() {
                     filter: none;
                     mix-blend-mode: normal;
                 }
+                .undertaking-page {
+                    page-break-before: always;
+                }
             }
              .manual-input {
                 border: none;
@@ -274,7 +277,7 @@ export default function BillViewPage() {
                         {billDetails.signature && (
                             <div className="text-center">
                                 <div className="flex justify-center items-center rounded-md p-1 min-h-[3rem]">
-                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-10" />
+                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-10 signature-image" />
                                 </div>
                                 <h3 className="font-bold text-sm mt-1">Signature of Examiner</h3>
                             </div>
@@ -339,11 +342,46 @@ export default function BillViewPage() {
                 </div>
             </CardContent>
         </Card>
+
+        <div className="undertaking-page pt-12">
+            <h2 className="text-2xl font-bold text-center underline">UNDERTAKING</h2>
+            <div className="mt-8 space-y-4 text-base">
+                <p>
+                    I, <span className="font-bold">{billDetails.evaluatorName}</span>, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
+                </p>
+                <div className="grid grid-cols-2 gap-x-16 gap-y-4 pt-8">
+                    <div>
+                        <span className="font-bold">Teacher ID:</span> {billDetails.evaluatorId}
+                    </div>
+                    <div>
+                        <span className="font-bold">Teacher Name:</span> {billDetails.evaluatorName}
+                    </div>
+                    <div>
+                        <span className="font-bold">College Name:</span> {billDetails.collegeName}
+                    </div>
+                    <div>
+                        <span className="font-bold">Mobile No.:</span> {billDetails.mobileNo}
+                    </div>
+                    <div className="col-span-2">
+                        <span className="font-bold">Email ID:</span> {billDetails.email}
+                    </div>
+                </div>
+                <div className="flex justify-end pt-16">
+                     {billDetails.signature && (
+                        <div className="text-center">
+                            <div className="flex justify-center items-center p-1 min-h-[3rem]">
+                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12 signature-image" />
+                            </div>
+                            <h3 className="font-bold text-sm mt-1">(Signature of the Teacher)</h3>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+
       </div>
 
     </div>
   );
 
 }
-
-    

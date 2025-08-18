@@ -462,24 +462,22 @@ export default function BillFormPage() {
                 <FormField control={form.control} name="bankAccountNo" render={({ field }) => (<FormItem><FormLabel>Bank Account No.</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="ifscCode" render={({ field }) => (<FormItem><FormLabel>IFSC Code</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="panNo" render={({ field }) => (<FormItem><FormLabel>PAN No.</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                 <div className="space-y-2">
-                    <FormField control={form.control} name="signature" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Signature of examiner</FormLabel>
-                             <FormControl>
-                                <>
-                                <Input id="signature-upload" type="file" accept="image/jpeg,image/jpg,application/pdf,image/png" onChange={handleSignatureUpload} className="hidden" />
-                                <Button type="button" onClick={() => document.getElementById('signature-upload')?.click()} variant="outline">
-                                    <Upload className="mr-2 h-4 w-4" />
-                                    Choose File
-                                </Button>
-                                </>
-                            </FormControl>
-                             {signaturePreview && <img src={signaturePreview} alt="Signature Preview" className="mt-2 h-20 border rounded-md" />}
-                            <FormMessage />
-                        </FormItem>
-                    )} />
-                </div>
+                 <FormField control={form.control} name="signature" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Signature of examiner</FormLabel>
+                            <FormControl>
+                            <div >
+                            <Input id="signature-upload" type="file" accept="image/jpeg,image/jpg,application/pdf,image/png" onChange={handleSignatureUpload} className="hidden" />
+                            <Button type="button" onClick={() => document.getElementById('signature-upload')?.click()} variant="outline">
+                                <Upload className="mr-2 h-4 w-4" />
+                                Choose File
+                            </Button>
+                            </div>
+                        </FormControl>
+                            {signaturePreview && <img src={signaturePreview} alt="Signature Preview" className="mt-2 h-20 border rounded-md" />}
+                        <FormMessage />
+                    </FormItem>
+                )} />
              </CardContent>
           </Card>
            <div className="flex justify-end gap-4">
