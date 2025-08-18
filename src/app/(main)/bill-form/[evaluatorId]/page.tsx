@@ -6,12 +6,20 @@ import { useParams, useRouter } from "next/navigation";
 import type { BillFormValues } from "../page";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Printer } from "lucide-react";
+import { ArrowLeft, Printer, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "@/components/ui/table";
-import { BILLS_STORAGE_KEY } from "@/lib/constants";
+import { BILLS_STORAGE_KEY, GLOBAL_BILL_SETTINGS_KEY } from "@/lib/constants";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
+
+type GlobalBillSettings = {
+    billName: string;
+    examinationName: string;
+    coordinatorName: string;
+}
 
 export default function BillViewPage() {
   const params = useParams();
@@ -19,11 +27,23 @@ export default function BillViewPage() {
   const { toast } = useToast();
   const [billDetails, setBillDetails] = useState<BillFormValues | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [globalSettings, setGlobalSettings] = useState<GlobalBillSettings>({
+      billName: '',
+      examinationName: '',
+      coordinatorName: ''
+  });
   
 
   useEffect(() => {
     const evaluatorId = params.evaluatorId;
     try {
+        // Load global settings
+        const storedSettings = localStorage.getItem(GLOBAL_BILL_SETTINGS_KEY);
+        if (storedSettings) {
+            setGlobalSettings(JSON.parse(storedSettings));
+        }
+
         const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
         if (storedBills && evaluatorId) {
             const allBills: BillFormValues[] = JSON.parse(storedBills);
@@ -51,6 +71,12 @@ export default function BillViewPage() {
   
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleSaveSettings = () => {
+    localStorage.setItem(GLOBAL_BILL_SETTINGS_KEY, JSON.stringify(globalSettings));
+    toast({ title: "Settings Saved", description: "The global bill fields have been updated." });
+    setIsSettingsOpen(false);
   };
 
   if (isLoading) {
@@ -150,7 +176,58 @@ export default function BillViewPage() {
                 <p className="text-lg text-muted-foreground mt-2">Viewing details for {billDetails.evaluatorName}.</p>
             </div>
         </div>
-        <Button onClick={handlePrint}><Printer className="mr-2 h-4 w-4" /> Print Bill</Button>
+         <div className="flex items-center gap-2">
+             <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="outline" size="icon"><Settings className="h-4 w-4" /></Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Set Global Bill Fields</DialogTitle>
+                        <DialogDescription>
+                            These values will be saved and will appear on all bills.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="billName" className="text-right">Bill Name</Label>
+                            <Input
+                                id="billName"
+                                value={globalSettings.billName}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, billName: e.target.value }))}
+                                className="col-span-3"
+                                placeholder="e.g., Bill for Sem-I"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="examinationName" className="text-right">Examination Name</Label>
+                            <Input
+                                id="examinationName"
+                                value={globalSettings.examinationName}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, examinationName: e.target.value }))}
+                                className="col-span-3"
+                                placeholder="e.g., May/June 2024"
+                            />
+                        </div>
+                         <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="coordinatorName" className="text-right">Coordinator</Label>
+                            <Input
+                                id="coordinatorName"
+                                value={globalSettings.coordinatorName}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, coordinatorName: e.target.value }))}
+                                className="col-span-3"
+                                placeholder="e.g., Dr. ABC"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button type="button" variant="outline" onClick={() => setIsSettingsOpen(false)}>Cancel</Button>
+                        <Button type="button" onClick={handleSaveSettings}>Save Changes</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            <Button onClick={handlePrint}><Printer className="mr-2 h-4 w-4" /> Print Bill</Button>
+        </div>
       </header>
       
       <div id="print-section">
@@ -168,9 +245,9 @@ export default function BillViewPage() {
                 </div>
                  <div className="flex items-center justify-center gap-2 md:gap-4">
                     <span className="font-bold">Bill,</span>
-                    <Input className="w-[180px] manual-input" />
+                    <Input className="w-[180px] manual-input font-bold text-center" value={globalSettings.billName} readOnly />
                     <span className="font-bold">Examination</span>
-                    <Input className="w-[120px] manual-input" />
+                    <Input className="w-[120px] manual-input font-bold text-center" value={globalSettings.examinationName} readOnly />
                 </div>
             </CardHeader>
             <CardContent className="space-y-2 text-base p-4 md:p-6 print:p-0 print:text-sm">
@@ -332,7 +409,7 @@ export default function BillViewPage() {
                             <span className="font-bold">Coordinator</span>
                             <div className="flex items-center gap-2">
                                 <span className="text-sm">CEC</span>
-                                <Input className="w-[100px] h-8 manual-input" />
+                                <Input className="w-[100px] h-8 manual-input font-bold text-center" value={globalSettings.coordinatorName} readOnly />
                             </div>
                         </div>
                         <span>Dealing Assistant</span>
