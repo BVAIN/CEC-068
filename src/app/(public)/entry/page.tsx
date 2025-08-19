@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import { Upload } from "lucide-react";
 
 
 const publicBillFormSchema = z.object({
+  id: z.string().optional(),
   evaluatorId: z.string().min(1, "Evaluator ID is required"),
   evaluatorName: z.string().min(1, "Evaluator Name is required"),
   collegeName: z.string().min(1, "College Name is required"),
@@ -37,10 +38,12 @@ export default function PublicBillEntryPage() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<BillFormValues | null>(null);
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
+  const [lastSubmittedId, setLastSubmittedId] = useState<string | null>(null);
 
   const form = useForm<BillFormValues>({
     resolver: zodResolver(publicBillFormSchema),
     defaultValues: {
+      id: undefined,
       evaluatorId: "",
       evaluatorName: "",
       collegeName: "",
@@ -81,10 +84,18 @@ export default function PublicBillEntryPage() {
     
     try {
         const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
-        const allBills: BillFormValues[] = storedBills ? JSON.parse(storedBills) : [];
+        let allBills: BillFormValues[] = storedBills ? JSON.parse(storedBills) : [];
         
-        const newBill = { ...formData, id: `${Date.now()}-${formData.evaluatorId}` };
-        allBills.push(newBill);
+        if (formData.id) {
+            // This is an edit of a previously submitted form
+            allBills = allBills.map(bill => bill.id === formData.id ? formData : bill);
+            setLastSubmittedId(formData.id);
+        } else {
+            // This is a new submission
+            const newBill = { ...formData, id: `${Date.now()}-${formData.evaluatorId}` };
+            allBills.push(newBill);
+            setLastSubmittedId(newBill.id);
+        }
 
         localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(allBills));
 
@@ -110,6 +121,26 @@ export default function PublicBillEntryPage() {
         }
     }
   };
+
+  const handleEditLastSubmission = () => {
+    if (!lastSubmittedId) return;
+
+    const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
+    const allBills: BillFormValues[] = storedBills ? JSON.parse(storedBills) : [];
+    const lastSubmission = allBills.find(bill => bill.id === lastSubmittedId);
+
+    if (lastSubmission) {
+      form.reset(lastSubmission);
+      setSignaturePreview(lastSubmission.signature);
+      setStep(1);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not find the submission to edit.",
+      });
+    }
+  };
   
 
   if (step === 3) {
@@ -119,8 +150,11 @@ export default function PublicBillEntryPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-3xl">Submission Successful!</CardTitle>
-                        <CardDescription>Your bill information has been recorded. You may now close this window.</CardDescription>
+                        <CardDescription>Your bill information has been recorded. You may now close this window or edit your submission.</CardDescription>
                     </CardHeader>
+                    <CardContent>
+                       <Button onClick={handleEditLastSubmission}>Edit Submission</Button>
+                    </CardContent>
                 </Card>
             </div>
         </main>
@@ -199,7 +233,7 @@ export default function PublicBillEntryPage() {
              </Card>
              <Card>
                 <CardHeader>
-                <CardTitle>Evaluator Details</CardTitle>
+                <CardTitle>{form.getValues('id') ? 'Edit Bill' : 'Evaluator Details'}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-3 gap-6">
                     <FormField control={form.control} name="evaluatorId" render={({ field }) => (<FormItem><FormLabel>Evaluator ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
