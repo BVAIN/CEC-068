@@ -4,6 +4,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -29,6 +32,7 @@ export type PublicIssueFormValues = z.infer<typeof publicIssueFormSchema>;
 
 export default function PublicIssueEntryPage() {
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof publicIssueFormSchema>>({
     resolver: zodResolver(publicIssueFormSchema),
@@ -76,7 +80,13 @@ export default function PublicIssueEntryPage() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-3xl">New Script Issue Entry</CardTitle>
+                <div className="flex items-center justify-between">
+                    <CardTitle className="text-3xl">New Script Issue Entry</CardTitle>
+                    <Button type="button" variant="outline" onClick={() => router.back()}>
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back
+                    </Button>
+                </div>
               </CardHeader>
             </Card>
             <Card>
@@ -175,5 +185,3 @@ export default function PublicIssueEntryPage() {
     </main>
   );
 }
-
-    
