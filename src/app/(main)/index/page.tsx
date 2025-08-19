@@ -298,15 +298,6 @@ export default function IndexPage() {
         </div>
 
         <div className="flex items-center gap-4">
-             <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input 
-                  placeholder="Search..." 
-                  className="pl-10 w-72"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
             <Button
             className="bg-green-500 hover:bg-green-600 text-white"
             onClick={() => handleNavigation('/entry')}
