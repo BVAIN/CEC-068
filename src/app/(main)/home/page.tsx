@@ -54,7 +54,7 @@ export default function HomePage() {
               const filtered = publicIssues.filter(issue => issue.type === type);
               const asPerChallan = filtered.reduce((acc, issue) => acc + (issue.asPerChallan || 0), 0);
               const netScripts = filtered.reduce((acc, issue) => acc + (issue.netScripts || 0), 0);
-              return { asPerChallan, netScripts, difference: asPerChallan - netScripts };
+              return { asPerChallan, netScripts, difference: netScripts - asPerChallan };
           };
 
           const regular = calculateStats("Regular");

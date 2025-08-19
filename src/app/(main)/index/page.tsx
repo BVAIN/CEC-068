@@ -86,7 +86,7 @@ export default function IndexPage() {
   const calculateTotals = (campusEntries: PublicIssueFormValues[]) => {
     const totalChallan = campusEntries.reduce((acc, entry) => acc + (entry.asPerChallan || 0), 0);
     const totalNetScripts = campusEntries.reduce((acc, entry) => acc + (entry.netScripts || 0), 0);
-    const totalDifference = totalChallan - totalNetScripts;
+    const totalDifference = totalNetScripts - totalChallan;
     return { totalChallan, totalNetScripts, totalDifference };
   }
 
@@ -240,7 +240,7 @@ export default function IndexPage() {
                 <TableCell>{entry.course}</TableCell>
                 <TableCell>{entry.asPerChallan}</TableCell>
                 <TableCell>{entry.netScripts}</TableCell>
-                <TableCell>{(entry.asPerChallan || 0) - (entry.netScripts || 0)}</TableCell>
+                <TableCell>{(entry.netScripts || 0) - (entry.asPerChallan || 0)}</TableCell>
                 <TableCell>
                     <div className="flex gap-2">
                         <Button variant="outline" size="icon" onClick={() => handleEdit(entry.id!)}>
