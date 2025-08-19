@@ -296,16 +296,28 @@ export default function IndexPage() {
               <p className="text-lg text-muted-foreground mt-2">Select a campus to view its forms.</p>
             </div>
         </div>
-
-        <div className="flex items-center gap-4">
-            <Button
-            className="bg-green-500 hover:bg-green-600 text-white"
-            onClick={() => handleNavigation('/entry')}
-            >
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add Entry
-            </Button>
-        </div>
+        
+        {activeView ? (
+             <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input 
+                    placeholder="Search all fields..." 
+                    className="pl-10 w-64"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+        ) : (
+            <div className="flex items-center gap-4">
+                <Button
+                className="bg-green-500 hover:bg-green-600 text-white"
+                onClick={() => handleNavigation('/entry')}
+                >
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Entry
+                </Button>
+            </div>
+        )}
       </header>
       
       {!activeView && (
