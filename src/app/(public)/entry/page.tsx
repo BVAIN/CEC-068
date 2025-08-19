@@ -83,7 +83,7 @@ export default function PublicIssueEntryPage() {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>Packet Details</CardTitle>
+                    <CardTitle>Paper Details</CardTitle>
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="dateOfExam" render={({ field }) => (<FormItem><FormLabel>Date of Exam</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
