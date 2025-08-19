@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -61,6 +61,32 @@ export default function PublicBillEntryPage() {
     },
   });
 
+  const { watch, setValue } = form;
+  const watchedEvaluatorId = watch('evaluatorId');
+
+  useEffect(() => {
+    if (watchedEvaluatorId) {
+      try {
+        const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
+        if (storedBills) {
+          const allBills: BillFormValues[] = JSON.parse(storedBills);
+          const existingBill = allBills.find(bill => bill.evaluatorId === watchedEvaluatorId);
+          if (existingBill) {
+            form.reset(existingBill);
+            setSignaturePreview(existingBill.signature);
+            toast({
+              title: "Existing Record Found",
+              description: "Your details have been pre-filled. You can now update them.",
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error reading from localStorage:", error);
+      }
+    }
+  }, [watchedEvaluatorId, form, toast]);
+
+
   const handleSignatureUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -86,12 +112,15 @@ export default function PublicBillEntryPage() {
         const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
         let allBills: BillFormValues[] = storedBills ? JSON.parse(storedBills) : [];
         
-        if (formData.id) {
-            // This is an edit of a previously submitted form
-            allBills = allBills.map(bill => bill.id === formData.id ? formData : bill);
-            setLastSubmittedId(formData.id);
+        const existingBillIndex = allBills.findIndex(bill => bill.evaluatorId === formData.evaluatorId);
+
+        if (existingBillIndex > -1) {
+            // Update existing entry
+            const existingBill = allBills[existingBillIndex];
+            allBills[existingBillIndex] = { ...formData, id: existingBill.id };
+            setLastSubmittedId(existingBill.id!);
         } else {
-            // This is a new submission
+            // Create new entry
             const newBill = { ...formData, id: `${Date.now()}-${formData.evaluatorId}` };
             allBills.push(newBill);
             setLastSubmittedId(newBill.id);
@@ -125,20 +154,29 @@ export default function PublicBillEntryPage() {
   const handleEditLastSubmission = () => {
     if (!lastSubmittedId) return;
 
-    const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
-    const allBills: BillFormValues[] = storedBills ? JSON.parse(storedBills) : [];
-    const lastSubmission = allBills.find(bill => bill.id === lastSubmittedId);
+    try {
+        const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
+        const allBills: BillFormValues[] = storedBills ? JSON.parse(storedBills) : [];
+        const lastSubmission = allBills.find(bill => bill.id === lastSubmittedId);
 
-    if (lastSubmission) {
-      form.reset(lastSubmission);
-      setSignaturePreview(lastSubmission.signature);
-      setStep(1);
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Could not find the submission to edit.",
-      });
+        if (lastSubmission) {
+          form.reset(lastSubmission);
+          setSignaturePreview(lastSubmission.signature);
+          setStep(1);
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Could not find the submission to edit.",
+          });
+        }
+    } catch(error) {
+        console.error("Error loading last submission for edit:", error);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Could not load your previous submission.",
+        });
     }
   };
   
@@ -228,7 +266,7 @@ export default function PublicBillEntryPage() {
              <Card>
                 <CardHeader>
                     <CardTitle className="text-3xl">Bill Form And Undertaking</CardTitle>
-                    <CardDescription>Please fill out your details to submit the bill.</CardDescription>
+                    <CardDescription>Please fill out your details to submit the bill. If you have submitted before, enter your Evaluator ID to pre-fill your details.</CardDescription>
                 </CardHeader>
              </Card>
              <Card>
@@ -283,3 +321,5 @@ export default function PublicBillEntryPage() {
     </main>
   );
 }
+
+    
