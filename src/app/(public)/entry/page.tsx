@@ -18,7 +18,7 @@ const publicIssueFormSchema = z.object({
   dateOfExam: z.string().min(1, "Date of Exam is required"),
   upc: z.string().min(1, "UPC is required"),
   qpNo: z.string().min(1, "QP No. is required"),
-  packetNo: z.string().min(1, "Packet No. is required"),
+  pageNo: z.string().min(1, "Page No. is required"),
   asPerChallan: z.coerce.number().min(1, "As per Challan is required"),
   netScripts: z.coerce.number().min(1, "Net Scripts is required"),
   course: z.string().min(1, "Course is required"),
@@ -37,7 +37,7 @@ export default function PublicIssueEntryPage() {
       dateOfExam: "",
       upc: "",
       qpNo: "",
-      packetNo: "",
+      pageNo: "",
       asPerChallan: undefined,
       netScripts: undefined,
       course: "",
@@ -50,7 +50,7 @@ export default function PublicIssueEntryPage() {
     try {
         const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
         const entries = storedEntries ? JSON.parse(storedEntries) : [];
-        const newEntry = { ...data, id: `${Date.now()}-${data.packetNo}` };
+        const newEntry = { ...data, id: `${Date.now()}-${data.pageNo}` };
         entries.push(newEntry);
         localStorage.setItem(PUBLIC_ISSUES_STORAGE_KEY, JSON.stringify(entries));
         
@@ -89,7 +89,7 @@ export default function PublicIssueEntryPage() {
                     <FormField control={form.control} name="dateOfExam" render={({ field }) => (<FormItem><FormLabel>Date of Exam</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="upc" render={({ field }) => (<FormItem><FormLabel>UPC</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="qpNo" render={({ field }) => (<FormItem><FormLabel>QP No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="packetNo" render={({ field }) => (<FormItem><FormLabel>Packet No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="pageNo" render={({ field }) => (<FormItem><FormLabel>Page No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="asPerChallan" render={({ field }) => (<FormItem><FormLabel>As per Challan</FormLabel><FormControl><Input type="number" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="netScripts" render={({ field }) => (<FormItem><FormLabel>Net Scripts</FormLabel><FormControl><Input type="number" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="course" render={({ field }) => (<FormItem><FormLabel>Course</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />

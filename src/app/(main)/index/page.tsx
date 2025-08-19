@@ -63,6 +63,7 @@ export default function IndexPage() {
               <TableHead>Date of Exam</TableHead>
               <TableHead>UPC</TableHead>
               <TableHead>QP No.</TableHead>
+              <TableHead>Page No.</TableHead>
               <TableHead>Course</TableHead>
               <TableHead>As Per Challan</TableHead>
               <TableHead>Net Scripts</TableHead>
@@ -75,6 +76,7 @@ export default function IndexPage() {
                 <TableCell>{entry.dateOfExam}</TableCell>
                 <TableCell>{entry.upc}</TableCell>
                 <TableCell>{entry.qpNo}</TableCell>
+                <TableCell>{entry.pageNo}</TableCell>
                 <TableCell>{entry.course}</TableCell>
                 <TableCell>{entry.asPerChallan}</TableCell>
                 <TableCell>{entry.netScripts}</TableCell>
@@ -84,7 +86,7 @@ export default function IndexPage() {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={4} className="text-right font-bold">Total</TableCell>
+              <TableCell colSpan={5} className="text-right font-bold">Total</TableCell>
               <TableCell className="font-bold">{totals.totalChallan}</TableCell>
               <TableCell className="font-bold">{totals.totalNetScripts}</TableCell>
               <TableCell className="font-bold">{totals.totalDifference}</TableCell>
