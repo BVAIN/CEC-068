@@ -10,10 +10,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { ISSUES_STORAGE_KEY } from "@/lib/constants";
-import type { IssueFormValues } from "@/app/(main)/issue-form/page";
+import { PUBLIC_ISSUES_STORAGE_KEY } from "@/lib/constants";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const publicIssueFormSchema = z.object({
+  id: z.string().optional(),
   dateOfExam: z.string().min(1, "Date of Exam is required"),
   upc: z.string().min(1, "UPC is required"),
   qpNo: z.string().min(1, "QP No. is required"),
@@ -21,9 +22,11 @@ const publicIssueFormSchema = z.object({
   asPerChallan: z.coerce.number().min(1, "As per Challan is required"),
   netScripts: z.coerce.number().min(1, "Net Scripts is required"),
   course: z.string().min(1, "Course is required"),
-  campus: z.string().min(1, "Please select a campus"),
-  schoolType: z.string().min(1, "Please select a school type"),
+  campus: z.enum(["North", "South"], { required_error: "Please select a campus"}),
+  type: z.enum(["Regular", "NCWEB", "SOL"], { required_error: "Please select a type"}),
 });
+
+export type PublicIssueFormValues = z.infer<typeof publicIssueFormSchema>;
 
 export default function PublicIssueEntryPage() {
   const { toast } = useToast();
@@ -38,22 +41,33 @@ export default function PublicIssueEntryPage() {
       asPerChallan: undefined,
       netScripts: undefined,
       course: "",
-      campus: "",
-      schoolType: "",
+      campus: undefined,
+      type: undefined,
     },
   });
 
   const onSubmit = (data: z.infer<typeof publicIssueFormSchema>) => {
-    console.log("Form Submitted", data);
-    
-    // In a real app, you would likely save this data.
-    // For now we just show a success toast.
-    toast({
-      title: "Entry Submitted!",
-      description: "Your script issue information has been recorded.",
-    });
-    
-    form.reset();
+    try {
+        const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
+        const entries = storedEntries ? JSON.parse(storedEntries) : [];
+        const newEntry = { ...data, id: `${Date.now()}-${data.packetNo}` };
+        entries.push(newEntry);
+        localStorage.setItem(PUBLIC_ISSUES_STORAGE_KEY, JSON.stringify(entries));
+        
+        toast({
+          title: "Entry Submitted!",
+          description: "Your script issue information has been recorded.",
+        });
+        
+        form.reset();
+    } catch (error) {
+        console.error("Error saving to localStorage", error);
+        toast({
+            variant: "destructive",
+            title: "Storage Error",
+            description: "Could not save the entry. The browser storage might be full."
+        });
+    }
   };
 
   return (
@@ -76,8 +90,8 @@ export default function PublicIssueEntryPage() {
                     <FormField control={form.control} name="upc" render={({ field }) => (<FormItem><FormLabel>UPC</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="qpNo" render={({ field }) => (<FormItem><FormLabel>QP No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="packetNo" render={({ field }) => (<FormItem><FormLabel>Packet No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="asPerChallan" render={({ field }) => (<FormItem><FormLabel>As per Challan</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="netScripts" render={({ field }) => (<FormItem><FormLabel>Net Scripts</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="asPerChallan" render={({ field }) => (<FormItem><FormLabel>As per Challan</FormLabel><FormControl><Input type="number" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="netScripts" render={({ field }) => (<FormItem><FormLabel>Net Scripts</FormLabel><FormControl><Input type="number" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="course" render={({ field }) => (<FormItem><FormLabel>Course</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </CardContent>
             </Card>
@@ -89,83 +103,65 @@ export default function PublicIssueEntryPage() {
                     <FormField
                         control={form.control}
                         name="campus"
-                        render={() => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Campus</FormLabel>
-                                <div className="flex gap-4 pt-2">
-                                    <FormField
-                                        control={form.control}
-                                        name="campus"
-                                        render={({ field }) => (
-                                        <FormItem className="flex items-center space-x-2">
-                                            <FormControl>
-                                                <Checkbox checked={field.value === 'North'} onCheckedChange={(checked) => field.onChange(checked ? 'North' : '')}/>
-                                            </FormControl>
-                                            <FormLabel className="font-normal">North</FormLabel>
-                                        </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="campus"
-                                        render={({ field }) => (
-                                        <FormItem className="flex items-center space-x-2">
-                                            <FormControl>
-                                                <Checkbox checked={field.value === 'South'} onCheckedChange={(checked) => field.onChange(checked ? 'South' : '')}/>
-                                            </FormControl>
-                                            <FormLabel className="font-normal">South</FormLabel>
-                                        </FormItem>
-                                        )}
-                                    />
-                                </div>
+                                 <FormControl>
+                                    <RadioGroup
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                    className="flex gap-4 pt-2"
+                                    >
+                                    <FormItem className="flex items-center space-x-2 space-y-0">
+                                        <FormControl>
+                                        <RadioGroupItem value="North" />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">North</FormLabel>
+                                    </FormItem>
+                                    <FormItem className="flex items-center space-x-2 space-y-0">
+                                        <FormControl>
+                                        <RadioGroupItem value="South" />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">South</FormLabel>
+                                    </FormItem>
+                                    </RadioGroup>
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                      <FormField
                         control={form.control}
-                        name="schoolType"
-                        render={() => (
+                        name="type"
+                        render={({ field }) => (
                             <FormItem>
-                                <FormLabel>School Type</FormLabel>
-                                <div className="flex gap-4 pt-2">
-                                    <FormField
-                                        control={form.control}
-                                        name="schoolType"
-                                        render={({ field }) => (
-                                        <FormItem className="flex items-center space-x-2">
-                                            <FormControl>
-                                                <Checkbox checked={field.value === 'Regular'} onCheckedChange={(checked) => field.onChange(checked ? 'Regular' : '')}/>
-                                            </FormControl>
-                                            <FormLabel className="font-normal">Regular</FormLabel>
-                                        </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="schoolType"
-                                        render={({ field }) => (
-                                        <FormItem className="flex items-center space-x-2">
-                                            <FormControl>
-                                                <Checkbox checked={field.value === 'NCWEB'} onCheckedChange={(checked) => field.onChange(checked ? 'NCWEB' : '')}/>
-                                            </FormControl>
-                                            <FormLabel className="font-normal">NCWEB</FormLabel>
-                                        </FormItem>
-                                        )}
-                                    />
-                                     <FormField
-                                        control={form.control}
-                                        name="schoolType"
-                                        render={({ field }) => (
-                                        <FormItem className="flex items-center space-x-2">
-                                            <FormControl>
-                                                <Checkbox checked={field.value === 'SOL'} onCheckedChange={(checked) => field.onChange(checked ? 'SOL' : '')}/>
-                                            </FormControl>
-                                            <FormLabel className="font-normal">SOL</FormLabel>
-                                        </FormItem>
-                                        )}
-                                    />
-                                </div>
+                                <FormLabel>Type</FormLabel>
+                                <FormControl>
+                                    <RadioGroup
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                    className="flex gap-4 pt-2"
+                                    >
+                                    <FormItem className="flex items-center space-x-2 space-y-0">
+                                        <FormControl>
+                                        <RadioGroupItem value="Regular" />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">Regular</FormLabel>
+                                    </FormItem>
+                                    <FormItem className="flex items-center space-x-2 space-y-0">
+                                        <FormControl>
+                                        <RadioGroupItem value="NCWEB" />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">NCWEB</FormLabel>
+                                    </FormItem>
+                                    <FormItem className="flex items-center space-x-2 space-y-0">
+                                        <FormControl>
+                                        <RadioGroupItem value="SOL" />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">SOL</FormLabel>
+                                    </FormItem>
+                                    </RadioGroup>
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}

@@ -1,6 +1,7 @@
 
 export const BILLS_STORAGE_KEY = 'cec068_bills';
 export const ISSUES_STORAGE_KEY = 'cec068_issues';
+export const PUBLIC_ISSUES_STORAGE_KEY = 'cec068_public_issues';
 export const TRASH_STORAGE_KEY = 'cec068_trash';
 export const BILL_TRASH_STORAGE_KEY = 'cec068_bill_trash';
 export const QP_UPC_MAP_KEY = 'cec068_qp_upc_map';
