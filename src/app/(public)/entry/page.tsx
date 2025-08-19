@@ -94,12 +94,20 @@ export default function PublicBillEntryPage() {
         });
         setStep(3); // Go to success page
     } catch (error) {
-        console.error("Failed to save bill:", error);
-        toast({
-            variant: "destructive",
-            title: "Submission Failed",
-            description: "Could not save your bill. Please try again later.",
-        });
+        if (error instanceof DOMException && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+             toast({
+                variant: 'destructive',
+                title: 'Storage Full',
+                description: "Browser's local storage is full. Could not save your submission."
+            });
+        } else {
+             console.error("Failed to save bill:", error);
+            toast({
+                variant: "destructive",
+                title: "Submission Failed",
+                description: "Could not save your bill. Please try again later.",
+            });
+        }
     }
   };
   
@@ -241,3 +249,5 @@ export default function PublicBillEntryPage() {
     </main>
   );
 }
+
+    

@@ -184,7 +184,21 @@ export default function BillFormPage() {
 
   const updateBillsStateAndStorage = async (newBills: BillFormValues[]) => {
     setBills(newBills);
-    localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(newBills));
+    try {
+        localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(newBills));
+    } catch (e) {
+        if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+            toast({
+                variant: 'destructive',
+                title: 'Storage Full',
+                description: 'Browser storage is full. Please clear some space or export and delete old bills.'
+            });
+        } else {
+            console.error("Failed to save to localStorage", e);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not save bills locally.' });
+        }
+    }
+
     if (isConnected) {
         try {
             await writeFile(BILLS_FILE_NAME, JSON.stringify(newBills, null, 2));
@@ -728,3 +742,5 @@ export default function BillFormPage() {
     </div>
   );
 }
+
+    
