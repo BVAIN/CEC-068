@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -121,50 +121,47 @@ export default function PublicBillEntryPage() {
 
   if (step === 2 && formData) {
     return (
-        <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 md:p-8">
+        <main className="flex min-h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 p-4 md:p-8">
             <div className="w-full max-w-4xl mx-auto">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Preview and Confirm</CardTitle>
+                        <CardTitle className="text-2xl">Preview and Confirm</CardTitle>
                         <CardDescription>Please review your details below before final submission.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div id="preview-section" className="space-y-6">
-                            {/* Bill Preview */}
-                            <div className="border rounded-lg p-4">
-                                <h3 className="text-lg font-semibold mb-4 text-center">Bill Preview</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                                    <p><strong className="text-muted-foreground">Evaluator ID:</strong> {formData.evaluatorId}</p>
-                                    <p><strong className="text-muted-foreground">Evaluator Name:</strong> {formData.evaluatorName}</p>
-                                    <p><strong className="text-muted-foreground">College Name:</strong> {formData.collegeName}</p>
-                                    <p><strong className="text-muted-foreground">Course:</strong> {formData.course}</p>
-                                    <p className="md:col-span-2"><strong className="text-muted-foreground">Address:</strong> {formData.address}</p>
-                                    <p><strong className="text-muted-foreground">Email:</strong> {formData.email}</p>
-                                    <p><strong className="text-muted-foreground">Mobile No:</strong> {formData.mobileNo}</p>
-                                    <p><strong className="text-muted-foreground">PAN No:</strong> {formData.panNo}</p>
-                                    <p><strong className="text-muted-foreground">Distance (Km):</strong> {formData.distance}</p>
-                                    <p><strong className="text-muted-foreground">Bank Name:</strong> {formData.bankName}</p>
-                                    <p><strong className="text-muted-foreground">Branch:</strong> {formData.branch}</p>
-                                    <p><strong className="text-muted-foreground">Account No:</strong> {formData.bankAccountNo}</p>
-                                    <p><strong className="text-muted-foreground">IFSC Code:</strong> {formData.ifscCode}</p>
+                            <div className="border rounded-lg p-6 space-y-4">
+                                <h3 className="text-xl font-semibold mb-4 text-center">Bill Preview</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">Evaluator ID:</span><span className="p-2 border rounded-md bg-muted/50">{formData.evaluatorId}</span></div>
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">Evaluator Name:</span><span className="p-2 border rounded-md bg-muted/50">{formData.evaluatorName}</span></div>
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">College Name:</span><span className="p-2 border rounded-md bg-muted/50">{formData.collegeName}</span></div>
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">Course:</span><span className="p-2 border rounded-md bg-muted/50">{formData.course}</span></div>
+                                    <div className="flex flex-col space-y-1 md:col-span-2"><span className="font-semibold text-muted-foreground">Address:</span><span className="p-2 border rounded-md bg-muted/50">{formData.address}</span></div>
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">Email:</span><span className="p-2 border rounded-md bg-muted/50">{formData.email}</span></div>
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">Mobile No:</span><span className="p-2 border rounded-md bg-muted/50">{formData.mobileNo}</span></div>
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">PAN No:</span><span className="p-2 border rounded-md bg-muted/50">{formData.panNo}</span></div>
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">Distance (Km):</span><span className="p-2 border rounded-md bg-muted/50">{formData.distance}</span></div>
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">Bank Name:</span><span className="p-2 border rounded-md bg-muted/50">{formData.bankName}</span></div>
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">Branch:</span><span className="p-2 border rounded-md bg-muted/50">{formData.branch}</span></div>
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">Account No:</span><span className="p-2 border rounded-md bg-muted/50">{formData.bankAccountNo}</span></div>
+                                    <div className="flex flex-col space-y-1"><span className="font-semibold text-muted-foreground">IFSC Code:</span><span className="p-2 border rounded-md bg-muted/50">{formData.ifscCode}</span></div>
                                 </div>
                             </div>
-
-                            {/* Undertaking Preview */}
-                            <div className="border rounded-lg p-4">
-                                <h3 className="text-lg font-semibold mb-2 text-center underline">UNDERTAKING</h3>
-                                <p className="text-sm">
+                            <div className="border rounded-lg p-6">
+                                <h3 className="text-xl font-semibold mb-4 text-center underline">UNDERTAKING</h3>
+                                <p className="text-base leading-relaxed">
                                     I, <span className="font-bold">{formData.evaluatorName}</span>, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
                                 </p>
-                                <div className="flex justify-between items-end mt-8">
-                                    <div>
+                                <div className="flex justify-between items-end mt-12">
+                                    <div className="space-y-2">
                                         <p className="text-sm"><strong className="text-muted-foreground">Teacher ID:</strong> {formData.evaluatorId}</p>
                                         <p className="text-sm"><strong className="text-muted-foreground">Teacher Name:</strong> {formData.evaluatorName}</p>
                                     </div>
                                     {signaturePreview && (
                                         <div className="text-center">
-                                            <img src={signaturePreview} alt="Signature" className="max-h-12 border rounded-md p-1" />
-                                            <p className="text-xs font-semibold mt-1">(Signature of the Teacher)</p>
+                                            <img src={signaturePreview} alt="Signature" className="max-h-16 border rounded-md p-1 bg-white" />
+                                            <p className="text-sm font-semibold mt-1">(Signature of the Teacher)</p>
                                         </div>
                                     )}
                                 </div>
@@ -172,8 +169,8 @@ export default function PublicBillEntryPage() {
                         </div>
                     </CardContent>
                     <div className="flex justify-end gap-4 p-6">
-                        <Button variant="outline" onClick={() => setStep(1)}>Go Back & Edit</Button>
-                        <Button onClick={handleFinalSubmit}>Submit</Button>
+                        <Button variant="outline" size="lg" onClick={() => setStep(1)}>Go Back & Edit</Button>
+                        <Button onClick={handleFinalSubmit} size="lg">Submit</Button>
                     </div>
                 </Card>
             </div>
@@ -244,3 +241,5 @@ export default function PublicBillEntryPage() {
     </main>
   );
 }
+
+    
