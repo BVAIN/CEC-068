@@ -434,8 +434,8 @@ export default function BillViewPage() {
                     <div className="flex items-start justify-between">
                         <div className="flex flex-col">
                             <span className="font-bold">Coordinator</span>
-                            <div className="flex items-center">
-                                <span className="text-sm">CEC</span>
+                            <div className="flex items-center text-sm">
+                                <span>CEC</span>
                                 <Input className="w-auto h-8 manual-input font-bold text-center" value={globalSettings.coordinatorName} readOnly />
                             </div>
                         </div>
