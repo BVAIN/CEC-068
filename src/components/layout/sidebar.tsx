@@ -19,6 +19,7 @@ const menuItems = [
       label: "Trash", 
       icon: Trash2,
       subItems: [
+        { href: "/trash/index", label: "Index Trash", icon: Trash2 },
         { href: "/trash/issues", label: "Issue Trash", icon: Trash2 },
         { href: "/trash/bills", label: "Bill Trash", icon: FileArchive },
       ] 

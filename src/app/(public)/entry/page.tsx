@@ -4,8 +4,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,6 +34,8 @@ export type PublicIssueFormValues = z.infer<typeof publicIssueFormSchema>;
 export default function PublicIssueEntryPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof publicIssueFormSchema>>({
     resolver: zodResolver(publicIssueFormSchema),
@@ -48,21 +51,49 @@ export default function PublicIssueEntryPage() {
       type: undefined,
     },
   });
+  
+  useEffect(() => {
+    const editId = searchParams.get('edit');
+    if (editId) {
+        setEditingId(editId);
+        const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
+        if (storedEntries) {
+            const entries: PublicIssueFormValues[] = JSON.parse(storedEntries);
+            const entryToEdit = entries.find(e => e.id === editId);
+            if (entryToEdit) {
+                form.reset(entryToEdit);
+            }
+        }
+    }
+  }, [searchParams, form]);
 
   const onSubmit = (data: z.infer<typeof publicIssueFormSchema>) => {
     try {
         const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
-        const entries = storedEntries ? JSON.parse(storedEntries) : [];
-        const newEntry = { ...data, id: `${Date.now()}-${data.pageNo}` };
-        entries.push(newEntry);
+        let entries = storedEntries ? JSON.parse(storedEntries) : [];
+
+        if (editingId) {
+            entries = entries.map((entry: PublicIssueFormValues) => 
+                entry.id === editingId ? { ...entry, ...data } : entry
+            );
+            toast({ title: "Entry Updated!", description: "Your entry has been updated." });
+        } else {
+            const newEntry = { ...data, id: `${Date.now()}-${data.pageNo}` };
+            entries.push(newEntry);
+            toast({
+              title: "Entry Submitted!",
+              description: "Your script issue information has been recorded.",
+            });
+        }
+        
         localStorage.setItem(PUBLIC_ISSUES_STORAGE_KEY, JSON.stringify(entries));
         
-        toast({
-          title: "Entry Submitted!",
-          description: "Your script issue information has been recorded.",
-        });
-        
-        form.reset();
+        if (editingId) {
+            router.push('/index');
+        } else {
+            form.reset();
+        }
+
     } catch (error) {
         console.error("Error saving to localStorage", error);
         toast({
@@ -81,7 +112,9 @@ export default function PublicIssueEntryPage() {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                    <CardTitle className="text-3xl">New Script Issue Entry</CardTitle>
+                    <CardTitle className="text-3xl">
+                        {editingId ? 'Edit Index Entry' : 'Index Entry'}
+                    </CardTitle>
                     <Button type="button" variant="outline" onClick={() => router.back()}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back
@@ -177,7 +210,7 @@ export default function PublicIssueEntryPage() {
                 </CardContent>
             </Card>
             <div className="flex justify-end">
-              <Button type="submit" size="lg">Submit Entry</Button>
+              <Button type="submit" size="lg">{editingId ? 'Update Entry' : 'Submit Entry'}</Button>
             </div>
           </form>
         </Form>

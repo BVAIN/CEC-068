@@ -109,6 +109,15 @@ export default function HomePage() {
         <p className="text-lg text-muted-foreground mt-2">Your data management dashboard.</p>
       </header>
       
+       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="Regular" stats={regularStats} />
+        <StatCard title="NCWEB" stats={ncwebStats} />
+        <StatCard title="SOL" stats={solStats} />
+        <StatCard title="All Data" stats={allDataStats} />
+      </div>
+
+       <Separator />
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card>
             <CardHeader>
@@ -134,15 +143,6 @@ export default function HomePage() {
                 <p className="text-4xl font-bold">{totalBills}</p>
             </CardContent>
         </Card>
-      </div>
-
-       <Separator />
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Regular" stats={regularStats} />
-        <StatCard title="NCWEB" stats={ncwebStats} />
-        <StatCard title="SOL" stats={solStats} />
-        <StatCard title="All Data" stats={allDataStats} />
       </div>
 
     </div>
