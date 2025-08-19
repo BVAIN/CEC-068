@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive } from "lucide-react";
+import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-provider";
@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 const menuItems = [
   { href: "/home", label: "Home", icon: Home },
+  { href: "/index", label: "Index", icon: List },
   { href: "/issue-form", label: "Issue Packets", icon: FilePlus },
   { href: "/bill-form", label: "Bill Form", icon: FileText },
   { 
