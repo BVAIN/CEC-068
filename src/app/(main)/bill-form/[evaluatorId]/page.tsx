@@ -167,7 +167,7 @@ export default function BillViewPage() {
             }
              .signature-image {
                 mix-blend-mode: multiply;
-                filter: contrast(1.1) brightness(1.1);
+                filter: contrast(1.2) brightness(1.2);
              }
         `}</style>
 
@@ -361,7 +361,7 @@ export default function BillViewPage() {
                         {billDetails.signature && (
                             <div className="text-center">
                                 <div className="flex justify-center items-center rounded-md p-1 min-h-[3rem]">
-                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-16 signature-image" />
+                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-24 signature-image" />
                                 </div>
                                 <h3 className="font-bold text-sm mt-1">Signature of Examiner</h3>
                             </div>
@@ -447,7 +447,7 @@ export default function BillViewPage() {
                      {billDetails.signature && (
                         <div className="text-center">
                             <div className="flex justify-center items-center p-1 min-h-[3rem]">
-                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-16 signature-image" />
+                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-24 signature-image" />
                             </div>
                             <h3 className="font-bold text-sm mt-1">(Signature of the Teacher)</h3>
                         </div>
