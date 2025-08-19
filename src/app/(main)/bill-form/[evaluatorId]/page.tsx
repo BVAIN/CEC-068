@@ -281,31 +281,31 @@ export default function BillViewPage() {
                 <div className="grid grid-cols-2 gap-x-8 gap-y-1">
                     <div className="flex justify-between items-baseline border-b pb-1">
                         <span className="font-bold shrink-0">Evaluator ID:</span>
-                        <span className="underlined-value text-right">{billDetails.evaluatorId}</span>
+                        <span className="text-right">{billDetails.evaluatorId}</span>
                     </div>
                     <div className="flex justify-between items-baseline border-b pb-1">
                         <span className="font-bold shrink-0">Evaluator Name:</span>
-                        <span className="underlined-value text-right">{billDetails.evaluatorName}</span>
+                        <span className="text-right">{billDetails.evaluatorName}</span>
                     </div>
                      <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">Address:</span> <span className="underlined-value text-right">{billDetails.address}</span>
+                        <span className="font-bold shrink-0">Address:</span> <span className="text-right">{billDetails.address}</span>
                     </div>
                      <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">Course:</span> <span className="underlined-value text-right">{billDetails.course}</span>
+                        <span className="font-bold shrink-0">Course:</span> <span className="text-right">{billDetails.course}</span>
                     </div>
                     <div className="flex justify-between items-baseline border-b pb-1">
                         <span className="font-bold shrink-0">Email ID:</span>
-                        <span className="underlined-value truncate text-right">{billDetails.email}</span>
+                        <span className="truncate text-right">{billDetails.email}</span>
                     </div>
                     <div className="flex justify-between items-baseline border-b pb-1">
                         <span className="font-bold shrink-0">Mobile No:</span>
-                        <span className="underlined-value text-right">{billDetails.mobileNo}</span>
+                        <span className="text-right">{billDetails.mobileNo}</span>
                     </div>
                      <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">College Name:</span> <span className="underlined-value text-right">{billDetails.collegeName}</span>
+                        <span className="font-bold shrink-0">College Name:</span> <span className="text-right">{billDetails.collegeName}</span>
                     </div>
                     <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">Distance (Km) Up-Down:</span> <span className="underlined-value text-right">{billDetails.distance}</span>
+                        <span className="font-bold shrink-0">Distance (Km) Up-Down:</span> <span className="text-right">{billDetails.distance}</span>
                     </div>
                 </div>
 
@@ -314,25 +314,25 @@ export default function BillViewPage() {
                      <div className="grid grid-cols-2 gap-x-8 gap-y-1">
                         <div className="flex justify-between items-baseline border-b pb-1">
                             <span className="font-bold shrink-0">Bank Name:</span>
-                            <span className="underlined-value text-right">{billDetails.bankName}</span>
+                            <span className="text-right">{billDetails.bankName}</span>
                         </div>
                         <div className="flex justify-between items-baseline border-b pb-1">
                             <span className="font-bold shrink-0">Branch:</span>
-                            <span className="underlined-value text-right">{billDetails.branch}</span>
+                            <span className="text-right">{billDetails.branch}</span>
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-x-8 gap-y-1 mt-1">
                         <div className="flex justify-between items-baseline border-b pb-1">
                             <span className="font-bold shrink-0">PAN No.:</span>
-                            <span className="underlined-value text-right">{billDetails.panNo}</span>
+                            <span className="text-right">{billDetails.panNo}</span>
                         </div>
                         <div className="flex justify-between items-baseline border-b pb-1">
                             <span className="font-bold shrink-0">Account No:</span>
-                            <span className="font-mono underlined-value text-right">{billDetails.bankAccountNo}</span>
+                            <span className="font-mono text-right">{billDetails.bankAccountNo}</span>
                         </div>
                         <div className="flex justify-between items-baseline border-b pb-1">
                             <span className="font-bold shrink-0">IFSC Code:</span>
-                            <span className="font-mono underlined-value text-right">{billDetails.ifscCode}</span>
+                            <span className="font-mono text-right">{billDetails.ifscCode}</span>
                         </div>
                     </div>
                      <div className="flex justify-between">
@@ -379,7 +379,7 @@ export default function BillViewPage() {
                         {billDetails.signature && (
                             <div className="text-center">
                                 <div className="flex justify-center items-center rounded-md p-1 min-h-[3rem]">
-                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-24 signature-image" />
+                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12 signature-image" />
                                 </div>
                                 <h3 className="font-bold text-sm mt-1">Signature of Examiner</h3>
                             </div>
@@ -465,7 +465,7 @@ export default function BillViewPage() {
                      {billDetails.signature && (
                         <div className="text-center">
                             <div className="flex justify-center items-center p-1 min-h-[3rem]">
-                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-24 signature-image" />
+                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12 signature-image" />
                             </div>
                             <h3 className="font-bold text-sm mt-1">(Signature of the Teacher)</h3>
                         </div>
@@ -480,5 +480,3 @@ export default function BillViewPage() {
   );
 
 }
-
-    
