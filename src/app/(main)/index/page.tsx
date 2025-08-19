@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Search } from "lucide-react";
+import { PlusCircle, Search, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
@@ -15,6 +15,8 @@ export default function IndexPage() {
   const router = useRouter();
   const [entries, setEntries] = useState<PublicIssueFormValues[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeView, setActiveView] = useState<"North" | "South" | null>(null);
+
 
   useEffect(() => {
     const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
@@ -96,10 +98,18 @@ export default function IndexPage() {
   return (
     <div className="space-y-8">
       <header className="flex justify-between items-center">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight font-headline">Index</h1>
-          <p className="text-lg text-muted-foreground mt-2">Select a campus to view its forms.</p>
+        <div className="flex items-center gap-4">
+            {activeView && (
+                <Button variant="outline" size="icon" onClick={() => setActiveView(null)}>
+                    <ArrowLeft className="h-4 w-4" />
+                </Button>
+            )}
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight font-headline">Index</h1>
+              <p className="text-lg text-muted-foreground mt-2">Select a campus to view its forms.</p>
+            </div>
         </div>
+
         <div className="flex items-center gap-4">
              <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -120,8 +130,27 @@ export default function IndexPage() {
         </div>
       </header>
       
-        {renderTable("North Campus", northEntries, northTotals)}
-        {renderTable("South Campus", southEntries, southTotals)}
+      {!activeView && (
+        <div className="grid md:grid-cols-2 gap-8 pt-8">
+            <Button
+            className="h-32 text-2xl font-bold"
+            onClick={() => setActiveView("North")}
+            >
+            North
+            </Button>
+            <Button
+            variant="destructive"
+            className="h-32 text-2xl font-bold"
+            onClick={() => setActiveView("South")}
+            >
+            South
+            </Button>
+        </div>
+      )}
+
+      {activeView === 'North' && renderTable("North Campus", northEntries, northTotals)}
+      {activeView === 'South' && renderTable("South Campus", southEntries, southTotals)}
+
     </div>
   );
 }
