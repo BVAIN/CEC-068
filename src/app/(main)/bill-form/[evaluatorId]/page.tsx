@@ -112,8 +112,14 @@ export default function BillViewPage() {
                     top: 0;
                     width: 100%;
                     margin: 0;
-                    padding: 1cm;
+                    padding: 1.5cm;
                     box-sizing: border-box;
+                }
+                 #print-section .print-header-title {
+                    font-size: 1.25rem;
+                }
+                 #print-section .print-header-subtitle {
+                    font-size: 1.1rem;
                 }
                 .no-print {
                     display: none;
@@ -147,6 +153,14 @@ export default function BillViewPage() {
                 .undertaking-page {
                     page-break-before: always;
                 }
+                .underlined-value {
+                    border-bottom: 1px solid black;
+                    padding: 0 2px;
+                }
+                .undertaking-details .underlined-value {
+                    display: inline-block;
+                    min-width: 200px;
+                }
             }
              .manual-input {
                 border: none;
@@ -167,7 +181,12 @@ export default function BillViewPage() {
             }
              .signature-image {
                 mix-blend-mode: multiply;
-                filter: contrast(1.2) brightness(1.2);
+                filter: contrast(1.5) brightness(1.1);
+             }
+             .underlined-value {
+                border-bottom: 1px solid;
+                padding: 0 2px;
+                word-break: break-word;
              }
         `}</style>
 
@@ -245,9 +264,9 @@ export default function BillViewPage() {
                     </div>
                 </div>
                 <div className="text-center space-y-1">
-                    <h1 className="text-xl md:text-2xl font-bold uppercase">University of Delhi</h1>
-                    <h2 className="text-lg md:text-xl font-bold">Central Evaluation Centre, SGTB Khalsa College</h2>
-                    <div className="flex items-center justify-center gap-2 pt-2">
+                    <h1 className="text-xl md:text-2xl font-bold uppercase print-header-title">University of Delhi</h1>
+                    <h2 className="text-lg md:text-xl font-bold print-header-subtitle">Central Evaluation Centre, SGTB Khalsa College</h2>
+                    <div className="flex items-baseline justify-center gap-2 pt-2">
                         <div className="flex items-baseline">
                            <span className="font-bold">Bill,</span>
                            <Input className="w-auto manual-input font-bold text-center" value={globalSettings.billName} readOnly />
@@ -261,60 +280,60 @@ export default function BillViewPage() {
             </CardHeader>
             <CardContent className="space-y-2 text-base p-4 md:p-6 print:p-0 print:text-sm">
                 <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-                    <div className="flex justify-between border-b pb-1">
-                        <span className="font-bold">Evaluator ID:</span>
-                        <span>{billDetails.evaluatorId}</span>
+                    <div className="flex justify-between items-baseline border-b pb-1">
+                        <span className="font-bold shrink-0">Evaluator ID:</span>
+                        <span className="underlined-value text-right">{billDetails.evaluatorId}</span>
                     </div>
-                    <div className="flex justify-between border-b pb-1">
-                        <span className="font-bold">Evaluator Name:</span>
-                        <span>{billDetails.evaluatorName}</span>
+                    <div className="flex justify-between items-baseline border-b pb-1">
+                        <span className="font-bold shrink-0">Evaluator Name:</span>
+                        <span className="underlined-value text-right">{billDetails.evaluatorName}</span>
                     </div>
-                     <div className="flex justify-between border-b pb-1">
-                        <span className="font-bold">Address:</span> <span>{billDetails.address}</span>
+                     <div className="flex justify-between items-baseline border-b pb-1">
+                        <span className="font-bold shrink-0">Address:</span> <span className="underlined-value text-right">{billDetails.address}</span>
                     </div>
-                     <div className="flex justify-between border-b pb-1">
-                        <span className="font-bold">Course:</span> <span>{billDetails.course}</span>
+                     <div className="flex justify-between items-baseline border-b pb-1">
+                        <span className="font-bold shrink-0">Course:</span> <span className="underlined-value text-right">{billDetails.course}</span>
                     </div>
-                    <div className="flex justify-between border-b pb-1">
-                        <span className="font-bold">Email ID:</span>
-                        <span className="truncate">{billDetails.email}</span>
+                    <div className="flex justify-between items-baseline border-b pb-1">
+                        <span className="font-bold shrink-0">Email ID:</span>
+                        <span className="underlined-value truncate text-right">{billDetails.email}</span>
                     </div>
-                    <div className="flex justify-between border-b pb-1">
-                        <span className="font-bold">Mobile No:</span>
-                        <span>{billDetails.mobileNo}</span>
+                    <div className="flex justify-between items-baseline border-b pb-1">
+                        <span className="font-bold shrink-0">Mobile No:</span>
+                        <span className="underlined-value text-right">{billDetails.mobileNo}</span>
                     </div>
-                     <div className="flex justify-between border-b pb-1">
-                        <span className="font-bold">College Name:</span> <span>{billDetails.collegeName}</span>
+                     <div className="flex justify-between items-baseline border-b pb-1">
+                        <span className="font-bold shrink-0">College Name:</span> <span className="underlined-value text-right">{billDetails.collegeName}</span>
                     </div>
-                    <div className="flex justify-between border-b pb-1">
-                        <span className="font-bold">Distance (Km) Up-Down:</span> <span>{billDetails.distance}</span>
+                    <div className="flex justify-between items-baseline border-b pb-1">
+                        <span className="font-bold shrink-0">Distance (Km) Up-Down:</span> <span className="underlined-value text-right">{billDetails.distance}</span>
                     </div>
                 </div>
 
 
                 <div className="pt-2">
                      <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-                        <div className="flex justify-between border-b pb-1">
-                            <span className="font-bold">Bank Name:</span>
-                            <span>{billDetails.bankName}</span>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">Bank Name:</span>
+                            <span className="underlined-value text-right">{billDetails.bankName}</span>
                         </div>
-                        <div className="flex justify-between border-b pb-1">
-                            <span className="font-bold">Branch:</span>
-                            <span>{billDetails.branch}</span>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">Branch:</span>
+                            <span className="underlined-value text-right">{billDetails.branch}</span>
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-x-8 gap-y-1 mt-1">
-                        <div className="flex justify-between border-b pb-1">
-                            <span className="font-bold">PAN No.:</span>
-                            <span>{billDetails.panNo}</span>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">PAN No.:</span>
+                            <span className="underlined-value text-right">{billDetails.panNo}</span>
                         </div>
-                        <div className="flex justify-between border-b pb-1">
-                            <span className="font-bold">Account No:</span>
-                            <span className="font-mono">{billDetails.bankAccountNo}</span>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">Account No:</span>
+                            <span className="font-mono underlined-value text-right">{billDetails.bankAccountNo}</span>
                         </div>
-                        <div className="flex justify-between border-b pb-1">
-                            <span className="font-bold">IFSC Code:</span>
-                            <span className="font-mono">{billDetails.ifscCode}</span>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">IFSC Code:</span>
+                            <span className="font-mono underlined-value text-right">{billDetails.ifscCode}</span>
                         </div>
                     </div>
                      <div className="flex justify-between">
@@ -431,15 +450,15 @@ export default function BillViewPage() {
             <h2 className="text-2xl font-bold text-center underline">UNDERTAKING</h2>
             <div className="mt-8 space-y-4 text-base">
                 <p>
-                    I, <span className="font-bold">{billDetails.evaluatorName}</span>, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
+                    I, <span className="font-bold underlined-value">{billDetails.evaluatorName}</span>, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
                 </p>
                 <div className="flex justify-end pt-8">
-                    <div className="text-left space-y-1">
-                        <div>Teacher ID: {billDetails.evaluatorId}</div>
-                        <div>Teacher Name: {billDetails.evaluatorName}</div>
-                        <div>College Name: {billDetails.collegeName}</div>
-                        <div>Mobile No.: {billDetails.mobileNo}</div>
-                        <div>Email ID: {billDetails.email}</div>
+                    <div className="text-left space-y-1 undertaking-details">
+                        <div className="flex justify-between items-baseline"><span className="mr-2">Teacher ID:</span> <span className="underlined-value">{billDetails.evaluatorId}</span></div>
+                        <div className="flex justify-between items-baseline"><span className="mr-2">Teacher Name:</span> <span className="underlined-value">{billDetails.evaluatorName}</span></div>
+                        <div className="flex justify-between items-baseline"><span className="mr-2">College Name:</span> <span className="underlined-value">{billDetails.collegeName}</span></div>
+                        <div className="flex justify-between items-baseline"><span className="mr-2">Mobile No.:</span> <span className="underlined-value">{billDetails.mobileNo}</span></div>
+                        <div className="flex justify-between items-baseline"><span className="mr-2">Email ID:</span> <span className="underlined-value">{billDetails.email}</span></div>
                     </div>
                 </div>
 
