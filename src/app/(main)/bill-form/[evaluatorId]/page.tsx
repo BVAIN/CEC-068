@@ -180,7 +180,6 @@ export default function BillViewPage() {
                 width: 40%;
             }
              .signature-image {
-                mix-blend-mode: multiply;
                 filter: contrast(1.5) brightness(1.1);
              }
              .underlined-value {
@@ -265,12 +264,12 @@ export default function BillViewPage() {
                 <div className="text-center space-y-1">
                     <h1 className="text-xl md:text-2xl font-bold uppercase print-header-title">University of Delhi</h1>
                     <h2 className="text-lg md:text-xl font-bold print-header-subtitle">Central Evaluation Centre, SGTB Khalsa College</h2>
-                    <div className="flex items-baseline justify-center gap-2 pt-2">
+                    <div className="flex items-baseline justify-center pt-2">
                         <div className="flex items-baseline">
                            <span className="font-bold">Bill,</span>
                            <Input className="w-auto manual-input font-bold text-center" value={globalSettings.billName} readOnly />
                         </div>
-                        <div className="flex items-baseline">
+                        <div className="flex items-baseline ml-4">
                            <span className="font-bold">Examination</span>
                            <Input className="w-auto manual-input font-bold text-center" value={globalSettings.examinationName} readOnly />
                         </div>
@@ -480,3 +479,5 @@ export default function BillViewPage() {
   );
 
 }
+
+    
