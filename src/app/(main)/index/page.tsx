@@ -4,18 +4,20 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Search, ArrowLeft } from "lucide-react";
+import { PlusCircle, Search, ArrowLeft, Filter } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
 import { PUBLIC_ISSUES_STORAGE_KEY } from "@/lib/constants";
 import type { PublicIssueFormValues } from "@/app/(public)/entry/page";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function IndexPage() {
   const router = useRouter();
   const [entries, setEntries] = useState<PublicIssueFormValues[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeView, setActiveView] = useState<"North" | "South" | null>(null);
+  const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
 
 
   useEffect(() => {
@@ -24,6 +26,11 @@ export default function IndexPage() {
       setEntries(JSON.parse(storedEntries));
     }
   }, []);
+
+  useEffect(() => {
+    // Clear selections when changing views
+    setSelectedEntries([]);
+  }, [activeView, searchTerm]);
 
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -51,15 +58,46 @@ export default function IndexPage() {
   const northTotals = calculateTotals(northEntries);
   const southTotals = calculateTotals(southEntries);
 
-  const renderTable = (title: string, data: PublicIssueFormValues[], totals: {totalChallan: number, totalNetScripts: number, totalDifference: number}) => (
+  const handleSelectEntry = (entryId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedEntries(prev => [...prev, entryId]);
+    } else {
+      setSelectedEntries(prev => prev.filter(id => id !== entryId));
+    }
+  };
+
+  const handleSelectAll = (campusEntries: PublicIssueFormValues[]) => (checked: boolean) => {
+    if (checked) {
+      setSelectedEntries(campusEntries.map(entry => entry.id).filter((id): id is string => !!id));
+    } else {
+      setSelectedEntries([]);
+    }
+  };
+
+
+  const renderTable = (title: string, data: PublicIssueFormValues[], totals: {totalChallan: number, totalNetScripts: number, totalDifference: number}) => {
+    const isAllSelected = data.length > 0 && selectedEntries.length === data.length;
+    
+    return (
      <Card className="mt-8">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{title}</CardTitle>
+        <Button size="sm" className="bg-gradient-to-r from-green-400 to-yellow-400 text-black">
+            <Filter className="mr-2 h-4 w-4"/>
+            Filter
+        </Button>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                <Checkbox
+                    onCheckedChange={handleSelectAll(data)}
+                    checked={isAllSelected}
+                    aria-label="Select all"
+                />
+              </TableHead>
               <TableHead>Date of Exam</TableHead>
               <TableHead>UPC</TableHead>
               <TableHead>QP No.</TableHead>
@@ -71,8 +109,16 @@ export default function IndexPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((entry, index) => (
-              <TableRow key={index}>
+            {data.map((entry) => (
+              <TableRow key={entry.id}>
+                <TableCell>
+                    <Checkbox
+                        onCheckedChange={(checked) => entry.id && handleSelectEntry(entry.id, !!checked)}
+                        checked={!!entry.id && selectedEntries.includes(entry.id)}
+                        aria-label={`Select entry ${entry.pageNo}`}
+                        disabled={!entry.id}
+                    />
+                </TableCell>
                 <TableCell>{entry.dateOfExam}</TableCell>
                 <TableCell>{entry.upc}</TableCell>
                 <TableCell>{entry.qpNo}</TableCell>
@@ -86,7 +132,7 @@ export default function IndexPage() {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={5} className="text-right font-bold">Total</TableCell>
+              <TableCell colSpan={6} className="text-right font-bold">Total</TableCell>
               <TableCell className="font-bold">{totals.totalChallan}</TableCell>
               <TableCell className="font-bold">{totals.totalNetScripts}</TableCell>
               <TableCell className="font-bold">{totals.totalDifference}</TableCell>
@@ -95,7 +141,7 @@ export default function IndexPage() {
         </Table>
       </CardContent>
     </Card>
-  );
+  )};
 
   return (
     <div className="space-y-8">
@@ -156,3 +202,5 @@ export default function IndexPage() {
     </div>
   );
 }
+
+    
