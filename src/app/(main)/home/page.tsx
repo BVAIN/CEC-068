@@ -106,7 +106,6 @@ export default function HomePage() {
     <div className="space-y-8 animate-fade-in">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline lg:text-5xl">Welcome to CEC-068</h1>
-        <p className="text-lg text-muted-foreground mt-2">Your data management dashboard.</p>
       </header>
       
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
