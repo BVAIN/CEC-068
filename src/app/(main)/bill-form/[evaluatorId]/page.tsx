@@ -142,7 +142,7 @@ export default function BillViewPage() {
                 }
                  .signature-image {
                     filter: none;
-                    mix-blend-mode: normal;
+                    mix-blend-mode: multiply;
                  }
                 .undertaking-page {
                     page-break-before: always;
@@ -165,6 +165,10 @@ export default function BillViewPage() {
             .date-of-visits-cell {
                 width: 40%;
             }
+             .signature-image {
+                mix-blend-mode: multiply;
+                filter: contrast(1.1) brightness(1.1);
+             }
         `}</style>
 
       <header className="flex items-center justify-between gap-4 no-print mb-8">
@@ -243,12 +247,12 @@ export default function BillViewPage() {
                 <div className="text-center space-y-1">
                     <h1 className="text-xl md:text-2xl font-bold uppercase">University of Delhi</h1>
                     <h2 className="text-lg md:text-xl font-bold">Central Evaluation Centre, SGTB Khalsa College</h2>
-                    <div className="flex items-center justify-center gap-4 pt-2">
-                        <div className="flex items-baseline gap-2">
+                    <div className="flex items-center justify-center gap-2 pt-2">
+                        <div className="flex items-baseline">
                            <span className="font-bold">Bill,</span>
                            <Input className="w-auto manual-input font-bold text-center" value={globalSettings.billName} readOnly />
                         </div>
-                        <div className="flex items-baseline gap-2">
+                        <div className="flex items-baseline">
                            <span className="font-bold">Examination</span>
                            <Input className="w-auto manual-input font-bold text-center" value={globalSettings.examinationName} readOnly />
                         </div>
@@ -357,7 +361,7 @@ export default function BillViewPage() {
                         {billDetails.signature && (
                             <div className="text-center">
                                 <div className="flex justify-center items-center rounded-md p-1 min-h-[3rem]">
-                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-10 signature-image" />
+                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-16 signature-image" />
                                 </div>
                                 <h3 className="font-bold text-sm mt-1">Signature of Examiner</h3>
                             </div>
@@ -414,7 +418,7 @@ export default function BillViewPage() {
                             <span className="font-bold">Coordinator</span>
                             <div className="flex items-center">
                                 <span className="text-sm">CEC</span>
-                                <Input className="w-[100px] h-8 manual-input font-bold text-center" value={globalSettings.coordinatorName} readOnly />
+                                <Input className="w-auto h-8 manual-input font-bold text-center" value={globalSettings.coordinatorName} readOnly />
                             </div>
                         </div>
                         <span>Dealing Assistant</span>
@@ -443,7 +447,7 @@ export default function BillViewPage() {
                      {billDetails.signature && (
                         <div className="text-center">
                             <div className="flex justify-center items-center p-1 min-h-[3rem]">
-                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12 signature-image" />
+                                <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-16 signature-image" />
                             </div>
                             <h3 className="font-bold text-sm mt-1">(Signature of the Teacher)</h3>
                         </div>
@@ -458,5 +462,3 @@ export default function BillViewPage() {
   );
 
 }
-
-    
