@@ -184,7 +184,6 @@ export default function BillViewPage() {
                 filter: contrast(1.5) brightness(1.1);
              }
              .underlined-value {
-                border-bottom: 1px solid;
                 padding: 0 2px;
                 word-break: break-word;
              }
@@ -386,7 +385,7 @@ export default function BillViewPage() {
                             </div>
                         )}
                     </div>
-                    <hr className="my-2 border-t border-gray-400" />
+                    <hr className="my-2 border-t border-foreground" />
                     <div className="text-center">
                         <span className="font-bold underline">Official Use</span>
                     </div>
@@ -481,3 +480,5 @@ export default function BillViewPage() {
   );
 
 }
+
+    
