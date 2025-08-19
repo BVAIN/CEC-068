@@ -298,7 +298,6 @@ export default function BillForm2Page() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Bill Form 2</h1>
-        <p className="text-lg text-muted-foreground mt-2">Manage your bill submissions here.</p>
       </header>
 
       <Form {...form}>
