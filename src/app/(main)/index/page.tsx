@@ -68,7 +68,11 @@ export default function IndexPage() {
     } else {
         if(activeView === "Search") setActiveView(null);
     }
-  }, [searchTerm]);
+  }, [searchTerm, activeView]);
+
+  const northEntriesCount = useMemo(() => entries.filter(e => e.campus === 'North').length, [entries]);
+  const southEntriesCount = useMemo(() => entries.filter(e => e.campus === 'South').length, [entries]);
+
 
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -174,7 +178,8 @@ export default function IndexPage() {
   };
   
   const handleExport = (data: PublicIssueFormValues[], filename: string) => {
-    const worksheet = XLSX.utils.json_to_sheet(data.map(({id, ...rest}) => rest));
+    const dataToExport = data.map(({id, ...rest}) => rest);
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Entries");
     XLSX.writeFile(workbook, filename);
@@ -246,7 +251,8 @@ export default function IndexPage() {
 
   const renderTable = (title: string, data: PublicIssueFormValues[], totals: {totalChallan: number, totalNetScripts: number, totalDifference: number}, stats?: CampusStats) => {
     const isAllSelected = data.length > 0 && selectedEntries.length === data.filter(e => data.map(d => d.id).includes(e.id)).length;
-    
+    const isSearch = activeView === 'Search';
+
     return (
      <>
       <div className="mt-8 space-y-6">
@@ -261,12 +267,12 @@ export default function IndexPage() {
         )}
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>{title} Campus</CardTitle>
+                <CardTitle>{title}</CardTitle>
                 <div className="flex items-center gap-2">
                     <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-green-500 hover:bg-green-600 text-white">
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Entry
                     </Button>
-                    <Button size="sm" onClick={() => handleExport(data, `${title}_Entries.xlsx`)} variant="default">
+                    <Button size="sm" onClick={() => handleExport(data, `${title.replace(/"/g, '')}_Entries.xlsx`)} variant="default" style={{backgroundColor: '#3b82f6', color: 'white'}}>
                         <FileDown className="mr-2 h-4 w-4" /> Export to Excel
                     </Button>
                     {selectedEntries.length > 0 && (
@@ -333,10 +339,12 @@ export default function IndexPage() {
                         />
                     </TableHead>
                     <TableHead className="text-primary-foreground">Date of Exam</TableHead>
+                    {isSearch && <TableHead className="text-primary-foreground">Course</TableHead>}
+                    {isSearch && <TableHead className="text-primary-foreground">Type</TableHead>}
                     <TableHead className="text-primary-foreground">UPC</TableHead>
                     <TableHead className="text-primary-foreground">QP No.</TableHead>
                     <TableHead className="text-primary-foreground">Page No.</TableHead>
-                    <TableHead className="text-primary-foreground">Course</TableHead>
+                    {!isSearch && <TableHead className="text-primary-foreground">Course</TableHead>}
                     <TableHead className="text-primary-foreground">As Per Challan</TableHead>
                     <TableHead className="text-primary-foreground">Net Scripts</TableHead>
                     <TableHead className="text-primary-foreground">Difference</TableHead>
@@ -355,16 +363,18 @@ export default function IndexPage() {
                             />
                         </TableCell>
                         <TableCell>{entry.dateOfExam}</TableCell>
+                        {isSearch && <TableCell>{entry.course}</TableCell>}
+                        {isSearch && <TableCell>{entry.type}</TableCell>}
                         <TableCell>{entry.upc}</TableCell>
                         <TableCell>{entry.qpNo}</TableCell>
                         <TableCell>{entry.pageNo}</TableCell>
-                        <TableCell>{entry.course}</TableCell>
+                        {!isSearch && <TableCell>{entry.course}</TableCell>}
                         <TableCell>{entry.asPerChallan}</TableCell>
                         <TableCell>{entry.netScripts}</TableCell>
                         <TableCell>{(entry.netScripts || 0) - (entry.asPerChallan || 0)}</TableCell>
                         <TableCell>
                             <div className="flex gap-2">
-                                <Button variant="default" size="icon" onClick={() => handleOpenRemarks(entry)}>
+                                <Button variant="default" size="icon" onClick={() => handleOpenRemarks(entry)} style={{backgroundColor: '#3b82f6', color: 'white'}}>
                                     <MessageSquare className="h-4 w-4" />
                                 </Button>
                                 <Button variant="outline" size="icon" onClick={() => handleEdit(entry.id!)} style={{backgroundColor: 'green', color: 'white'}}>
@@ -394,7 +404,7 @@ export default function IndexPage() {
                 </TableBody>
                 <TableFooter>
                     <TableRow>
-                    <TableCell colSpan={6} className="text-right font-bold">Total</TableCell>
+                    <TableCell colSpan={isSearch ? 7 : 6} className="text-right font-bold">Total</TableCell>
                     <TableCell className="font-bold">{totals.totalChallan}</TableCell>
                     <TableCell className="font-bold">{totals.totalNetScripts}</TableCell>
                     <TableCell className="font-bold">{totals.totalDifference}</TableCell>
@@ -445,21 +455,27 @@ export default function IndexPage() {
       
       {!activeView && (
         <div className="grid md:grid-cols-2 gap-8 pt-8">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-blue-500 text-white" onClick={() => setActiveView("North")}>
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-blue-500 text-white flex flex-col justify-between" onClick={() => setActiveView("North")}>
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center">North Campus</CardTitle>
                 </CardHeader>
+                <CardFooter>
+                    <span className="text-xs text-center w-full">Entries: {northEntriesCount}</span>
+                </CardFooter>
             </Card>
-             <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-red-500 text-white" onClick={() => setActiveView("South")}>
+             <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-red-500 text-white flex flex-col justify-between" onClick={() => setActiveView("South")}>
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center">South Campus</CardTitle>
                 </CardHeader>
+                <CardFooter>
+                    <span className="text-xs text-center w-full">Entries: {southEntriesCount}</span>
+                </CardFooter>
             </Card>
         </div>
       )}
 
-      {activeView === 'North' && renderTable("North", filteredEntries, getTotalsForView(), getStatsForView())}
-      {activeView === 'South' && renderTable("South", filteredEntries, getTotalsForView(), getStatsForView())}
+      {activeView === 'North' && renderTable("North Campus", filteredEntries, getTotalsForView(), getStatsForView())}
+      {activeView === 'South' && renderTable("South Campus", filteredEntries, getTotalsForView(), getStatsForView())}
       {activeView === 'Search' && renderTable(`Search Results for "${searchTerm}"`, filteredEntries, getTotalsForView())}
 
        <Dialog open={remarksModalOpen} onOpenChange={setRemarksModalOpen}>

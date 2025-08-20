@@ -140,19 +140,20 @@ export default function BillTrashPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                     <TableHead>
+                  <TableRow className="bg-primary hover:bg-primary/90">
+                     <TableHead className="text-primary-foreground">
                         <Checkbox
                           onCheckedChange={handleSelectAll}
                           checked={selectedTrash.length === trashedBills.length && trashedBills.length > 0}
                           aria-label="Select all"
+                           className="border-primary-foreground text-primary-foreground"
                         />
                       </TableHead>
-                    <TableHead>Evaluator Name</TableHead>
-                    <TableHead>Evaluator ID</TableHead>
-                    <TableHead>Course</TableHead>
-                    <TableHead>College</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-primary-foreground">Evaluator Name</TableHead>
+                    <TableHead className="text-primary-foreground">Evaluator ID</TableHead>
+                    <TableHead className="text-primary-foreground">Course</TableHead>
+                    <TableHead className="text-primary-foreground">College</TableHead>
+                    <TableHead className="text-right text-primary-foreground">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

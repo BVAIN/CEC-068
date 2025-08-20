@@ -154,22 +154,23 @@ export default function IndexTrashPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                     <TableHead>
+                  <TableRow className="bg-primary hover:bg-primary/90">
+                     <TableHead className="text-primary-foreground">
                         <Checkbox
                           onCheckedChange={handleSelectAll}
                           checked={selectedTrash.length === trashedEntries.length && trashedEntries.length > 0}
                           aria-label="Select all"
+                          className="border-primary-foreground text-primary-foreground"
                         />
                       </TableHead>
-                    <TableHead>Date of Exam</TableHead>
-                    <TableHead>Course</TableHead>
-                    <TableHead>Campus</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>UPC</TableHead>
-                    <TableHead>QP No.</TableHead>
-                    <TableHead>Page No.</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-primary-foreground">Date of Exam</TableHead>
+                    <TableHead className="text-primary-foreground">Course</TableHead>
+                    <TableHead className="text-primary-foreground">Campus</TableHead>
+                    <TableHead className="text-primary-foreground">Type</TableHead>
+                    <TableHead className="text-primary-foreground">UPC</TableHead>
+                    <TableHead className="text-primary-foreground">QP No.</TableHead>
+                    <TableHead className="text-primary-foreground">Page No.</TableHead>
+                    <TableHead className="text-right text-primary-foreground">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

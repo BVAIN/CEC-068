@@ -128,22 +128,23 @@ export default function IssueTrashPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                     <TableHead>
+                  <TableRow className="bg-primary hover:bg-primary/90">
+                     <TableHead className="text-primary-foreground">
                         <Checkbox
                           onCheckedChange={handleSelectAll}
                           checked={selectedTrash.length === trashedIssues.length && trashedIssues.length > 0}
                           aria-label="Select all"
+                          className="border-primary-foreground text-primary-foreground"
                         />
                       </TableHead>
-                    <TableHead>Teacher Name</TableHead>
-                    <TableHead>Teacher ID</TableHead>
-                    <TableHead>Course</TableHead>
-                    <TableHead>Campus</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Date of Issue</TableHead>
-                    <TableHead>Packet No.</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-primary-foreground">Teacher Name</TableHead>
+                    <TableHead className="text-primary-foreground">Teacher ID</TableHead>
+                    <TableHead className="text-primary-foreground">Course</TableHead>
+                    <TableHead className="text-primary-foreground">Campus</TableHead>
+                    <TableHead className="text-primary-foreground">Type</TableHead>
+                    <TableHead className="text-primary-foreground">Date of Issue</TableHead>
+                    <TableHead className="text-primary-foreground">Packet No.</TableHead>
+                    <TableHead className="text-right text-primary-foreground">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -162,7 +163,7 @@ export default function IssueTrashPage() {
                       <TableCell>{issue.teacherId}</TableCell>
                       <TableCell>{issue.course}</TableCell>
                       <TableCell>{issue.campus}</TableCell>
-                      <TableCell>{issue.type}</TableCell>
+                      <TableCell>{issue.schoolType}</TableCell>
                       <TableCell>{issue.dateOfIssue}</TableCell>
                       <TableCell>{issue.packetNo}</TableCell>
                       <TableCell className="text-right">
