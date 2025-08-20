@@ -33,6 +33,7 @@ type StatDetail = {
     asPerChallan: number;
     netScripts: number;
     difference: number;
+    entryCount: number;
 };
 
 type CampusStats = {
@@ -140,7 +141,8 @@ export default function IndexPage() {
           const filtered = campusEntries.filter(e => e.type === type);
           const asPerChallan = filtered.reduce((acc, e) => acc + (e.asPerChallan || 0), 0);
           const netScripts = filtered.reduce((acc, e) => acc + (e.netScripts || 0), 0);
-          return { asPerChallan, netScripts, difference: netScripts - asPerChallan };
+          const entryCount = filtered.length;
+          return { asPerChallan, netScripts, difference: netScripts - asPerChallan, entryCount };
       };
 
       const regular = calculateStatsForType("Regular");
@@ -151,6 +153,7 @@ export default function IndexPage() {
           asPerChallan: regular.asPerChallan + ncweb.asPerChallan + sol.asPerChallan,
           netScripts: regular.netScripts + ncweb.netScripts + sol.netScripts,
           difference: regular.difference + ncweb.difference + sol.difference,
+          entryCount: regular.entryCount + ncweb.entryCount + sol.entryCount
       };
 
       return { regular, ncweb, sol, allData };
@@ -264,6 +267,9 @@ export default function IndexPage() {
             <div className="flex justify-between w-full font-bold text-base">
                 <span>Difference:</span>
                 <span>{stats.difference}</span>
+            </div>
+            <div className="w-full text-center text-xs mt-2">
+              (Entries: {stats.entryCount})
             </div>
         </CardFooter>
     </Card>
