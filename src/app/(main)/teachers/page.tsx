@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FileDown, Trash2 } from "lucide-react";
+import { FileDown, Trash2, Search } from "lucide-react";
 import { BILLS_STORAGE_KEY, TEACHER_TRASH_STORAGE_KEY } from "@/lib/constants";
 import type { BillFormValues } from "../bill-form/page";
 import * as XLSX from "xlsx";
@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
 
 type TeacherData = Omit<BillFormValues, 'id' | 'signature'>;
 
@@ -20,6 +21,7 @@ export default function TeachersDataPage() {
   const [teachers, setTeachers] = useState<TeacherData[]>([]);
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
   const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
@@ -39,6 +41,19 @@ export default function TeachersDataPage() {
       setTeachers(Array.from(uniqueTeachers.values()));
     }
   }, []);
+
+  const filteredTeachers = useMemo(() => {
+    const lowercasedTerm = searchTerm.toLowerCase();
+    if (!lowercasedTerm) return teachers;
+    return teachers.filter(teacher => {
+        return (
+            teacher.evaluatorName.toLowerCase().includes(lowercasedTerm) ||
+            teacher.evaluatorId.toLowerCase().includes(lowercasedTerm) ||
+            teacher.course.toLowerCase().includes(lowercasedTerm) ||
+            teacher.mobileNo.toLowerCase().includes(lowercasedTerm)
+        );
+    });
+  }, [teachers, searchTerm]);
   
   const updateTeachersStateAndStorage = (updatedTeachers: TeacherData[]) => {
       setTeachers(updatedTeachers);
@@ -68,7 +83,7 @@ export default function TeachersDataPage() {
   };
 
   const handleExport = () => {
-    const worksheet = XLSX.utils.json_to_sheet(teachers);
+    const worksheet = XLSX.utils.json_to_sheet(filteredTeachers);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Teachers");
     XLSX.writeFile(workbook, "TeachersData.xlsx");
@@ -80,7 +95,7 @@ export default function TeachersDataPage() {
   
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedTeachers(teachers.map(t => t.evaluatorId));
+      setSelectedTeachers(filteredTeachers.map(t => t.evaluatorId));
     } else {
       setSelectedTeachers([]);
     }
@@ -92,38 +107,51 @@ export default function TeachersDataPage() {
         <div>
           <h1 className="text-4xl font-bold tracking-tight font-headline">Teachers Data</h1>
         </div>
-        <div className="flex items-center gap-2">
-            {selectedTeachers.length > 0 && (
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="destructive">
-                            <Trash2 className="mr-2 h-4 w-4" /> Delete ({selectedTeachers.length})
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>This will move {selectedTeachers.length} teacher(s) to the trash.</AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(selectedTeachers)}>Continue</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            )}
-            <Button onClick={handleExport} disabled={teachers.length === 0}>
-                <FileDown className="mr-2 h-4 w-4" /> Export to Excel
-            </Button>
-        </div>
       </header>
       
       <Card>
         <CardHeader>
-          <CardTitle>All Teachers ({teachers.length})</CardTitle>
+            <div className="flex justify-between items-center gap-4 flex-wrap">
+                <div>
+                  <CardTitle>All Teachers ({filteredTeachers.length})</CardTitle>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input 
+                            placeholder="Search teachers..." 
+                            className="pl-10 w-64"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    {selectedTeachers.length > 0 && (
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" /> Delete ({selectedTeachers.length})
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>This will move {selectedTeachers.length} teacher(s) to the trash.</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(selectedTeachers)}>Continue</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    )}
+                    <Button onClick={handleExport} disabled={filteredTeachers.length === 0}>
+                        <FileDown className="mr-2 h-4 w-4" /> Export to Excel
+                    </Button>
+                </div>
+            </div>
         </CardHeader>
         <CardContent>
-          {teachers.length > 0 ? (
+          {filteredTeachers.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -131,7 +159,7 @@ export default function TeachersDataPage() {
                     <TableHead className="text-primary-foreground w-12">
                          <Checkbox
                             onCheckedChange={handleSelectAll}
-                            checked={teachers.length > 0 && selectedTeachers.length === teachers.length}
+                            checked={filteredTeachers.length > 0 && selectedTeachers.length === filteredTeachers.length}
                             aria-label="Select all"
                             className="border-primary-foreground text-primary-foreground"
                          />
@@ -147,7 +175,7 @@ export default function TeachersDataPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {teachers.map((teacher, index) => (
+                  {filteredTeachers.map((teacher, index) => (
                     <TableRow key={teacher.evaluatorId} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")}>
                       <TableCell>
                          <Checkbox
@@ -190,7 +218,7 @@ export default function TeachersDataPage() {
           ) : (
              <div className="text-center py-16 border-2 border-dashed rounded-lg">
               <h3 className="mt-4 text-lg font-medium">No Teacher Data Found</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Submit a bill to see teacher data here.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Submit a bill to see teacher data here, or adjust your search.</p>
             </div>
           )}
         </CardContent>
