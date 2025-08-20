@@ -17,6 +17,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogHeader, DialogFooter, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 type FilterValues = Partial<Omit<PublicIssueFormValues, "id" | "asPerChallan" | "netScripts" | "difference">> & {
     asPerChallan: string;
@@ -42,6 +44,9 @@ export default function IndexPage() {
   const [activeView, setActiveView] = useState<"North" | "South" | "Search" | null>(null);
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
   const [filters, setFilters] = useState<FilterValues>({} as FilterValues);
+  const [remarksModalOpen, setRemarksModalOpen] = useState(false);
+  const [currentRemarks, setCurrentRemarks] = useState<{ id: string; text?: string }>({ id: '' });
+  const [isEditingRemarks, setIsEditingRemarks] = useState(false);
 
   useEffect(() => {
     const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
@@ -92,7 +97,7 @@ export default function IndexPage() {
             ) : [];
             break;
         default:
-            baseEntries = entries.filter(e => e.campus === activeView);
+            baseEntries = []; // Show nothing if no view is active
     }
 
     return baseEntries.filter(entry => {
@@ -111,10 +116,10 @@ export default function IndexPage() {
     const totalDifference = totalNetScripts - totalChallan;
     return { totalChallan, totalNetScripts, totalDifference };
   }
-
-  const northTotals = useMemo(() => calculateTotals(filteredEntries), [filteredEntries]);
-  const southTotals = useMemo(() => calculateTotals(filteredEntries), [filteredEntries]);
-  const searchTotals = useMemo(() => calculateTotals(filteredEntries), [filteredEntries]);
+  
+  const getTotalsForView = () => {
+      return calculateTotals(filteredEntries);
+  }
 
 
   const calculateCampusStats = (campusEntries: PublicIssueFormValues[]): CampusStats => {
@@ -127,8 +132,7 @@ export default function IndexPage() {
       return { regular, ncweb, sol, allData: regular + ncweb + sol, asPerChallan, netScripts, difference };
   }
   
-  const northStats = useMemo(() => calculateCampusStats(filteredEntries), [filteredEntries]);
-  const southStats = useMemo(() => calculateCampusStats(filteredEntries), [filteredEntries]);
+  const getStatsForView = () => calculateCampusStats(filteredEntries);
 
 
   const handleSelectEntry = (entryId: string, checked: boolean) => {
@@ -174,6 +178,25 @@ export default function IndexPage() {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Entries");
     XLSX.writeFile(workbook, filename);
   };
+  
+  const handleOpenRemarks = (entry: PublicIssueFormValues) => {
+      setCurrentRemarks({ id: entry.id!, text: entry.remarks || '' });
+      setIsEditingRemarks(!entry.remarks);
+      setRemarksModalOpen(true);
+  };
+
+  const handleSaveRemarks = () => {
+    const newEntries = entries.map(entry => {
+        if (entry.id === currentRemarks.id) {
+            return { ...entry, remarks: currentRemarks.text };
+        }
+        return entry;
+    });
+    updateEntriesStateAndStorage(newEntries);
+    setRemarksModalOpen(false);
+    toast({ title: "Remarks Saved", description: "Your remarks have been updated." });
+  };
+
 
   const filterFields: { name: keyof FilterValues, label: string }[] = [
       { name: 'dateOfExam', label: 'Date of Exam' },
@@ -338,7 +361,7 @@ export default function IndexPage() {
                         <TableCell>{(entry.netScripts || 0) - (entry.asPerChallan || 0)}</TableCell>
                         <TableCell>
                             <div className="flex gap-2">
-                                <Button variant="outline" size="icon" onClick={() => {}}>
+                                <Button variant="outline" size="icon" onClick={() => handleOpenRemarks(entry)}>
                                     <MessageSquare className="h-4 w-4" />
                                 </Button>
                                 <Button variant="outline" size="icon" onClick={() => handleEdit(entry.id!)}>
@@ -431,11 +454,34 @@ export default function IndexPage() {
         </div>
       )}
 
-      {activeView === 'North' && renderTable("North", filteredEntries, northTotals, northStats)}
-      {activeView === 'South' && renderTable("South", filteredEntries, southTotals, southStats)}
-      {activeView === 'Search' && renderTable(`Search Results for "${searchTerm}"`, filteredEntries, searchTotals)}
+      {activeView === 'North' && renderTable("North", filteredEntries, getTotalsForView(), getStatsForView())}
+      {activeView === 'South' && renderTable("South", filteredEntries, getTotalsForView(), getStatsForView())}
+      {activeView === 'Search' && renderTable(`Search Results for "${searchTerm}"`, filteredEntries, getTotalsForView())}
 
-
+       <Dialog open={remarksModalOpen} onOpenChange={setRemarksModalOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Remarks</DialogTitle>
+                <DialogDescription>
+                    {isEditingRemarks ? "Add or edit remarks for this entry." : "Viewing remarks for this entry."}
+                </DialogDescription>
+            </DialogHeader>
+            <Textarea
+                value={currentRemarks.text}
+                onChange={(e) => setCurrentRemarks(prev => ({ ...prev, text: e.target.value }))}
+                readOnly={!isEditingRemarks}
+                rows={6}
+            />
+            <DialogFooter>
+                {!isEditingRemarks ? (
+                    <Button type="button" onClick={() => setIsEditingRemarks(true)}>Edit</Button>
+                ) : (
+                    <Button type="button" onClick={handleSaveRemarks}>Save</Button>
+                )}
+                <Button type="button" variant="outline" onClick={() => setRemarksModalOpen(false)}>Close</Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -27,6 +27,7 @@ const publicIssueFormSchema = z.object({
   course: z.string().min(1, "Course is required"),
   campus: z.enum(["North", "South"], { required_error: "Please select a campus"}),
   type: z.enum(["Regular", "NCWEB", "SOL"], { required_error: "Please select a type"}),
+  remarks: z.string().optional(),
 });
 
 export type PublicIssueFormValues = z.infer<typeof publicIssueFormSchema>;
@@ -49,6 +50,7 @@ export default function PublicIssueEntryPage() {
       course: "",
       campus: undefined,
       type: undefined,
+      remarks: "",
     },
   });
   
