@@ -13,10 +13,21 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   username: z.string().min(1, "Username is required"),
   password: z.string().min(1, "Password is required"),
+});
+
+const forgotPasswordSchema = z.object({
+    securityAnswer: z.string().min(1, "Answer is required"),
+    newPassword: z.string().min(6, "New password must be at least 6 characters"),
+    confirmPassword: z.string(),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
 });
 
 export default function LoginForm() {
@@ -24,12 +35,22 @@ export default function LoginForm() {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
       password: "",
+    },
+  });
+  
+  const forgotPasswordForm = useForm<z.infer<typeof forgotPasswordSchema>>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+        securityAnswer: "",
+        newPassword: "",
+        confirmPassword: "",
     },
   });
 
@@ -52,6 +73,29 @@ export default function LoginForm() {
       }
       setIsLoading(false);
     }, 1000);
+  }
+  
+  function onForgotPasswordSubmit(values: z.infer<typeof forgotPasswordSchema>) {
+    if (values.securityAnswer.toLowerCase() === "prabhjeet singh") {
+        // In a real app, you would now call an API to update the password.
+        // For this demo, we'll just show a success message.
+        toast({
+            title: "Password Reset Successful",
+            description: "You can now log in with your new password (demo: use original).",
+        });
+        setIsForgotPasswordOpen(false);
+        forgotPasswordForm.reset();
+    } else {
+        forgotPasswordForm.setError("securityAnswer", {
+            type: "manual",
+            message: "The answer to the security question is incorrect."
+        });
+        toast({
+            variant: "destructive",
+            title: "Incorrect Answer",
+            description: "The answer to the security question is incorrect.",
+        });
+    }
   }
 
   return (
@@ -80,7 +124,71 @@ export default function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                   <div className="flex justify-between items-center">
+                        <FormLabel>Password</FormLabel>
+                        <Dialog open={isForgotPasswordOpen} onOpenChange={setIsForgotPasswordOpen}>
+                            <DialogTrigger asChild>
+                                <Button type="button" variant="link" className="p-0 h-auto text-xs">Forgot Password?</Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <Form {...forgotPasswordForm}>
+                                    <form onSubmit={forgotPasswordForm.handleSubmit(onForgotPasswordSubmit)}>
+                                        <DialogHeader>
+                                            <DialogTitle>Forgot Password</DialogTitle>
+                                            <DialogDescription>
+                                                Answer the security question to reset your password.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-4 py-4">
+                                            <FormField
+                                                control={forgotPasswordForm.control}
+                                                name="securityAnswer"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Who Created This Web Application?</FormLabel>
+                                                        <FormControl>
+                                                            <Input placeholder="Enter your answer" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={forgotPasswordForm.control}
+                                                name="newPassword"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>New Password</FormLabel>
+                                                        <FormControl>
+                                                            <Input type="password" placeholder="Enter new password" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={forgotPasswordForm.control}
+                                                name="confirmPassword"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Confirm New Password</FormLabel>
+                                                        <FormControl>
+                                                            <Input type="password" placeholder="Confirm new password" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+                                        <DialogFooter>
+                                            <Button type="button" variant="outline" onClick={() => setIsForgotPasswordOpen(false)}>Cancel</Button>
+                                            <Button type="submit">Reset Password</Button>
+                                        </DialogFooter>
+                                    </form>
+                                </Form>
+                            </DialogContent>
+                        </Dialog>
+                   </div>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -118,5 +226,3 @@ export default function LoginForm() {
     </Card>
   );
 }
-
-    
