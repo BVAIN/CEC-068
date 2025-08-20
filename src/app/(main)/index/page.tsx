@@ -27,7 +27,10 @@ type CampusStats = {
     regular: number,
     ncweb: number,
     sol: number,
-    allData: number
+    allData: number,
+    asPerChallan: number;
+    netScripts: number;
+    difference: number;
 }
 
 export default function IndexPage() {
@@ -49,7 +52,8 @@ export default function IndexPage() {
   useEffect(() => {
     // Clear selections when changing views
     setSelectedEntries([]);
-  }, [activeView, searchTerm, filters]);
+    setFilters({} as FilterValues);
+  }, [activeView]);
   
   useEffect(() => {
     if (searchTerm) {
@@ -69,36 +73,41 @@ export default function IndexPage() {
   };
 
   const filteredEntries = useMemo(() => {
-    let results = entries;
-    
-    // Global Search for 'Search' view
-    if (activeView === "Search") {
-        const lowercasedTerm = searchTerm.toLowerCase();
-        if (lowercasedTerm) {
-            results = results.filter(entry =>
+    let results: PublicIssueFormValues[];
+
+    switch(activeView) {
+        case 'North':
+            results = entries.filter(e => e.campus === 'North');
+            break;
+        case 'South':
+            results = entries.filter(e => e.campus === 'South');
+            break;
+        case 'Search':
+            const lowercasedTerm = searchTerm.toLowerCase();
+            results = lowercasedTerm ? entries.filter(entry =>
                 Object.values(entry).some(value => 
                     String(value).toLowerCase().includes(lowercasedTerm)
                 )
-            );
-        }
-    } else if (activeView) { // Filter for 'North' or 'South' view
-        results = entries.filter(e => e.campus === activeView);
-        
-        results = results.filter(entry => {
-            return Object.entries(filters).every(([key, value]) => {
-                if (!value) return true;
-                const entryValue = entry[key as keyof PublicIssueFormValues];
-                return String(entryValue).toLowerCase().includes(String(value).toLowerCase());
-            });
+            ) : [];
+            break;
+        default:
+            results = [];
+    }
+
+    if (activeView === 'North' || activeView === 'South') {
+      results = results.filter(entry => {
+        return Object.entries(filters).every(([key, value]) => {
+          if (!value) return true;
+          const entryValue = entry[key as keyof PublicIssueFormValues];
+          return String(entryValue).toLowerCase().includes(String(value).toLowerCase());
         });
+      });
     }
 
     return results;
   }, [entries, searchTerm, filters, activeView]);
   
-  const northEntries = useMemo(() => entries.filter(entry => entry.campus === 'North'), [entries]);
-  const southEntries = useMemo(() => entries.filter(entry => entry.campus === 'South'), [entries]);
-  
+
   const calculateTotals = (campusEntries: PublicIssueFormValues[]) => {
     const totalChallan = campusEntries.reduce((acc, entry) => acc + (entry.asPerChallan || 0), 0);
     const totalNetScripts = campusEntries.reduce((acc, entry) => acc + (entry.netScripts || 0), 0);
@@ -108,18 +117,21 @@ export default function IndexPage() {
 
   const northTotals = useMemo(() => calculateTotals(filteredEntries.filter(e => e.campus === 'North')), [filteredEntries]);
   const southTotals = useMemo(() => calculateTotals(filteredEntries.filter(e => e.campus === 'South')), [filteredEntries]);
-  const searchTotals = useMemo(() => calculateTotals(filteredEntries), [filteredEntries, activeView]);
+  const searchTotals = useMemo(() => calculateTotals(filteredEntries), [filteredEntries]);
 
 
   const calculateCampusStats = (campusEntries: PublicIssueFormValues[]): CampusStats => {
       const regular = campusEntries.filter(e => e.type === "Regular").reduce((acc, e) => acc + (e.netScripts || 0), 0);
       const ncweb = campusEntries.filter(e => e.type === "NCWEB").reduce((acc, e) => acc + (e.netScripts || 0), 0);
       const sol = campusEntries.filter(e => e.type === "SOL").reduce((acc, e) => acc + (e.netScripts || 0), 0);
-      return { regular, ncweb, sol, allData: regular + ncweb + sol };
+      const asPerChallan = campusEntries.reduce((acc, e) => acc + (e.asPerChallan || 0), 0);
+      const netScripts = campusEntries.reduce((acc, e) => acc + (e.netScripts || 0), 0);
+      const difference = netScripts - asPerChallan;
+      return { regular, ncweb, sol, allData: regular + ncweb + sol, asPerChallan, netScripts, difference };
   }
   
-  const northStats = useMemo(() => calculateCampusStats(northEntries), [northEntries]);
-  const southStats = useMemo(() => calculateCampusStats(southEntries), [southEntries]);
+  const northStats = useMemo(() => calculateCampusStats(filteredEntries.filter(e => e.campus === 'North')), [filteredEntries]);
+  const southStats = useMemo(() => calculateCampusStats(filteredEntries.filter(e => e.campus === 'South')), [filteredEntries]);
 
 
   const handleSelectEntry = (entryId: string, checked: boolean) => {
@@ -179,8 +191,8 @@ export default function IndexPage() {
   
   const StatTile = ({ title, value }: { title: string, value: number }) => (
       <Card>
-        <CardHeader>
-            <CardTitle className="text-base text-center">{title}</CardTitle>
+        <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-center font-medium text-muted-foreground">{title}</CardTitle>
         </CardHeader>
         <CardContent>
             <p className="text-2xl font-bold text-center">{value}</p>
@@ -194,11 +206,14 @@ export default function IndexPage() {
     return (
      <div className="mt-8 space-y-6">
         {stats && (
-             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+             <div className="grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
                 <StatTile title={`${title} Regular`} value={stats.regular} />
                 <StatTile title={`${title} NCWEB`} value={stats.ncweb} />
                 <StatTile title={`${title} SOL`} value={stats.sol} />
                 <StatTile title={`${title} All Data`} value={stats.allData} />
+                <StatTile title="As Per Challan" value={stats.asPerChallan} />
+                <StatTile title="Net Scripts" value={stats.netScripts} />
+                <StatTile title="Difference" value={stats.difference} />
             </div>
         )}
         <Card>
@@ -208,7 +223,7 @@ export default function IndexPage() {
                     <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-green-500 hover:bg-green-600 text-white">
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Entry
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleExport(data, `${title}_Entries.xlsx`)}>
+                    <Button size="sm" variant="outline" onClick={() => handleExport(data, `${title}_Entries.xlsx`)} className="bg-blue-500 hover:bg-blue-600 text-white border-blue-600">
                         <FileDown className="mr-2 h-4 w-4" /> Export to Excel
                     </Button>
                     {selectedEntries.length > 0 && (
@@ -386,21 +401,11 @@ export default function IndexPage() {
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center">North Campus</CardTitle>
                 </CardHeader>
-                 <CardFooter>
-                     <div className="w-full text-center font-bold text-lg">
-                        Total Scripts: {northStats.allData}
-                    </div>
-                </CardFooter>
             </Card>
              <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-red-500 text-white" onClick={() => setActiveView("South")}>
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center">South Campus</CardTitle>
                 </CardHeader>
-                 <CardFooter>
-                     <div className="w-full text-center font-bold text-lg">
-                        Total Scripts: {southStats.allData}
-                    </div>
-                </CardFooter>
             </Card>
         </div>
       )}
@@ -413,5 +418,7 @@ export default function IndexPage() {
     </div>
   );
 }
+
+    
 
     
