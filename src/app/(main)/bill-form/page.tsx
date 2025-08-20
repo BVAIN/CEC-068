@@ -670,20 +670,21 @@ export default function BillFormPage() {
                  <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-muted">
-                                <TableHead className="w-12">
+                            <TableRow className="bg-primary hover:bg-primary/90">
+                                <TableHead className="w-12 text-primary-foreground">
                                      <Checkbox
                                       onCheckedChange={handleSelectAll}
                                       checked={filteredBills.length > 0 && selectedBills.length === filteredBills.length}
                                       aria-label="Select all"
+                                      className="border-primary-foreground text-primary-foreground"
                                     />
                                 </TableHead>
-                                <TableHead>S. No.</TableHead>
-                                <TableHead>Evaluator ID</TableHead>
-                                <TableHead>Evaluator Name</TableHead>
-                                <TableHead>Mobile No.</TableHead>
-                                <TableHead>Bank Account No.</TableHead>
-                                <TableHead>Actions</TableHead>
+                                <TableHead className="text-primary-foreground">S. No.</TableHead>
+                                <TableHead className="text-primary-foreground">Evaluator ID</TableHead>
+                                <TableHead className="text-primary-foreground">Evaluator Name</TableHead>
+                                <TableHead className="text-primary-foreground">Mobile No.</TableHead>
+                                <TableHead className="text-primary-foreground">Bank Account No.</TableHead>
+                                <TableHead className="text-primary-foreground">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

@@ -63,14 +63,14 @@ export default function TeachersDataPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-muted">
-                    <TableHead>S. No.</TableHead>
-                    <TableHead>Evaluator ID</TableHead>
-                    <TableHead>Evaluator Name</TableHead>
-                    <TableHead>College</TableHead>
-                    <TableHead>Course</TableHead>
-                    <TableHead>Mobile No.</TableHead>
-                    <TableHead>Email</TableHead>
+                  <TableRow className="bg-primary hover:bg-primary/90">
+                    <TableHead className="text-primary-foreground">S. No.</TableHead>
+                    <TableHead className="text-primary-foreground">Evaluator ID</TableHead>
+                    <TableHead className="text-primary-foreground">Evaluator Name</TableHead>
+                    <TableHead className="text-primary-foreground">College</TableHead>
+                    <TableHead className="text-primary-foreground">Course</TableHead>
+                    <TableHead className="text-primary-foreground">Mobile No.</TableHead>
+                    <TableHead className="text-primary-foreground">Email</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

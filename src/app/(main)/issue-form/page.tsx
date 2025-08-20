@@ -715,29 +715,30 @@ export default function ScriptsIssueFormPage() {
              <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted">
-                  <TableHead>
+                <TableRow className="bg-primary hover:bg-primary/90">
+                  <TableHead className="text-primary-foreground">
                     <Checkbox
                       onCheckedChange={handleSelectAll}
                       checked={filteredIssues.length > 0 && selectedIssues.length === filteredIssues.length}
                       aria-label="Select all"
+                      className="border-primary-foreground text-primary-foreground"
                     />
                   </TableHead>
-                  <TableHead>Token No.</TableHead>
-                  <TableHead>Teacher Name / ID</TableHead>
-                  <TableHead>Date of Issue</TableHead>
-                  <TableHead>Packet No.</TableHead>
-                  <TableHead>QP No.</TableHead>
-                  <TableHead>Course</TableHead>
-                  <TableHead>Range</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Campus</TableHead>
-                  <TableHead>No. of Scripts</TableHead>
-                  <TableHead>No. of Absent</TableHead>
-                  <TableHead>Missing</TableHead>
-                  <TableHead>Extra Sheets</TableHead>
-                  <TableHead>Received</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="text-primary-foreground">Token No.</TableHead>
+                  <TableHead className="text-primary-foreground">Teacher Name / ID</TableHead>
+                  <TableHead className="text-primary-foreground">Date of Issue</TableHead>
+                  <TableHead className="text-primary-foreground">Packet No.</TableHead>
+                  <TableHead className="text-primary-foreground">QP No.</TableHead>
+                  <TableHead className="text-primary-foreground">Course</TableHead>
+                  <TableHead className="text-primary-foreground">Range</TableHead>
+                  <TableHead className="text-primary-foreground">Type</TableHead>
+                  <TableHead className="text-primary-foreground">Campus</TableHead>
+                  <TableHead className="text-primary-foreground">No. of Scripts</TableHead>
+                  <TableHead className="text-primary-foreground">No. of Absent</TableHead>
+                  <TableHead className="text-primary-foreground">Missing</TableHead>
+                  <TableHead className="text-primary-foreground">Extra Sheets</TableHead>
+                  <TableHead className="text-primary-foreground">Received</TableHead>
+                  <TableHead className="text-primary-foreground">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

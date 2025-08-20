@@ -322,23 +322,24 @@ export default function IndexPage() {
             <CardContent>
                 <Table>
                 <TableHeader>
-                    <TableRow className="bg-muted">
-                    <TableHead className="w-12">
+                    <TableRow className="bg-primary hover:bg-primary/90">
+                    <TableHead className="w-12 text-primary-foreground">
                         <Checkbox
                             onCheckedChange={handleSelectAll(data)}
                             checked={isAllSelected}
                             aria-label="Select all"
+                            className="border-primary-foreground text-primary-foreground"
                         />
                     </TableHead>
-                    <TableHead>Date of Exam</TableHead>
-                    <TableHead>UPC</TableHead>
-                    <TableHead>QP No.</TableHead>
-                    <TableHead>Page No.</TableHead>
-                    <TableHead>Course</TableHead>
-                    <TableHead>As Per Challan</TableHead>
-                    <TableHead>Net Scripts</TableHead>
-                    <TableHead>Difference</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="text-primary-foreground">Date of Exam</TableHead>
+                    <TableHead className="text-primary-foreground">UPC</TableHead>
+                    <TableHead className="text-primary-foreground">QP No.</TableHead>
+                    <TableHead className="text-primary-foreground">Page No.</TableHead>
+                    <TableHead className="text-primary-foreground">Course</TableHead>
+                    <TableHead className="text-primary-foreground">As Per Challan</TableHead>
+                    <TableHead className="text-primary-foreground">Net Scripts</TableHead>
+                    <TableHead className="text-primary-foreground">Difference</TableHead>
+                    <TableHead className="text-primary-foreground">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
