@@ -163,6 +163,7 @@ export default function IndexTrashPage() {
                       </TableHead>
                     <TableHead>Date of Exam</TableHead>
                     <TableHead>Course</TableHead>
+                    <TableHead>Campus</TableHead>
                     <TableHead>UPC</TableHead>
                     <TableHead>QP No.</TableHead>
                     <TableHead>Page No.</TableHead>
@@ -183,6 +184,7 @@ export default function IndexTrashPage() {
                         </TableCell>
                       <TableCell>{entry.dateOfExam}</TableCell>
                       <TableCell>{entry.course}</TableCell>
+                      <TableCell>{entry.campus}</TableCell>
                       <TableCell>{entry.upc}</TableCell>
                       <TableCell>{entry.qpNo}</TableCell>
                       <TableCell>{entry.pageNo}</TableCell>
@@ -219,3 +221,5 @@ export default function IndexTrashPage() {
     </div>
   );
 }
+
+    

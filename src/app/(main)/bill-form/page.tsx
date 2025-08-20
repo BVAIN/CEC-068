@@ -16,7 +16,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter, Share2, Copy, PencilRuler } from "lucide-react";
+import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter, Share2, Copy, PencilRuler, Users } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -736,8 +736,13 @@ export default function BillFormPage() {
                     </Table>
                  </div>
             </CardContent>
+            <CardFooter>
+                <Button><Users className="mr-2 h-4 w-4" /> Teachers Data</Button>
+            </CardFooter>
         </Card>
       )}
     </div>
   );
 }
+
+    
