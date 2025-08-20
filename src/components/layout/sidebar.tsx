@@ -13,7 +13,7 @@ const menuItems = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/index", label: "Index", icon: List },
   { href: "/issue-form", label: "Issue Packets", icon: FilePlus },
-  { href: "/bill-form", label: "Bill Form", icon: FileText },
+  { href: "/bill-form", label: "Bill Forms", icon: FileText },
   { href: "/teachers", label: "Teachers Data", icon: Users },
   { 
       href: "/trash", 
@@ -117,5 +117,3 @@ export default function Sidebar() {
     </aside>
   );
 }
-
-    

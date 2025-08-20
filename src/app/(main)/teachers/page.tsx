@@ -63,7 +63,7 @@ export default function TeachersDataPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-muted">
                     <TableHead>S. No.</TableHead>
                     <TableHead>Evaluator ID</TableHead>
                     <TableHead>Evaluator Name</TableHead>
@@ -99,5 +99,3 @@ export default function TeachersDataPage() {
     </div>
   );
 }
-
-    

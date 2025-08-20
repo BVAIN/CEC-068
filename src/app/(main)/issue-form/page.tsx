@@ -715,7 +715,7 @@ export default function ScriptsIssueFormPage() {
              <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-muted">
                   <TableHead>
                     <Checkbox
                       onCheckedChange={handleSelectAll}

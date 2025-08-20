@@ -248,8 +248,9 @@ export default function IndexPage() {
     
     return (
      <>
+      <div className="mt-8 space-y-6">
         {stats && (
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-span-5 gap-4 mt-8">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-span-5 gap-4">
                 <StatTile title={`${title} Regular`} value={stats.regular} />
                 <StatTile title={`${title} NCWEB`} value={stats.ncweb} />
                 <StatTile title={`${title} SOL`} value={stats.sol} />
@@ -257,14 +258,14 @@ export default function IndexPage() {
                 <SummaryStatCard title="Overall Summary" asPerChallan={stats.asPerChallan} netScripts={stats.netScripts} difference={stats.difference} />
             </div>
         )}
-        <Card className="mt-6">
+        <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{title} Campus</CardTitle>
                 <div className="flex items-center gap-2">
                     <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-green-500 hover:bg-green-600 text-white">
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Entry
                     </Button>
-                    <Button size="sm" onClick={() => handleExport(data, `${title}_Entries.xlsx`)}>
+                    <Button size="sm" onClick={() => handleExport(data, `${title}_Entries.xlsx`)} variant="default">
                         <FileDown className="mr-2 h-4 w-4" /> Export to Excel
                     </Button>
                     {selectedEntries.length > 0 && (
@@ -321,7 +322,7 @@ export default function IndexPage() {
             <CardContent>
                 <Table>
                 <TableHeader>
-                    <TableRow>
+                    <TableRow className="bg-muted">
                     <TableHead className="w-12">
                         <Checkbox
                             onCheckedChange={handleSelectAll(data)}
@@ -401,6 +402,7 @@ export default function IndexPage() {
                 </Table>
             </CardContent>
         </Card>
+        </div>
      </>
   )};
 

@@ -670,7 +670,7 @@ export default function BillFormPage() {
                  <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
-                            <TableRow>
+                            <TableRow className="bg-muted">
                                 <TableHead className="w-12">
                                      <Checkbox
                                       onCheckedChange={handleSelectAll}
@@ -745,5 +745,3 @@ export default function BillFormPage() {
     </div>
   );
 }
-
-    
