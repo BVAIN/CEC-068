@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive, List } from "lucide-react";
+import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive, List, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-provider";
@@ -14,6 +14,7 @@ const menuItems = [
   { href: "/index", label: "Index", icon: List },
   { href: "/issue-form", label: "Issue Packets", icon: FilePlus },
   { href: "/bill-form", label: "Bill Form", icon: FileText },
+  { href: "/teachers", label: "Teachers Data", icon: Users },
   { 
       href: "/trash", 
       label: "Trash", 
@@ -116,3 +117,5 @@ export default function Sidebar() {
     </aside>
   );
 }
+
+    

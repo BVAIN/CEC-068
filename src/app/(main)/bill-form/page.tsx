@@ -512,7 +512,6 @@ export default function BillFormPage() {
                 <div className="flex justify-between items-center gap-4 flex-wrap">
                     <div>
                         <CardTitle>Submitted Bills ({filteredBills.length})</CardTitle>
-                        <CardDescription>View and manage submitted bill forms.</CardDescription>
                     </div>
                      <div className="flex items-center gap-2">
                         <div className="relative">
@@ -737,7 +736,7 @@ export default function BillFormPage() {
                  </div>
             </CardContent>
             <CardFooter>
-                <Button><Users className="mr-2 h-4 w-4" /> Teachers Data</Button>
+                <Button onClick={() => router.push('/teachers')}><Users className="mr-2 h-4 w-4" /> Teachers Data</Button>
             </CardFooter>
         </Card>
       )}
