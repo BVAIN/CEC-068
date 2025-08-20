@@ -451,6 +451,7 @@ export default function BillFormPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Bill Form And Undertaking</h1>
+        <p className="text-lg text-muted-foreground mt-2">Manage your bill submissions here.</p>
       </header>
 
       <Form {...form}>
@@ -512,6 +513,7 @@ export default function BillFormPage() {
                 <div className="flex justify-between items-center gap-4 flex-wrap">
                     <div>
                         <CardTitle>Submitted Bills ({filteredBills.length})</CardTitle>
+                        <CardDescription>View and manage submitted bill forms.</CardDescription>
                     </div>
                      <div className="flex items-center gap-2">
                         <div className="relative">
@@ -525,7 +527,7 @@ export default function BillFormPage() {
                         </div>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
+                                <Button className="bg-gradient-to-r from-green-400 to-yellow-400 text-black"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-96 max-h-[80vh] overflow-y-auto">
                                 <div className="grid gap-4">

@@ -93,7 +93,7 @@ export default function BillTrashPage() {
       {trashedBills.length > 0 && selectedTrash.length > 0 && (
           <Card>
               <CardContent className="pt-6 flex gap-4">
-                  <Button onClick={() => handleRestore(selectedTrash)}><History className="mr-2 h-4 w-4" /> Restore Selected ({selectedTrash.length})</Button>
+                  <Button onClick={() => handleRestore(selectedTrash)} style={{backgroundColor: 'lightgreen'}}><History className="mr-2 h-4 w-4" /> Restore Selected ({selectedTrash.length})</Button>
                   <AlertDialog>
                       <AlertDialogTrigger asChild>
                           <Button variant="destructive"><ShieldX className="mr-2 h-4 w-4" /> Delete Selected ({selectedTrash.length})</Button>
@@ -172,7 +172,7 @@ export default function BillTrashPage() {
                       <TableCell>{bill.collegeName}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
-                            <Button variant="outline" size="sm" onClick={() => handleRestore([bill.id!])}>
+                            <Button variant="outline" size="sm" onClick={() => handleRestore([bill.id!])} style={{backgroundColor: 'lightgreen'}}>
                               <History className="mr-2 h-4 w-4" /> Restore
                             </Button>
                              <AlertDialog>
@@ -227,3 +227,5 @@ export default function BillTrashPage() {
     </div>
   );
 }
+
+    
