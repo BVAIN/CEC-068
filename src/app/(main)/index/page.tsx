@@ -173,7 +173,7 @@ export default function IndexPage() {
   };
   
   const handleExport = (data: PublicIssueFormValues[], filename: string) => {
-    const worksheet = XLSX.utils.json_to_sheet(data);
+    const worksheet = XLSX.utils.json_to_sheet(data.map(({id, ...rest}) => rest));
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Entries");
     XLSX.writeFile(workbook, filename);
@@ -249,7 +249,7 @@ export default function IndexPage() {
     return (
      <div className="mt-8 space-y-6">
         {stats && (
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-span-5 gap-4">
                 <StatTile title={`${title} Regular`} value={stats.regular} />
                 <StatTile title={`${title} NCWEB`} value={stats.ncweb} />
                 <StatTile title={`${title} SOL`} value={stats.sol} />
@@ -264,7 +264,7 @@ export default function IndexPage() {
                     <Button size="sm" onClick={() => handleNavigation('/entry')} style={{backgroundColor: 'lightgreen'}}>
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Entry
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleExport(data, `${title}_Entries.xlsx`)} style={{backgroundColor: 'blue', color: 'white'}}>
+                    <Button size="sm" variant="outline" onClick={() => handleExport(data, `${title}_Entries.xlsx`)} style={{backgroundColor: 'lightblue', color: 'white'}}>
                         <FileDown className="mr-2 h-4 w-4" /> Export to Excel
                     </Button>
                     {selectedEntries.length > 0 && (
@@ -361,7 +361,7 @@ export default function IndexPage() {
                         <TableCell>{(entry.netScripts || 0) - (entry.asPerChallan || 0)}</TableCell>
                         <TableCell>
                             <div className="flex gap-2">
-                                <Button variant="outline" size="icon" onClick={() => handleOpenRemarks(entry)} style={{backgroundColor: 'blue', color: 'white'}}>
+                                <Button variant="outline" size="icon" onClick={() => handleOpenRemarks(entry)} style={{backgroundColor: 'lightblue', color: 'white'}}>
                                     <MessageSquare className="h-4 w-4" />
                                 </Button>
                                 <Button variant="outline" size="icon" onClick={() => handleEdit(entry.id!)} style={{backgroundColor: 'green', color: 'white'}}>
@@ -485,3 +485,5 @@ export default function IndexPage() {
     </div>
   );
 }
+
+    
