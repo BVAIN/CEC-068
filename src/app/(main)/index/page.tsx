@@ -16,6 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Separator } from "@/components/ui/separator";
 
 type FilterValues = Partial<Omit<PublicIssueFormValues, "id" | "asPerChallan" | "netScripts" | "difference">> & {
     asPerChallan: string;
@@ -50,7 +51,7 @@ export default function IndexPage() {
   }, []);
 
   useEffect(() => {
-    // Clear selections when changing views
+    // Clear selections and filters when changing views
     setSelectedEntries([]);
     setFilters({} as FilterValues);
   }, [activeView]);
@@ -73,38 +74,34 @@ export default function IndexPage() {
   };
 
   const filteredEntries = useMemo(() => {
-    let results: PublicIssueFormValues[];
+    let baseEntries: PublicIssueFormValues[];
 
     switch(activeView) {
         case 'North':
-            results = entries.filter(e => e.campus === 'North');
+            baseEntries = entries.filter(e => e.campus === 'North');
             break;
         case 'South':
-            results = entries.filter(e => e.campus === 'South');
+            baseEntries = entries.filter(e => e.campus === 'South');
             break;
         case 'Search':
             const lowercasedTerm = searchTerm.toLowerCase();
-            results = lowercasedTerm ? entries.filter(entry =>
+            baseEntries = lowercasedTerm ? entries.filter(entry =>
                 Object.values(entry).some(value => 
                     String(value).toLowerCase().includes(lowercasedTerm)
                 )
             ) : [];
             break;
         default:
-            results = [];
+            baseEntries = [];
     }
 
-    if (activeView === 'North' || activeView === 'South') {
-      results = results.filter(entry => {
+    return baseEntries.filter(entry => {
         return Object.entries(filters).every(([key, value]) => {
           if (!value) return true;
           const entryValue = entry[key as keyof PublicIssueFormValues];
           return String(entryValue).toLowerCase().includes(String(value).toLowerCase());
         });
       });
-    }
-
-    return results;
   }, [entries, searchTerm, filters, activeView]);
   
 
@@ -130,8 +127,8 @@ export default function IndexPage() {
       return { regular, ncweb, sol, allData: regular + ncweb + sol, asPerChallan, netScripts, difference };
   }
   
-  const northStats = useMemo(() => calculateCampusStats(filteredEntries.filter(e => e.campus === 'North')), [filteredEntries]);
-  const southStats = useMemo(() => calculateCampusStats(filteredEntries.filter(e => e.campus === 'South')), [filteredEntries]);
+  const northStats = useMemo(() => calculateCampusStats(filteredEntries), [filteredEntries]);
+  const southStats = useMemo(() => calculateCampusStats(filteredEntries), [filteredEntries]);
 
 
   const handleSelectEntry = (entryId: string, checked: boolean) => {
@@ -200,20 +197,41 @@ export default function IndexPage() {
       </Card>
   );
 
+  const SummaryStatCard = ({ title, asPerChallan, netScripts, difference }: { title: string, asPerChallan: number, netScripts: number, difference: number }) => (
+    <Card className="col-span-1 md:col-span-2 lg:col-span-4 xl:col-span-2">
+        <CardHeader>
+            <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+            <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">As Per Challan:</span>
+                <span className="font-medium">{asPerChallan}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Net Scripts:</span>
+                <span className="font-medium">{netScripts}</span>
+            </div>
+            <Separator />
+            <div className="flex justify-between font-bold text-base">
+                <span>Difference:</span>
+                <span>{difference}</span>
+            </div>
+        </CardContent>
+    </Card>
+  );
+
   const renderTable = (title: string, data: PublicIssueFormValues[], totals: {totalChallan: number, totalNetScripts: number, totalDifference: number}, stats?: CampusStats) => {
     const isAllSelected = data.length > 0 && selectedEntries.length === data.filter(e => data.map(d => d.id).includes(e.id)).length;
     
     return (
      <div className="mt-8 space-y-6">
         {stats && (
-             <div className="grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 <StatTile title={`${title} Regular`} value={stats.regular} />
                 <StatTile title={`${title} NCWEB`} value={stats.ncweb} />
                 <StatTile title={`${title} SOL`} value={stats.sol} />
                 <StatTile title={`${title} All Data`} value={stats.allData} />
-                <StatTile title="As Per Challan" value={stats.asPerChallan} />
-                <StatTile title="Net Scripts" value={stats.netScripts} />
-                <StatTile title="Difference" value={stats.difference} />
+                <SummaryStatCard title="Overall Summary" asPerChallan={stats.asPerChallan} netScripts={stats.netScripts} difference={stats.difference} />
             </div>
         )}
         <Card>
@@ -418,7 +436,3 @@ export default function IndexPage() {
     </div>
   );
 }
-
-    
-
-    
