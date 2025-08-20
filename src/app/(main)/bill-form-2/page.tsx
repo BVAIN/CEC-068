@@ -282,16 +282,16 @@ export default function BillForm2Page() {
     { name: 'evaluatorId', label: 'Evaluator ID', type: 'text' },
     { name: 'evaluatorName', label: 'Evaluator Name', type: 'text' },
     { name: 'collegeName', label: 'College Name', type: 'text' },
-    { name: 'course', label: 'Course', type: 'text' },
-    { name: 'email', label: 'Email ID', type: 'email' },
+    { name: 'course', label: 'Course' },
+    { name: 'email', label: 'Email ID' },
     { name: 'mobileNo', label: 'Mobile No.', type: 'text' },
-    { name: 'address', label: 'Address', type: 'text' },
-    { name: 'distance', label: 'Distance (Km)', type: 'number' },
-    { name: 'bankName', label: 'Bank Name', type: 'text' },
-    { name: 'branch', label: 'Branch', type: 'text' },
-    { name: 'bankAccountNo', label: 'Bank Account No.', type: 'text' },
-    { name: 'ifscCode', label: 'IFSC Code', type: 'text' },
-    { name: 'panNo', label: 'PAN No.', type: 'text' },
+    { name: 'address', label: 'Address' },
+    { name: 'distance', label: 'Distance (Km)' },
+    { name: 'bankName', label: 'Bank Name' },
+    { name: 'branch', label: 'Branch' },
+    { name: 'bankAccountNo', label: 'Bank Account No.' },
+    { name: 'ifscCode', label: 'IFSC Code' },
+    { name: 'panNo', label: 'PAN No.' },
   ];
 
   return (
@@ -461,7 +461,7 @@ export default function BillForm2Page() {
                         <Button onClick={handleExport}><FileDown className="mr-2 h-4 w-4" /> Export to Excel</Button>
                          <Dialog>
                             <DialogTrigger asChild>
-                                <Button><Share2 className="mr-2 h-4 w-4" /> Share Form</Button>
+                                <Button className="bg-green-500 hover:bg-green-600 text-white"><Share2 className="mr-2 h-4 w-4" /> Share Form</Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-md">
                                 <DialogHeader>
@@ -570,3 +570,5 @@ export default function BillForm2Page() {
     </div>
   );
 }
+
+    

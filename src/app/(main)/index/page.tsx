@@ -322,7 +322,7 @@ export default function IndexPage() {
                     )}
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button size="sm" className="bg-gradient-to-r from-green-400 to-yellow-400 text-black">
+                            <Button size="sm" className="bg-pink-500 hover:bg-pink-600 text-white">
                                 <Filter className="mr-2 h-4 w-4"/>
                                 Filter
                             </Button>

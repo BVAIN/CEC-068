@@ -607,7 +607,7 @@ export default function ScriptsIssueFormPage() {
                   </div>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
+                    <Button className="bg-pink-500 hover:bg-pink-600 text-white"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-80">
                     <div className="grid gap-4">
@@ -805,7 +805,7 @@ export default function ScriptsIssueFormPage() {
                         <Button variant="outline" size="icon" onClick={() => handleView(issue.teacherId)} style={{backgroundColor: 'yellow', color: 'black'}}>
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="icon" onClick={() => handleSaveRow(originalIndex)} style={{backgroundColor: '#1e90ff', color: 'white'}}>
+                        <Button variant="outline" size="icon" onClick={() => handleSaveRow(originalIndex)} style={{backgroundColor: 'blue', color: 'white'}}>
                           <Save className="h-4 w-4" />
                         </Button>
                         <Button variant="outline" size="icon" onClick={() => handleEdit(originalIndex)} style={{backgroundColor: 'green', color: 'white'}}>

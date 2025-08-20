@@ -528,7 +528,7 @@ export default function BillFormPage() {
                         </div>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button className="bg-gradient-to-r from-green-400 to-yellow-400 text-black"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
+                                <Button className="bg-pink-500 hover:bg-pink-600 text-white"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-96 max-h-[80vh] overflow-y-auto">
                                 <div className="grid gap-4">
@@ -634,7 +634,7 @@ export default function BillFormPage() {
                         <Button onClick={handleExport}><FileDown className="mr-2 h-4 w-4" /> Export to Excel</Button>
                          <Dialog>
                             <DialogTrigger asChild>
-                                <Button><Share2 className="mr-2 h-4 w-4" /> Share Form</Button>
+                                <Button className="bg-green-500 hover:bg-green-600 text-white"><Share2 className="mr-2 h-4 w-4" /> Share Form</Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-md">
                                 <DialogHeader>
