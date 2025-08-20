@@ -557,12 +557,12 @@ export default function BillFormPage() {
                         </Popover>
                         {selectedBills.length > 0 && (
                             <>
-                             <Button variant="outline" size="icon" onClick={handleDownloadHTML} title="Download Selected as HTML">
+                             <Button variant="outline" onClick={handleDownloadHTML} title="Download Selected as HTML" className="bg-orange-500 hover:bg-orange-600 text-white">
                                 <FileDown className="h-4 w-4" />
                             </Button>
                             <Dialog open={isBulkEditOpen} onOpenChange={setIsBulkEditOpen}>
                                 <DialogTrigger asChild>
-                                    <Button variant="outline"><PencilRuler className="mr-2 h-4 w-4" />Find and Replace</Button>
+                                    <Button variant="outline" className="bg-purple-500 hover:bg-purple-600 text-white"><PencilRuler className="mr-2 h-4 w-4" />Find and Replace</Button>
                                 </DialogTrigger>
                                 <DialogContent>
                                     <DialogHeader>
@@ -747,3 +747,5 @@ export default function BillFormPage() {
     </div>
   );
 }
+
+    

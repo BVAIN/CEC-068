@@ -27,10 +27,12 @@ export default function MainLayout({
         <header className="flex h-16 items-center justify-end border-b bg-card px-4 sm:px-6 lg:px-8">
           <LogoutButton />
         </header>
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto animate-fade-in">
           {children}
         </main>
       </div>
     </div>
   );
 }
+
+    
