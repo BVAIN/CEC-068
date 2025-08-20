@@ -249,11 +249,11 @@ export default function IndexPage() {
   ];
 
   const StatCard = ({ title, stats, className }: { title: string, stats: StatDetail, className?: string }) => (
-    <Card className={className}>
+    <Card className={cn("flex flex-col", className)}>
         <CardHeader>
             <CardTitle>{title}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-2 flex-grow">
             <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">As Per Challan:</span>
                 <span className="font-medium">{stats.asPerChallan}</span>
@@ -262,14 +262,14 @@ export default function IndexPage() {
                 <span className="text-muted-foreground">Net Scripts:</span>
                 <span className="font-medium">{stats.netScripts}</span>
             </div>
-        </CardContent>
-        <CardFooter>
-            <div className="flex justify-between w-full font-bold text-base">
-                <span>Difference:</span>
-                <span>{stats.difference}</span>
+            <div className="flex justify-between text-sm font-bold">
+                <span className="text-muted-foreground">Difference:</span>
+                <span className="font-medium">{stats.difference}</span>
             </div>
-            <div className="w-full text-center text-xs mt-2">
-              (Entries: {stats.entryCount})
+        </CardContent>
+        <CardFooter className="justify-center">
+            <div className="text-center text-xs text-muted-foreground">
+              Entries: {stats.entryCount}
             </div>
         </CardFooter>
     </Card>
@@ -297,7 +297,7 @@ export default function IndexPage() {
                     <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-green-500 hover:bg-green-600 text-white">
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Entry
                     </Button>
-                    <Button size="sm" onClick={() => handleExport(data, `${title.replace(/"/g, '')}_Entries.xlsx`)} variant="default" style={{backgroundColor: '#3b82f6', color: 'white'}}>
+                    <Button size="sm" onClick={() => handleExport(data, `${title.replace(/"/g, '')}_Entries.xlsx`)} variant="default" className="bg-blue-500 hover:bg-blue-600 text-white">
                         <FileDown className="mr-2 h-4 w-4" /> Export to Excel
                     </Button>
                     {selectedEntries.length > 0 && (
@@ -409,7 +409,7 @@ export default function IndexPage() {
                         <TableCell>{(entry.netScripts || 0) - (entry.asPerChallan || 0)}</TableCell>
                         <TableCell>
                             <div className="flex gap-2">
-                                <Button variant="default" size="icon" onClick={() => handleOpenRemarks(entry)} style={{backgroundColor: '#3b82f6', color: 'white'}}>
+                                <Button variant="default" size="icon" onClick={() => handleOpenRemarks(entry)} className="bg-blue-500 hover:bg-blue-600 text-white">
                                     <MessageSquare className="h-4 w-4" />
                                 </Button>
                                 <Button variant="outline" size="icon" onClick={() => handleEdit(entry.id!)} style={{backgroundColor: 'green', color: 'white'}}>
@@ -439,7 +439,7 @@ export default function IndexPage() {
                 </TableBody>
                 <TableFooter>
                     <TableRow>
-                    <TableCell colSpan={isSearch ? 7 : 6} className="text-right font-bold">Total</TableCell>
+                    <TableCell colSpan={isSearch ? 6 : 7} className="text-right font-bold">Total</TableCell>
                     <TableCell className="font-bold">{totals.totalChallan}</TableCell>
                     <TableCell className="font-bold">{totals.totalNetScripts}</TableCell>
                     <TableCell className="font-bold">{totals.totalDifference}</TableCell>
