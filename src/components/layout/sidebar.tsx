@@ -23,6 +23,7 @@ const menuItems = [
         { href: "/trash/index", label: "Index Trash", icon: Trash2 },
         { href: "/trash/issues", label: "Issue Trash", icon: Trash2 },
         { href: "/trash/bills", label: "Bill Trash", icon: FileArchive },
+        { href: "/trash/teachers", label: "Teacher Trash", icon: Users },
       ] 
   },
   { href: "/settings", label: "Settings", icon: Settings },

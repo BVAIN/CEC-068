@@ -5,16 +5,21 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FileDown } from "lucide-react";
-import { BILLS_STORAGE_KEY } from "@/lib/constants";
+import { FileDown, Trash2 } from "lucide-react";
+import { BILLS_STORAGE_KEY, TEACHER_TRASH_STORAGE_KEY } from "@/lib/constants";
 import type { BillFormValues } from "../bill-form/page";
 import * as XLSX from "xlsx";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 type TeacherData = Omit<BillFormValues, 'id' | 'signature'>;
 
 export default function TeachersDataPage() {
   const [teachers, setTeachers] = useState<TeacherData[]>([]);
+  const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
@@ -34,6 +39,33 @@ export default function TeachersDataPage() {
       setTeachers(Array.from(uniqueTeachers.values()));
     }
   }, []);
+  
+  const updateTeachersStateAndStorage = (updatedTeachers: TeacherData[]) => {
+      setTeachers(updatedTeachers);
+      
+      // We need to update the original bills storage to reflect the deletion
+      const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
+      if (storedBills) {
+          let allBills: BillFormValues[] = JSON.parse(storedBills);
+          const remainingTeacherIds = new Set(updatedTeachers.map(t => t.evaluatorId));
+          const updatedBills = allBills.filter(bill => remainingTeacherIds.has(bill.evaluatorId));
+          localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(updatedBills));
+      }
+  };
+
+  const handleDelete = (ids: string[]) => {
+    const teachersToDelete = teachers.filter(t => ids.includes(t.evaluatorId));
+    const remainingTeachers = teachers.filter(t => !ids.includes(t.evaluatorId));
+    
+    const storedTrash = localStorage.getItem(TEACHER_TRASH_STORAGE_KEY);
+    const trash = storedTrash ? JSON.parse(storedTrash) : [];
+    localStorage.setItem(TEACHER_TRASH_STORAGE_KEY, JSON.stringify([...trash, ...teachersToDelete]));
+    
+    updateTeachersStateAndStorage(remainingTeachers);
+    
+    toast({ title: "Teachers Moved to Trash", description: `${ids.length} teacher(s) moved to trash.` });
+    setSelectedTeachers([]);
+  };
 
   const handleExport = () => {
     const worksheet = XLSX.utils.json_to_sheet(teachers);
@@ -41,23 +73,54 @@ export default function TeachersDataPage() {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Teachers");
     XLSX.writeFile(workbook, "TeachersData.xlsx");
   };
+  
+  const handleSelectTeacher = (id: string, checked: boolean) => {
+    setSelectedTeachers(prev => checked ? [...prev, id] : prev.filter(i => i !== id));
+  };
+  
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedTeachers(teachers.map(t => t.evaluatorId));
+    } else {
+      setSelectedTeachers([]);
+    }
+  };
 
   return (
     <div className="space-y-8">
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold tracking-tight font-headline">Teachers Data</h1>
-          <p className="text-lg text-muted-foreground mt-2">A centralized list of all teachers from bill submissions.</p>
         </div>
-        <Button onClick={handleExport} disabled={teachers.length === 0}>
-            <FileDown className="mr-2 h-4 w-4" /> Export to Excel
-        </Button>
+        <div className="flex items-center gap-2">
+            {selectedTeachers.length > 0 && (
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="destructive">
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete ({selectedTeachers.length})
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>This will move {selectedTeachers.length} teacher(s) to the trash.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(selectedTeachers)}>Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            )}
+            <Button onClick={handleExport} disabled={teachers.length === 0}>
+                <FileDown className="mr-2 h-4 w-4" /> Export to Excel
+            </Button>
+        </div>
       </header>
       
       <Card>
         <CardHeader>
           <CardTitle>All Teachers ({teachers.length})</CardTitle>
-          <CardDescription>This list is compiled from all submitted bills.</CardDescription>
         </CardHeader>
         <CardContent>
           {teachers.length > 0 ? (
@@ -65,6 +128,14 @@ export default function TeachersDataPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-primary hover:bg-primary/90">
+                    <TableHead className="text-primary-foreground w-12">
+                         <Checkbox
+                            onCheckedChange={handleSelectAll}
+                            checked={teachers.length > 0 && selectedTeachers.length === teachers.length}
+                            aria-label="Select all"
+                            className="border-primary-foreground text-primary-foreground"
+                         />
+                    </TableHead>
                     <TableHead className="text-primary-foreground">S. No.</TableHead>
                     <TableHead className="text-primary-foreground">Evaluator ID</TableHead>
                     <TableHead className="text-primary-foreground">Evaluator Name</TableHead>
@@ -72,11 +143,19 @@ export default function TeachersDataPage() {
                     <TableHead className="text-primary-foreground">Course</TableHead>
                     <TableHead className="text-primary-foreground">Mobile No.</TableHead>
                     <TableHead className="text-primary-foreground">Email</TableHead>
+                    <TableHead className="text-primary-foreground text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {teachers.map((teacher, index) => (
                     <TableRow key={teacher.evaluatorId} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")}>
+                      <TableCell>
+                         <Checkbox
+                            onCheckedChange={(checked) => handleSelectTeacher(teacher.evaluatorId, !!checked)}
+                            checked={selectedTeachers.includes(teacher.evaluatorId)}
+                            aria-label={`Select ${teacher.evaluatorName}`}
+                         />
+                      </TableCell>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{teacher.evaluatorId}</TableCell>
                       <TableCell>{teacher.evaluatorName}</TableCell>
@@ -84,6 +163,25 @@ export default function TeachersDataPage() {
                       <TableCell>{teacher.course}</TableCell>
                       <TableCell>{teacher.mobileNo}</TableCell>
                       <TableCell>{teacher.email}</TableCell>
+                      <TableCell className="text-right">
+                          <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                  <Button variant="destructive" size="icon">
+                                      <Trash2 className="h-4 w-4" />
+                                  </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>This will move this teacher to the trash.</AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => handleDelete([teacher.evaluatorId])}>Continue</AlertDialogAction>
+                                  </AlertDialogFooter>
+                              </AlertDialogContent>
+                          </AlertDialog>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -100,5 +198,3 @@ export default function TeachersDataPage() {
     </div>
   );
 }
-
-    
