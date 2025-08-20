@@ -261,10 +261,10 @@ export default function IndexPage() {
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{title} Campus</CardTitle>
                 <div className="flex items-center gap-2">
-                    <Button size="sm" onClick={() => handleNavigation('/entry')} style={{backgroundColor: 'lightgreen'}}>
+                    <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-green-500 hover:bg-green-600 text-white">
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Entry
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleExport(data, `${title}_Entries.xlsx`)} style={{backgroundColor: 'lightblue', color: 'white'}}>
+                    <Button size="sm" variant="outline" onClick={() => handleExport(data, `${title}_Entries.xlsx`)} style={{backgroundColor: 'lightblue', color: 'black'}}>
                         <FileDown className="mr-2 h-4 w-4" /> Export to Excel
                     </Button>
                     {selectedEntries.length > 0 && (
@@ -361,7 +361,7 @@ export default function IndexPage() {
                         <TableCell>{(entry.netScripts || 0) - (entry.asPerChallan || 0)}</TableCell>
                         <TableCell>
                             <div className="flex gap-2">
-                                <Button variant="outline" size="icon" onClick={() => handleOpenRemarks(entry)} style={{backgroundColor: 'lightblue', color: 'white'}}>
+                                <Button variant="outline" size="icon" onClick={() => handleOpenRemarks(entry)} style={{backgroundColor: 'lightblue', color: 'black'}}>
                                     <MessageSquare className="h-4 w-4" />
                                 </Button>
                                 <Button variant="outline" size="icon" onClick={() => handleEdit(entry.id!)} style={{backgroundColor: 'green', color: 'white'}}>
@@ -485,5 +485,3 @@ export default function IndexPage() {
     </div>
   );
 }
-
-    
