@@ -247,9 +247,9 @@ export default function IndexPage() {
     const isAllSelected = data.length > 0 && selectedEntries.length === data.filter(e => data.map(d => d.id).includes(e.id)).length;
     
     return (
-     <div className="mt-8 space-y-6">
+     <>
         {stats && (
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-span-5 gap-4">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-span-5 gap-4 mt-8">
                 <StatTile title={`${title} Regular`} value={stats.regular} />
                 <StatTile title={`${title} NCWEB`} value={stats.ncweb} />
                 <StatTile title={`${title} SOL`} value={stats.sol} />
@@ -257,14 +257,14 @@ export default function IndexPage() {
                 <SummaryStatCard title="Overall Summary" asPerChallan={stats.asPerChallan} netScripts={stats.netScripts} difference={stats.difference} />
             </div>
         )}
-        <Card>
+        <Card className="mt-6">
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{title} Campus</CardTitle>
                 <div className="flex items-center gap-2">
                     <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-green-500 hover:bg-green-600 text-white">
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Entry
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleExport(data, `${title}_Entries.xlsx`)} style={{backgroundColor: 'lightblue', color: 'black'}}>
+                    <Button size="sm" onClick={() => handleExport(data, `${title}_Entries.xlsx`)}>
                         <FileDown className="mr-2 h-4 w-4" /> Export to Excel
                     </Button>
                     {selectedEntries.length > 0 && (
@@ -361,7 +361,7 @@ export default function IndexPage() {
                         <TableCell>{(entry.netScripts || 0) - (entry.asPerChallan || 0)}</TableCell>
                         <TableCell>
                             <div className="flex gap-2">
-                                <Button variant="outline" size="icon" onClick={() => handleOpenRemarks(entry)} style={{backgroundColor: 'lightblue', color: 'black'}}>
+                                <Button variant="default" size="icon" onClick={() => handleOpenRemarks(entry)}>
                                     <MessageSquare className="h-4 w-4" />
                                 </Button>
                                 <Button variant="outline" size="icon" onClick={() => handleEdit(entry.id!)} style={{backgroundColor: 'green', color: 'white'}}>
@@ -401,7 +401,7 @@ export default function IndexPage() {
                 </Table>
             </CardContent>
         </Card>
-     </div>
+     </>
   )};
 
   return (
