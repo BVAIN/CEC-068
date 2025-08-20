@@ -464,7 +464,6 @@ export default function IndexPage() {
             )}
             <div>
               <h1 className="text-4xl font-bold tracking-tight font-headline">Index</h1>
-              <p className="text-lg text-muted-foreground mt-2">Select a campus to view its forms.</p>
             </div>
         </div>
         
@@ -540,5 +539,3 @@ export default function IndexPage() {
     </div>
   );
 }
-
-    
