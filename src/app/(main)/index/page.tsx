@@ -20,22 +20,27 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogHeader, DialogFooter, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-type FilterValues = Partial<Omit<PublicIssueFormValues, "id" | "asPerChallan" | "netScripts" | "difference">> & {
+type FilterValues = Partial<Omit<PublicIssueFormValues, "id" | "asPerChallan" | "netScripts" | "difference" | "type">> & {
     asPerChallan: string;
     netScripts: string;
     difference: string;
+    type: ("Regular" | "NCWEB" | "SOL")[];
 };
 
-type CampusStats = {
-    regular: number,
-    ncweb: number,
-    sol: number,
-    allData: number,
+type StatDetail = {
     asPerChallan: number;
     netScripts: number;
     difference: number;
-}
+};
+
+type CampusStats = {
+    regular: StatDetail,
+    ncweb: StatDetail,
+    sol: StatDetail,
+    allData: StatDetail,
+};
 
 export default function IndexPage() {
   const router = useRouter();
@@ -44,7 +49,7 @@ export default function IndexPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeView, setActiveView] = useState<"North" | "South" | "Search" | null>(null);
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
-  const [filters, setFilters] = useState<FilterValues>({} as FilterValues);
+  const [filters, setFilters] = useState<FilterValues>({ type: [] } as FilterValues);
   const [remarksModalOpen, setRemarksModalOpen] = useState(false);
   const [currentRemarks, setCurrentRemarks] = useState<{ id: string; text?: string }>({ id: '' });
   const [isEditingRemarks, setIsEditingRemarks] = useState(false);
@@ -59,7 +64,7 @@ export default function IndexPage() {
   useEffect(() => {
     // Clear selections and filters when changing views
     setSelectedEntries([]);
-    setFilters({} as FilterValues);
+    setFilters({ type: [] } as FilterValues);
   }, [activeView]);
   
   useEffect(() => {
@@ -107,7 +112,10 @@ export default function IndexPage() {
 
     return baseEntries.filter(entry => {
         return Object.entries(filters).every(([key, value]) => {
-          if (!value) return true;
+          if (!value || (Array.isArray(value) && value.length === 0)) return true;
+          if (key === 'type' && Array.isArray(value)) {
+              return value.includes(entry.type);
+          }
           const entryValue = entry[key as keyof PublicIssueFormValues];
           return String(entryValue).toLowerCase().includes(String(value).toLowerCase());
         });
@@ -128,13 +136,24 @@ export default function IndexPage() {
 
 
   const calculateCampusStats = (campusEntries: PublicIssueFormValues[]): CampusStats => {
-      const regular = campusEntries.filter(e => e.type === "Regular").reduce((acc, e) => acc + (e.netScripts || 0), 0);
-      const ncweb = campusEntries.filter(e => e.type === "NCWEB").reduce((acc, e) => acc + (e.netScripts || 0), 0);
-      const sol = campusEntries.filter(e => e.type === "SOL").reduce((acc, e) => acc + (e.netScripts || 0), 0);
-      const asPerChallan = campusEntries.reduce((acc, e) => acc + (e.asPerChallan || 0), 0);
-      const netScripts = campusEntries.reduce((acc, e) => acc + (e.netScripts || 0), 0);
-      const difference = netScripts - asPerChallan;
-      return { regular, ncweb, sol, allData: regular + ncweb + sol, asPerChallan, netScripts, difference };
+      const calculateStatsForType = (type: "Regular" | "NCWEB" | "SOL"): StatDetail => {
+          const filtered = campusEntries.filter(e => e.type === type);
+          const asPerChallan = filtered.reduce((acc, e) => acc + (e.asPerChallan || 0), 0);
+          const netScripts = filtered.reduce((acc, e) => acc + (e.netScripts || 0), 0);
+          return { asPerChallan, netScripts, difference: netScripts - asPerChallan };
+      };
+
+      const regular = calculateStatsForType("Regular");
+      const ncweb = calculateStatsForType("NCWEB");
+      const sol = calculateStatsForType("SOL");
+      
+      const allData: StatDetail = {
+          asPerChallan: regular.asPerChallan + ncweb.asPerChallan + sol.asPerChallan,
+          netScripts: regular.netScripts + ncweb.netScripts + sol.netScripts,
+          difference: regular.difference + ncweb.difference + sol.difference,
+      };
+
+      return { regular, ncweb, sol, allData };
   }
   
   const getStatsForView = () => calculateCampusStats(filteredEntries);
@@ -173,8 +192,19 @@ export default function IndexPage() {
       toast({ title: "Entries Moved to Trash", description: `${ids.length} entries have been moved to the trash.`});
   };
   
-  const handleFilterChange = (field: keyof FilterValues, value: string) => {
+  const handleFilterChange = (field: keyof FilterValues, value: any) => {
     setFilters(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCheckboxFilterChange = (field: 'type', value: string, checked: boolean) => {
+    setFilters(prev => {
+        const currentValues = prev[field] as string[];
+        if (checked) {
+            return { ...prev, [field]: [...currentValues, value] };
+        } else {
+            return { ...prev, [field]: currentValues.filter(v => v !== value) };
+        }
+    });
   };
   
   const handleExport = (data: PublicIssueFormValues[], filename: string) => {
@@ -214,38 +244,28 @@ export default function IndexPage() {
       { name: 'netScripts', label: 'Net Scripts' },
       { name: 'difference', label: 'Difference' },
   ];
-  
-  const StatTile = ({ title, value }: { title: string, value: number }) => (
-      <Card>
-        <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-center font-medium text-muted-foreground">{title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <p className="text-2xl font-bold text-center">{value}</p>
-        </CardContent>
-      </Card>
-  );
 
-  const SummaryStatCard = ({ title, asPerChallan, netScripts, difference }: { title: string, asPerChallan: number, netScripts: number, difference: number }) => (
-    <Card className="col-span-1 md:col-span-2 lg:col-span-4 xl:col-span-2">
+  const StatCard = ({ title, stats, className }: { title: string, stats: StatDetail, className?: string }) => (
+    <Card className={className}>
         <CardHeader>
             <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
             <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">As Per Challan:</span>
-                <span className="font-medium">{asPerChallan}</span>
+                <span className="font-medium">{stats.asPerChallan}</span>
             </div>
             <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Net Scripts:</span>
-                <span className="font-medium">{netScripts}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between font-bold text-base">
-                <span>Difference:</span>
-                <span>{difference}</span>
+                <span className="font-medium">{stats.netScripts}</span>
             </div>
         </CardContent>
+        <CardFooter>
+            <div className="flex justify-between w-full font-bold text-base">
+                <span>Difference:</span>
+                <span>{stats.difference}</span>
+            </div>
+        </CardFooter>
     </Card>
   );
 
@@ -257,12 +277,11 @@ export default function IndexPage() {
      <>
       <div className="mt-8 space-y-6">
         {stats && (
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-span-5 gap-4">
-                <StatTile title={`${title} Regular`} value={stats.regular} />
-                <StatTile title={`${title} NCWEB`} value={stats.ncweb} />
-                <StatTile title={`${title} SOL`} value={stats.sol} />
-                <StatTile title={`${title} All Data`} value={stats.allData} />
-                <SummaryStatCard title="Overall Summary" asPerChallan={stats.asPerChallan} netScripts={stats.netScripts} difference={stats.difference} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard title="Regular" stats={stats.regular} />
+                <StatCard title="NCWEB" stats={stats.ncweb} />
+                <StatCard title="SOL" stats={stats.sol} />
+                <StatCard title="All Data" stats={stats.allData} className="bg-primary/10" />
             </div>
         )}
         <Card>
@@ -314,12 +333,20 @@ export default function IndexPage() {
                                             <Label htmlFor={`filter-${field.name}`}>{field.label}</Label>
                                             <Input
                                                 id={`filter-${field.name}`}
-                                                value={filters[field.name] || ''}
+                                                value={filters[field.name as keyof Omit<FilterValues, 'type'>] || ''}
                                                 onChange={(e) => handleFilterChange(field.name, e.target.value)}
                                                 className="col-span-2 h-8"
                                             />
                                         </div>
                                     ))}
+                                    <div className="grid grid-cols-3 items-start gap-4">
+                                        <Label>Type</Label>
+                                        <div className="col-span-2 flex flex-col gap-2">
+                                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-regular" checked={filters.type.includes('Regular')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'Regular', !!c)} /><Label htmlFor="filter-type-regular" className="font-normal">Regular</Label></div>
+                                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-ncweb" checked={filters.type.includes('NCWEB')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'NCWEB', !!c)} /><Label htmlFor="filter-type-ncweb" className="font-normal">NCWEB</Label></div>
+                                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-sol" checked={filters.type.includes('SOL')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'SOL', !!c)} /><Label htmlFor="filter-type-sol" className="font-normal">SOL</Label></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </PopoverContent>
@@ -345,6 +372,7 @@ export default function IndexPage() {
                     <TableHead className="text-primary-foreground">QP No.</TableHead>
                     <TableHead className="text-primary-foreground">Page No.</TableHead>
                     {!isSearch && <TableHead className="text-primary-foreground">Course</TableHead>}
+                    {!isSearch && <TableHead className="text-primary-foreground">Type</TableHead>}
                     <TableHead className="text-primary-foreground">As Per Challan</TableHead>
                     <TableHead className="text-primary-foreground">Net Scripts</TableHead>
                     <TableHead className="text-primary-foreground">Difference</TableHead>
@@ -369,6 +397,7 @@ export default function IndexPage() {
                         <TableCell>{entry.qpNo}</TableCell>
                         <TableCell>{entry.pageNo}</TableCell>
                         {!isSearch && <TableCell>{entry.course}</TableCell>}
+                        {!isSearch && <TableCell>{entry.type}</TableCell>}
                         <TableCell>{entry.asPerChallan}</TableCell>
                         <TableCell>{entry.netScripts}</TableCell>
                         <TableCell>{(entry.netScripts || 0) - (entry.asPerChallan || 0)}</TableCell>
