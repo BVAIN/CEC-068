@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Search, ArrowLeft, Filter, Edit, Trash2, FileDown } from "lucide-react";
+import { PlusCircle, Search, ArrowLeft, Filter, Edit, Trash2, FileDown, MessageSquare } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
@@ -92,7 +92,7 @@ export default function IndexPage() {
             ) : [];
             break;
         default:
-            baseEntries = [];
+            baseEntries = entries.filter(e => e.campus === activeView);
     }
 
     return baseEntries.filter(entry => {
@@ -112,8 +112,8 @@ export default function IndexPage() {
     return { totalChallan, totalNetScripts, totalDifference };
   }
 
-  const northTotals = useMemo(() => calculateTotals(filteredEntries.filter(e => e.campus === 'North')), [filteredEntries]);
-  const southTotals = useMemo(() => calculateTotals(filteredEntries.filter(e => e.campus === 'South')), [filteredEntries]);
+  const northTotals = useMemo(() => calculateTotals(filteredEntries), [filteredEntries]);
+  const southTotals = useMemo(() => calculateTotals(filteredEntries), [filteredEntries]);
   const searchTotals = useMemo(() => calculateTotals(filteredEntries), [filteredEntries]);
 
 
@@ -238,7 +238,7 @@ export default function IndexPage() {
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{title} Campus</CardTitle>
                 <div className="flex items-center gap-2">
-                    <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-green-500 hover:bg-green-600 text-white">
+                    <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-green-400 hover:bg-green-500 text-white">
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Entry
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => handleExport(data, `${title}_Entries.xlsx`)} className="bg-blue-500 hover:bg-blue-600 text-white border-blue-600">
@@ -338,6 +338,9 @@ export default function IndexPage() {
                         <TableCell>{(entry.netScripts || 0) - (entry.asPerChallan || 0)}</TableCell>
                         <TableCell>
                             <div className="flex gap-2">
+                                <Button variant="outline" size="icon" onClick={() => {}}>
+                                    <MessageSquare className="h-4 w-4" />
+                                </Button>
                                 <Button variant="outline" size="icon" onClick={() => handleEdit(entry.id!)}>
                                     <Edit className="h-4 w-4" />
                                 </Button>
