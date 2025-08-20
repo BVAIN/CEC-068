@@ -19,6 +19,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogHeader, DialogFooter, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 type FilterValues = Partial<Omit<PublicIssueFormValues, "id" | "asPerChallan" | "netScripts" | "difference">> & {
     asPerChallan: string;
@@ -343,8 +344,8 @@ export default function IndexPage() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data.map((entry) => (
-                    <TableRow key={entry.id}>
+                    {data.map((entry, index) => (
+                    <TableRow key={entry.id} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")}>
                         <TableCell>
                             <Checkbox
                                 onCheckedChange={(checked) => entry.id && handleSelectEntry(entry.id, !!checked)}
@@ -488,3 +489,5 @@ export default function IndexPage() {
     </div>
   );
 }
+
+    

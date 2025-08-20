@@ -14,6 +14,7 @@ import { BILLS_STORAGE_KEY, BILL_TRASH_STORAGE_KEY, BILLS_FILE_NAME } from "@/li
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
+import { cn } from "@/lib/utils";
 
 
 export default function BillTrashPage() {
@@ -93,7 +94,7 @@ export default function BillTrashPage() {
       {trashedBills.length > 0 && selectedTrash.length > 0 && (
           <Card>
               <CardContent className="pt-6 flex gap-4">
-                  <Button onClick={() => handleRestore(selectedTrash)} style={{backgroundColor: 'lightgreen'}}><History className="mr-2 h-4 w-4" /> Restore Selected ({selectedTrash.length})</Button>
+                  <Button onClick={() => handleRestore(selectedTrash)} className="bg-green-500 hover:bg-green-600 text-white"><History className="mr-2 h-4 w-4" /> Restore Selected ({selectedTrash.length})</Button>
                   <AlertDialog>
                       <AlertDialogTrigger asChild>
                           <Button variant="destructive"><ShieldX className="mr-2 h-4 w-4" /> Delete Selected ({selectedTrash.length})</Button>
@@ -155,10 +156,10 @@ export default function BillTrashPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {trashedBills.map((bill) => {
+                  {trashedBills.map((bill, index) => {
                      const isSelected = selectedTrash.includes(bill.id!);
                     return (
-                    <TableRow key={bill.id} data-state={isSelected ? "selected" : "unselected"}>
+                    <TableRow key={bill.id} data-state={isSelected ? "selected" : "unselected"} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")}>
                        <TableCell>
                           <Checkbox
                             onCheckedChange={(checked) => bill.id && handleSelectTrash(bill.id, !!checked)}
@@ -172,7 +173,7 @@ export default function BillTrashPage() {
                       <TableCell>{bill.collegeName}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
-                            <Button variant="outline" size="sm" onClick={() => handleRestore([bill.id!])} style={{backgroundColor: 'lightgreen'}}>
+                            <Button variant="outline" size="sm" onClick={() => handleRestore([bill.id!])} className="bg-green-500 hover:bg-green-600 text-white">
                               <History className="mr-2 h-4 w-4" /> Restore
                             </Button>
                              <AlertDialog>

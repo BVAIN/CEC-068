@@ -13,6 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ISSUES_STORAGE_KEY, TRASH_STORAGE_KEY } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 
 export default function IssueTrashPage() {
@@ -81,7 +82,7 @@ export default function IssueTrashPage() {
       {trashedIssues.length > 0 && selectedTrash.length > 0 && (
           <Card>
               <CardContent className="pt-6 flex gap-4">
-                  <Button onClick={() => handleRestore(selectedTrash)} style={{backgroundColor: 'lightgreen'}}><History className="mr-2 h-4 w-4" /> Restore Selected ({selectedTrash.length})</Button>
+                  <Button onClick={() => handleRestore(selectedTrash)} className="bg-green-500 hover:bg-green-600 text-white"><History className="mr-2 h-4 w-4" /> Restore Selected ({selectedTrash.length})</Button>
                   <AlertDialog>
                       <AlertDialogTrigger asChild>
                           <Button variant="destructive"><ShieldX className="mr-2 h-4 w-4" /> Delete Selected ({selectedTrash.length})</Button>
@@ -146,10 +147,10 @@ export default function IssueTrashPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {trashedIssues.map((issue) => {
+                  {trashedIssues.map((issue, index) => {
                      const isSelected = selectedTrash.includes(issue.id!);
                     return (
-                    <TableRow key={issue.id} data-state={isSelected ? "selected" : "unselected"}>
+                    <TableRow key={issue.id} data-state={isSelected ? "selected" : "unselected"} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")}>
                        <TableCell>
                           <Checkbox
                             onCheckedChange={(checked) => issue.id && handleSelectTrash(issue.id, !!checked)}
@@ -161,12 +162,12 @@ export default function IssueTrashPage() {
                       <TableCell>{issue.teacherId}</TableCell>
                       <TableCell>{issue.course}</TableCell>
                       <TableCell>{issue.campus}</TableCell>
-                      <TableCell>{issue.schoolType}</TableCell>
+                      <TableCell>{issue.type}</TableCell>
                       <TableCell>{issue.dateOfIssue}</TableCell>
                       <TableCell>{issue.packetNo}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
-                            <Button variant="outline" size="sm" onClick={() => handleRestore([issue.id!])} style={{backgroundColor: 'lightgreen'}}>
+                            <Button variant="outline" size="sm" onClick={() => handleRestore([issue.id!])} className="bg-green-500 hover:bg-green-600 text-white">
                               <History className="mr-2 h-4 w-4" /> Restore
                             </Button>
                              <AlertDialog>

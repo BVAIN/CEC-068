@@ -13,6 +13,7 @@ import { PUBLIC_ISSUES_STORAGE_KEY, INDEX_TRASH_STORAGE_KEY } from "@/lib/consta
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { PublicIssueFormValues } from "@/app/(public)/entry/page";
+import { cn } from "@/lib/utils";
 
 
 export default function IndexTrashPage() {
@@ -128,7 +129,7 @@ export default function IndexTrashPage() {
         {trashedEntries.length > 0 && selectedTrash.length > 0 && (
             <Card>
                 <CardContent className="pt-6 flex gap-4">
-                    <Button onClick={() => handleRestore(selectedTrash)} style={{backgroundColor: 'lightgreen'}}><History className="mr-2 h-4 w-4" /> Restore Selected ({selectedTrash.length})</Button>
+                    <Button onClick={() => handleRestore(selectedTrash)} className="bg-green-500 hover:bg-green-600 text-white"><History className="mr-2 h-4 w-4" /> Restore Selected ({selectedTrash.length})</Button>
                     <AlertDialogTrigger asChild>
                         <Button variant="destructive"><ShieldX className="mr-2 h-4 w-4" /> Delete Selected ({selectedTrash.length})</Button>
                     </AlertDialogTrigger>
@@ -172,10 +173,10 @@ export default function IndexTrashPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {trashedEntries.map((entry) => {
+                  {trashedEntries.map((entry, index) => {
                      const isSelected = selectedTrash.includes(entry.id!);
                     return (
-                    <TableRow key={entry.id} data-state={isSelected ? "selected" : "unselected"}>
+                    <TableRow key={entry.id} data-state={isSelected ? "selected" : "unselected"} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")}>
                        <TableCell>
                           <Checkbox
                             onCheckedChange={(checked) => entry.id && handleSelectTrash(entry.id, !!checked)}
@@ -192,7 +193,7 @@ export default function IndexTrashPage() {
                       <TableCell>{entry.pageNo}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
-                            <Button variant="outline" size="sm" onClick={() => handleRestore([entry.id!])} style={{backgroundColor: 'lightgreen'}}>
+                            <Button variant="outline" size="sm" onClick={() => handleRestore([entry.id!])} className="bg-green-500 hover:bg-green-600 text-white">
                               <History className="mr-2 h-4 w-4" /> Restore
                             </Button>
                              <AlertDialog onOpenChange={(open) => !open && (setDeleteConfirmation(''), setSecondDeleteConfirmation(false))}>

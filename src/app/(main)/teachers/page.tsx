@@ -9,6 +9,7 @@ import { FileDown } from "lucide-react";
 import { BILLS_STORAGE_KEY } from "@/lib/constants";
 import type { BillFormValues } from "../bill-form/page";
 import * as XLSX from "xlsx";
+import { cn } from "@/lib/utils";
 
 type TeacherData = Omit<BillFormValues, 'id' | 'signature'>;
 
@@ -75,7 +76,7 @@ export default function TeachersDataPage() {
                 </TableHeader>
                 <TableBody>
                   {teachers.map((teacher, index) => (
-                    <TableRow key={teacher.evaluatorId}>
+                    <TableRow key={teacher.evaluatorId} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{teacher.evaluatorId}</TableCell>
                       <TableCell>{teacher.evaluatorName}</TableCell>
@@ -99,3 +100,5 @@ export default function TeachersDataPage() {
     </div>
   );
 }
+
+    

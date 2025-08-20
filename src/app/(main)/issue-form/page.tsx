@@ -24,6 +24,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ISSUES_STORAGE_KEY, TRASH_STORAGE_KEY, QP_UPC_MAP_KEY, TEACHER_COURSE_TOKEN_MAP_KEY, ISSUES_FILE_NAME } from "@/lib/constants";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 
 const issueFormSchema = z.object({
@@ -742,11 +743,11 @@ export default function ScriptsIssueFormPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredIssues.map((issue) => {
+                {filteredIssues.map((issue, index) => {
                   const originalIndex = issues.findIndex(i => i.id === issue.id);
                   const isSelected = issue.id ? selectedIssues.includes(issue.id) : false;
                   return (
-                  <TableRow key={issue.id} data-state={isSelected ? "selected" : "unselected"}>
+                  <TableRow key={issue.id} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")} data-state={isSelected ? "selected" : "unselected"}>
                     <TableCell>
                       <Checkbox
                         onCheckedChange={(checked) => issue.id && handleSelectIssue(issue.id, !!checked)}
@@ -853,3 +854,5 @@ export default function ScriptsIssueFormPage() {
     </div>
   );
 }
+
+    
