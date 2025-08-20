@@ -800,13 +800,13 @@ export default function ScriptsIssueFormPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="icon" onClick={() => handleView(issue.teacherId)}>
+                        <Button variant="outline" size="icon" onClick={() => handleView(issue.teacherId)} style={{backgroundColor: 'yellow', color: 'black'}}>
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="icon" onClick={() => handleSaveRow(originalIndex)}>
+                        <Button variant="outline" size="icon" onClick={() => handleSaveRow(originalIndex)} style={{backgroundColor: '#1e90ff', color: 'white'}}>
                           <Save className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="icon" onClick={() => handleEdit(originalIndex)}>
+                        <Button variant="outline" size="icon" onClick={() => handleEdit(originalIndex)} style={{backgroundColor: 'green', color: 'white'}}>
                           <Edit className="h-4 w-4" />
                         </Button>
                         <AlertDialog>
