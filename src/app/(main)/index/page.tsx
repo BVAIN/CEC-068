@@ -261,10 +261,10 @@ export default function IndexPage() {
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{title} Campus</CardTitle>
                 <div className="flex items-center gap-2">
-                    <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-green-400 hover:bg-green-500 text-white">
+                    <Button size="sm" onClick={() => handleNavigation('/entry')} style={{backgroundColor: 'lightgreen'}}>
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Entry
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleExport(data, `${title}_Entries.xlsx`)} className="bg-blue-500 hover:bg-blue-600 text-white border-blue-600">
+                    <Button size="sm" variant="outline" onClick={() => handleExport(data, `${title}_Entries.xlsx`)} style={{backgroundColor: 'blue', color: 'white'}}>
                         <FileDown className="mr-2 h-4 w-4" /> Export to Excel
                     </Button>
                     {selectedEntries.length > 0 && (
@@ -361,10 +361,10 @@ export default function IndexPage() {
                         <TableCell>{(entry.netScripts || 0) - (entry.asPerChallan || 0)}</TableCell>
                         <TableCell>
                             <div className="flex gap-2">
-                                <Button variant="outline" size="icon" onClick={() => handleOpenRemarks(entry)}>
+                                <Button variant="outline" size="icon" onClick={() => handleOpenRemarks(entry)} style={{backgroundColor: 'blue', color: 'white'}}>
                                     <MessageSquare className="h-4 w-4" />
                                 </Button>
-                                <Button variant="outline" size="icon" onClick={() => handleEdit(entry.id!)}>
+                                <Button variant="outline" size="icon" onClick={() => handleEdit(entry.id!)} style={{backgroundColor: 'green', color: 'white'}}>
                                     <Edit className="h-4 w-4" />
                                 </Button>
                                 <AlertDialog>
