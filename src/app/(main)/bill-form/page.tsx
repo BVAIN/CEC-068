@@ -26,6 +26,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 import { BILLS_STORAGE_KEY, BILLS_FILE_NAME, BILL_TRASH_STORAGE_KEY } from "@/lib/constants";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 
 const billFormSchema = z.object({
@@ -450,7 +451,7 @@ export default function BillFormPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-4xl font-bold tracking-tight font-headline">Bill Form And Undertaking</h1>
+        <h1 className="text-4xl font-bold tracking-tight font-headline">Bill Forms And Undertaking</h1>
         <p className="text-lg text-muted-foreground mt-2">Manage your bill submissions here.</p>
       </header>
 
@@ -689,7 +690,7 @@ export default function BillFormPage() {
                         </TableHeader>
                         <TableBody>
                             {filteredBills.map((bill, index) => (
-                                <TableRow key={bill.id} data-state={selectedBills.includes(bill.id!) ? "selected" : "unselected"}>
+                                <TableRow key={bill.id} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")} data-state={selectedBills.includes(bill.id!) ? "selected" : "unselected"}>
                                     <TableCell>
                                         <Checkbox
                                           onCheckedChange={(checked) => bill.id && handleSelectBill(bill.id, !!checked)}
@@ -705,7 +706,7 @@ export default function BillFormPage() {
                                     <TableCell>{bill.bankAccountNo}</TableCell>
                                     <TableCell>
                                         <div className="flex gap-2">
-                                            <Button variant="outline" size="icon" onClick={() => handleView(bill.evaluatorId)}>
+                                            <Button variant="outline" size="icon" onClick={() => handleView(bill.evaluatorId)} style={{backgroundColor: 'yellow', color: 'black'}}>
                                                 <Eye className="h-4 w-4" />
                                             </Button>
                                              <Button variant="outline" size="icon" onClick={() => handleEdit(bill)} style={{backgroundColor: 'green', color: 'white'}}>
