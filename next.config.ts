@@ -19,14 +19,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-   async rewrites() {
-    return [
-      {
-        source: '/entry',
-        destination: '/entry/index.html',
-      },
-    ]
-  },
 };
 
 export default nextConfig;
