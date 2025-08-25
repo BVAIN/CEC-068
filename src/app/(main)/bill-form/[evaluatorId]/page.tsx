@@ -336,12 +336,14 @@ export default function BillViewPage() {
                     <div className="text-center">
                         <h1 className="text-xl md:text-2xl font-bold uppercase print-header-title">University of Delhi</h1>
                         <h2 className="text-lg md:text-xl font-bold print-header-subtitle">Central Evaluation Centre, SGTB Khalsa College</h2>
-                        <div className="flex items-baseline justify-center">
-                             <div className="flex items-baseline">
+                        <div className="flex items-baseline justify-center gap-4">
+                            <div className="flex items-baseline">
                                 <span className="font-bold">Bill,</span>
+                                <span className="ml-2 font-bold">{globalSettings.billName}</span>
                             </div>
-                            <div className="flex items-baseline ml-4">
+                            <div className="flex items-baseline">
                                 <span className="font-bold">Examination</span>
+                                <span className="ml-2 font-bold">{globalSettings.examinationName}</span>
                             </div>
                         </div>
                     </div>
