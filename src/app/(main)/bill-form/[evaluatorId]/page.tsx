@@ -290,7 +290,7 @@ export default function BillViewPage() {
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="conveyanceOver30" className="text-right">Rate (&gt;30km)</Label>
+                            <Label htmlFor="conveyanceOver30" className="text-right">Rate (>30km)</Label>
                             <Input
                                 id="conveyanceOver30"
                                 type="number"
@@ -339,11 +339,9 @@ export default function BillViewPage() {
                         <div className="flex items-baseline justify-center">
                              <div className="flex items-baseline">
                                 <span className="font-bold">Bill,</span>
-                                <span style={{minWidth: '180px', borderBottom: '1px dotted black', display: 'inline-block', marginLeft: '8px'}}></span>
                             </div>
                             <div className="flex items-baseline ml-4">
                                 <span className="font-bold">Examination</span>
-                                <span style={{minWidth: '120px', borderBottom: '1px dotted black', display: 'inline-block', marginLeft: '8px'}}></span>
                             </div>
                         </div>
                     </div>
@@ -555,5 +553,3 @@ export default function BillViewPage() {
   );
 
 }
-
-    
