@@ -23,29 +23,31 @@ export default function BillViewPage2() {
 
   useEffect(() => {
     const evaluatorId = params.evaluatorId;
-    try {
-        const storedBills = localStorage.getItem(BILLS_STORAGE_KEY_2);
-        if (storedBills && evaluatorId) {
-            const allBills: BillFormValues[] = JSON.parse(storedBills);
-            const decodedEvaluatorId = decodeURIComponent(evaluatorId as string);
-            const foundBill = allBills.find(b => b.evaluatorId === decodedEvaluatorId);
+    if (evaluatorId) {
+        try {
+            const storedBills = localStorage.getItem(BILLS_STORAGE_KEY_2);
+            if (storedBills) {
+                const allBills: BillFormValues[] = JSON.parse(storedBills);
+                const decodedEvaluatorId = decodeURIComponent(evaluatorId as string);
+                const foundBill = allBills.find(b => b.evaluatorId === decodedEvaluatorId);
 
-            if (foundBill) {
-                setBillDetails(foundBill);
+                if (foundBill) {
+                    setBillDetails(foundBill);
+                } else {
+                    toast({ variant: "destructive", title: "Not Found", description: "No bill details found for this evaluator ID." });
+                    router.push("/bill-form-2");
+                }
             } else {
-                toast({ variant: "destructive", title: "Not Found", description: "No bill details found for this evaluator ID." });
-                router.push("/bill-form-2");
+                 toast({ variant: "destructive", title: "No Data", description: "No bill data found. Please submit a bill first." });
+                 router.push("/bill-form-2");
             }
-        } else if (!storedBills) {
-             toast({ variant: "destructive", title: "No Data", description: "No bill data found. Please submit a bill first." });
-             router.push("/bill-form-2");
+        } catch (error) {
+            console.error("Error parsing localStorage data:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not load bill details." });
+            router.push("/bill-form-2");
+        } finally {
+            setIsLoading(false);
         }
-    } catch (error) {
-        console.error("Error parsing localStorage data:", error);
-        toast({ variant: "destructive", title: "Error", description: "Could not load bill details." });
-        router.push("/bill-form-2");
-    } finally {
-        setIsLoading(false);
     }
   }, [params.evaluatorId, router, toast]);
   

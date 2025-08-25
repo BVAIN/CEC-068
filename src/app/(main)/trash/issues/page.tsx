@@ -76,7 +76,6 @@ export default function IssueTrashPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Issue Trash</h1>
-        <p className="text-lg text-muted-foreground mt-2"></p>
       </header>
       
       {trashedIssues.length > 0 && selectedTrash.length > 0 && (
@@ -122,7 +121,6 @@ export default function IssueTrashPage() {
         <Card>
           <CardHeader>
             <CardTitle>Deleted Issues</CardTitle>
-            <CardDescription>Here are the issues you have deleted. You can restore them or delete them permanently.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">

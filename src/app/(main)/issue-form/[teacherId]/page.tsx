@@ -9,9 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { ISSUES_STORAGE_KEY } from "@/lib/constants";
 
 export default function IssueViewPage() {
@@ -23,25 +20,27 @@ export default function IssueViewPage() {
 
   useEffect(() => {
     const teacherId = params.teacherId;
-    try {
-        const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
-        if (storedIssues && teacherId) {
-          const allIssues: IssueFormValues[] = JSON.parse(storedIssues);
-          const decodedTeacherId = decodeURIComponent(teacherId as string);
-          const foundIssues = allIssues.filter(i => i.teacherId === decodedTeacherId);
-          
-          if (foundIssues.length > 0) {
-            setTeacherIssues(foundIssues);
-            setTeacherInfo(foundIssues[0]);
-          } else {
-            // toast({ variant: "destructive", title: "Error", description: "No issues found for this teacher." });
+    if (teacherId) {
+        try {
+            const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+            if (storedIssues) {
+              const allIssues: IssueFormValues[] = JSON.parse(storedIssues);
+              const decodedTeacherId = decodeURIComponent(teacherId as string);
+              const foundIssues = allIssues.filter(i => i.teacherId === decodedTeacherId);
+              
+              if (foundIssues.length > 0) {
+                setTeacherIssues(foundIssues);
+                setTeacherInfo(foundIssues[0]);
+              } else {
+                // toast({ variant: "destructive", title: "Error", description: "No issues found for this teacher." });
+                router.push("/issue-form");
+              }
+            }
+        } catch (error) {
+            console.error("Error parsing localStorage data:", error);
+            localStorage.removeItem(ISSUES_STORAGE_KEY);
             router.push("/issue-form");
-          }
         }
-    } catch (error) {
-        console.error("Error parsing localStorage data:", error);
-        localStorage.removeItem(ISSUES_STORAGE_KEY);
-        router.push("/issue-form");
     }
   }, [params.teacherId, router, toast]);
   

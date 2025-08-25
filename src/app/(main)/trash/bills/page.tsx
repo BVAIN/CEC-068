@@ -88,7 +88,6 @@ export default function BillTrashPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Bill Trash</h1>
-        <p className="text-lg text-muted-foreground mt-2"></p>
       </header>
       
       {trashedBills.length > 0 && selectedTrash.length > 0 && (
@@ -134,7 +133,6 @@ export default function BillTrashPage() {
         <Card>
           <CardHeader>
             <CardTitle>Deleted Bills</CardTitle>
-            <CardDescription>Here are the bills you have deleted. You can restore them or delete them permanently.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">

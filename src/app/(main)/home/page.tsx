@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import type { IssueFormValues } from "../issue-form/page";
 import type { BillFormValues } from "../bill-form/page";
 import { ISSUES_STORAGE_KEY, BILLS_STORAGE_KEY, PUBLIC_ISSUES_STORAGE_KEY } from "@/lib/constants";

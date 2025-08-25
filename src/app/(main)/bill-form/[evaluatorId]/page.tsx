@@ -42,37 +42,39 @@ export default function BillViewPage() {
 
   useEffect(() => {
     const evaluatorId = params.evaluatorId;
-    try {
-        // Load global settings
-        const storedSettings = localStorage.getItem(GLOBAL_BILL_SETTINGS_KEY);
-        if (storedSettings) {
-            // Merging with defaults to ensure new fields are present
-            const parsedSettings = JSON.parse(storedSettings);
-            setGlobalSettings(prev => ({ ...prev, ...parsedSettings}));
-        }
-
-        const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
-        if (storedBills && evaluatorId) {
-            const allBills: BillFormValues[] = JSON.parse(storedBills);
-            const decodedEvaluatorId = decodeURIComponent(evaluatorId as string);
-            const foundBill = allBills.find(b => b.evaluatorId === decodedEvaluatorId);
-
-            if (foundBill) {
-                setBillDetails(foundBill);
-            } else {
-                toast({ variant: "destructive", title: "Not Found", description: "No bill details found for this evaluator ID." });
-                router.push("/bill-form");
+    if (evaluatorId) {
+        try {
+            // Load global settings
+            const storedSettings = localStorage.getItem(GLOBAL_BILL_SETTINGS_KEY);
+            if (storedSettings) {
+                // Merging with defaults to ensure new fields are present
+                const parsedSettings = JSON.parse(storedSettings);
+                setGlobalSettings(prev => ({ ...prev, ...parsedSettings}));
             }
-        } else if (!storedBills) {
-             toast({ variant: "destructive", title: "No Data", description: "No bill data found. Please submit a bill first." });
-             router.push("/bill-form");
+
+            const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
+            if (storedBills) {
+                const allBills: BillFormValues[] = JSON.parse(storedBills);
+                const decodedEvaluatorId = decodeURIComponent(evaluatorId as string);
+                const foundBill = allBills.find(b => b.evaluatorId === decodedEvaluatorId);
+
+                if (foundBill) {
+                    setBillDetails(foundBill);
+                } else {
+                    toast({ variant: "destructive", title: "Not Found", description: "No bill details found for this evaluator ID." });
+                    router.push("/bill-form");
+                }
+            } else {
+                 toast({ variant: "destructive", title: "No Data", description: "No bill data found. Please submit a bill first." });
+                 router.push("/bill-form");
+            }
+        } catch (error) {
+            console.error("Error parsing localStorage data:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not load bill details." });
+            router.push("/bill-form");
+        } finally {
+            setIsLoading(false);
         }
-    } catch (error) {
-        console.error("Error parsing localStorage data:", error);
-        toast({ variant: "destructive", title: "Error", description: "Could not load bill details." });
-        router.push("/bill-form");
-    } finally {
-        setIsLoading(false);
     }
   }, [params.evaluatorId, router, toast]);
   
@@ -518,12 +520,12 @@ export default function BillViewPage() {
 
         <div className="undertaking-page pt-12">
             <div className="text-center">
-                <h2 className="text-2xl font-bold underline">EXAMINATION WING</h2>
-                <p className="font-bold underline">UNDERTAKING</p>
+                <h3 className="text-xl font-bold">UNDERTAKING</h3>
+                <h2 className="text-2xl font-bold">EXAMINATION WING</h2>
             </div>
             <div className="mt-8 space-y-4 text-base">
                 <p>
-                    I, jeojfo, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
+                    I, {billDetails.evaluatorName}, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
                 </p>
                 <div className="flex justify-end pt-8">
                     <div className="text-left space-y-1 undertaking-details">

@@ -54,11 +54,16 @@ export default function IndexPage() {
   const [remarksModalOpen, setRemarksModalOpen] = useState(false);
   const [currentRemarks, setCurrentRemarks] = useState<{ id: string; text?: string }>({ id: '' });
   const [isEditingRemarks, setIsEditingRemarks] = useState(false);
+  const [northEntriesCount, setNorthEntriesCount] = useState(0);
+  const [southEntriesCount, setSouthEntriesCount] = useState(0);
 
   useEffect(() => {
     const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
     if (storedEntries) {
-      setEntries(JSON.parse(storedEntries));
+      const parsedEntries = JSON.parse(storedEntries);
+      setEntries(parsedEntries);
+      setNorthEntriesCount(parsedEntries.filter((e: PublicIssueFormValues) => e.campus === 'North').length);
+      setSouthEntriesCount(parsedEntries.filter((e: PublicIssueFormValues) => e.campus === 'South').length);
     }
   }, []);
 
@@ -76,10 +81,6 @@ export default function IndexPage() {
     }
   }, [searchTerm, activeView]);
 
-  const northEntriesCount = useMemo(() => entries.filter(e => e.campus === 'North').length, [entries]);
-  const southEntriesCount = useMemo(() => entries.filter(e => e.campus === 'South').length, [entries]);
-
-
   const handleNavigation = (path: string) => {
     router.push(path);
   };
@@ -87,6 +88,8 @@ export default function IndexPage() {
   const updateEntriesStateAndStorage = (newEntries: PublicIssueFormValues[]) => {
       setEntries(newEntries);
       localStorage.setItem(PUBLIC_ISSUES_STORAGE_KEY, JSON.stringify(newEntries));
+      setNorthEntriesCount(newEntries.filter((e: PublicIssueFormValues) => e.campus === 'North').length);
+      setSouthEntriesCount(newEntries.filter((e: PublicIssueFormValues) => e.campus === 'South').length);
   };
 
   const filteredEntries = useMemo(() => {

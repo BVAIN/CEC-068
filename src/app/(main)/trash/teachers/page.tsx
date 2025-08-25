@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { BillFormValues } from "../../bill-form/page";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { BILLS_STORAGE_KEY, TEACHER_TRASH_STORAGE_KEY } from "@/lib/constants";
+import { TEACHER_TRASH_STORAGE_KEY } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -36,13 +36,10 @@ export default function TeacherTrashPage() {
   };
 
   const handleRestore = (ids: string[]) => {
-    const teachersToRestore = trashedTeachers.filter((teacher) => ids.includes(teacher.evaluatorId));
     const newTrash = trashedTeachers.filter((teacher) => !ids.includes(teacher.evaluatorId));
     
-    // Since teacher data is derived from bills, we need a proxy to "restore" them.
-    // We can't directly add them back to the teachers list as it's not the source of truth.
-    // The assumption is that the bills they came from still exist.
-    // For this app, "restoring" means removing from trash. They will reappear if their source bill is present.
+    // Since teacher data is derived from bills, we just remove them from trash.
+    // They will reappear in the main list if their source bills exist and are not in trash.
     
     updateAndSaveTrash(newTrash);
     toast({ title: "Teachers Restored", description: `${ids.length} teacher(s) have been restored. They will reappear in the main list if their source bills exist.`});
@@ -77,7 +74,6 @@ export default function TeacherTrashPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Teacher Trash</h1>
-        <p className="text-lg text-muted-foreground mt-2"></p>
       </header>
       
       {trashedTeachers.length > 0 && selectedTrash.length > 0 && (
@@ -123,7 +119,6 @@ export default function TeacherTrashPage() {
         <Card>
           <CardHeader>
             <CardTitle>Deleted Teachers</CardTitle>
-            <CardDescription>Here are the teachers you have deleted. You can restore them or delete them permanently.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -218,4 +213,3 @@ export default function TeacherTrashPage() {
     </div>
   );
 }
-
