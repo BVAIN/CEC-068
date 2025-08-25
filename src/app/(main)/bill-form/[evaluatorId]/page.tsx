@@ -447,8 +447,9 @@ export default function BillViewPage() {
         <div className="undertaking-page pt-12">
             <h2 className="text-2xl font-bold text-center underline">UNDERTAKING</h2>
             <div className="mt-8 space-y-4 text-base">
+                <p className="text-center underline font-bold">EXAMINATION WING</p>
                 <p>
-                    I, <span className="font-bold underlined-value">{billDetails.evaluatorName}</span>, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
+                    I clerify that none of my relations (husband, wife, son, daughter, brother, sister, nephew, niece, sister-in-law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
                 </p>
                 <div className="flex justify-end pt-8">
                     <div className="text-left space-y-1 undertaking-details">
