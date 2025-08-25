@@ -331,7 +331,7 @@ export default function BillFormPage() {
     const signatureImage = billDetails.signature ? `<img src="${billDetails.signature}" alt="Evaluator's Signature" style="max-height: 40px; filter: contrast(1.5) brightness(1.1); mix-blend-mode: multiply;" />` : '';
 
     return `
-      <div style="font-family: sans-serif; max-width: 800px; margin: auto; border: 1px solid #eee; padding: 20px;">
+      <div style="font-family: sans-serif; max-width: 800px; margin: auto; border: 1px solid #eee; padding: 20px; page-break-after: always;">
         <div class="bill-card-page">
             <div style="display: flex; justify-content: flex-end; font-size: 0.875rem;">
               <div style="display: grid; grid-template-columns: 1fr; gap: 4px; text-align: right;">
@@ -778,3 +778,5 @@ export default function BillFormPage() {
     </div>
   );
 }
+
+    
