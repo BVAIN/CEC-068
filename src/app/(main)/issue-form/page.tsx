@@ -453,7 +453,7 @@ export default function ScriptsIssueFormPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Scripts Issue Form</h1>
-        <p className="text-lg text-muted-foreground mt-2">Create and manage teacher issues here.</p>
+        <p className="text-lg text-muted-foreground mt-2"></p>
       </header>
 
       <Form {...form}>
@@ -461,7 +461,7 @@ export default function ScriptsIssueFormPage() {
           <Card>
             <CardHeader>
               <CardTitle>{editingIndex !== null ? 'Update Issue' : 'Issue Details'}</CardTitle>
-              <CardDescription>Fill in the details for the issue.</CardDescription>
+              <CardDescription></CardDescription>
             </CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-6">
               <FormField control={form.control} name="dateOfIssue" render={({ field }) => (<FormItem><FormLabel>Date of Issue</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -593,7 +593,7 @@ export default function ScriptsIssueFormPage() {
             <div className="flex justify-between items-center gap-4 flex-wrap">
               <div>
                 <CardTitle>Submitted Issues</CardTitle>
-                <CardDescription>View and manage the submitted issues.</CardDescription>
+                <CardDescription></CardDescription>
               </div>
               <div className="flex items-center gap-2">
                  <div className="relative">
@@ -854,5 +854,3 @@ export default function ScriptsIssueFormPage() {
     </div>
   );
 }
-
-    

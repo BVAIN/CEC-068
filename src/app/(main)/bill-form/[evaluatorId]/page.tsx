@@ -333,7 +333,7 @@ export default function BillViewPage() {
                             <span>Reg. No. ....................</span>
                         </div>
                     </div>
-                    <div className="text-center">
+                    <div className="text-center mt-4">
                         <h1 className="text-xl md:text-2xl font-bold uppercase print-header-title">University of Delhi</h1>
                         <h2 className="text-lg md:text-xl font-bold print-header-subtitle">Central Evaluation Centre, SGTB Khalsa College</h2>
                         <div className="flex items-baseline justify-center gap-4">
@@ -523,7 +523,7 @@ export default function BillViewPage() {
             </div>
             <div className="mt-8 space-y-4 text-base">
                 <p>
-                    I clerify that none of my relations (husband, wife, son, daughter, brother, sister, nephew, niece, sister-in-law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
+                    I, jeojfo, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
                 </p>
                 <div className="flex justify-end pt-8">
                     <div className="text-left space-y-1 undertaking-details">

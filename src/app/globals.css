@@ -25,6 +25,14 @@
     --input: 220 10% 85%;
     --ring: 217 91% 60%;
     --radius: 0.75rem;
+
+    --nav-home: 217 91% 60%;
+    --nav-index: 28 80% 55%; /* Orange */
+    --nav-issue: 260 70% 65%; /* Purple */
+    --nav-bill: 145 63% 49%; /* Green */
+    --nav-teachers: 330 80% 60%; /* Pink */
+    --nav-trash: 0 84% 60%; /* Red */
+    --nav-settings: 50 95% 55%; /* Yellow */
   }
 
   .dark {
@@ -47,6 +55,14 @@
     --border: 0 0% 15%;
     --input: 0 0% 15%;
     --ring: 217 91% 60%;
+
+    --nav-home: 217 91% 60%;
+    --nav-index: 28 80% 55%;
+    --nav-issue: 260 70% 65%;
+    --nav-bill: 145 63% 49%;
+    --nav-teachers: 330 80% 60%;
+    --nav-trash: 0 70% 50%;
+    --nav-settings: 50 95% 55%;
   }
 }
 
@@ -81,5 +97,3 @@
       @apply relative z-10 text-primary-foreground;
   }
 }
-
-    

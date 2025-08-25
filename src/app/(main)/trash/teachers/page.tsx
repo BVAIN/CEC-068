@@ -43,7 +43,6 @@ export default function TeacherTrashPage() {
     // We can't directly add them back to the teachers list as it's not the source of truth.
     // The assumption is that the bills they came from still exist.
     // For this app, "restoring" means removing from trash. They will reappear if their source bill is present.
-    // A more robust solution might re-link them or check source bills, but this is a safe approach.
     
     updateAndSaveTrash(newTrash);
     toast({ title: "Teachers Restored", description: `${ids.length} teacher(s) have been restored. They will reappear in the main list if their source bills exist.`});
@@ -78,7 +77,7 @@ export default function TeacherTrashPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Teacher Trash</h1>
-        <p className="text-lg text-muted-foreground mt-2">View and manage deleted teachers.</p>
+        <p className="text-lg text-muted-foreground mt-2"></p>
       </header>
       
       {trashedTeachers.length > 0 && selectedTrash.length > 0 && (

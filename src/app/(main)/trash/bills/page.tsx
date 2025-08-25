@@ -88,7 +88,7 @@ export default function BillTrashPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Bill Trash</h1>
-        <p className="text-lg text-muted-foreground mt-2">View and manage deleted bills.</p>
+        <p className="text-lg text-muted-foreground mt-2"></p>
       </header>
       
       {trashedBills.length > 0 && selectedTrash.length > 0 && (
@@ -229,5 +229,3 @@ export default function BillTrashPage() {
     </div>
   );
 }
-
-    

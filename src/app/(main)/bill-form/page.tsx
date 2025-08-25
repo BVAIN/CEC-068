@@ -422,7 +422,7 @@ export default function BillFormPage() {
             </div>
             <div style="margin-top: 2rem; font-size: 1rem; line-height: 1.5;">
                 <p>
-                    I clerify that none of my relations (husband, wife, son, daughter, brother, sister, nephew, niece, sister-in-law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
+                    I, jeojfo, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
                 </p>
                 <div style="display: flex; justify-content: flex-end; padding-top: 2rem;">
                     <div style="text-align: left; display: grid; gap: 4px;">
@@ -483,7 +483,7 @@ export default function BillFormPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Bill Forms And Undertaking</h1>
-        <p className="text-lg text-muted-foreground mt-2">Manage your bill submissions here.</p>
+        <p className="text-lg text-muted-foreground mt-2"></p>
       </header>
 
       <Form {...form}>
@@ -491,7 +491,7 @@ export default function BillFormPage() {
           <Card>
             <CardHeader>
               <CardTitle>{editingId ? 'Update Bill' : 'New Bill Entry'}</CardTitle>
-              <CardDescription>Fill in the evaluator's details to create a bill.</CardDescription>
+              <CardDescription></CardDescription>
             </CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-6">
                 <FormField control={form.control} name="evaluatorId" render={({ field }) => (<FormItem><FormLabel>Evaluator ID</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -545,7 +545,7 @@ export default function BillFormPage() {
                 <div className="flex justify-between items-center gap-4 flex-wrap">
                     <div>
                         <CardTitle>Submitted Bills ({filteredBills.length})</CardTitle>
-                        <CardDescription>View and manage submitted bill forms.</CardDescription>
+                        <CardDescription></CardDescription>
                     </div>
                      <div className="flex items-center gap-2">
                         <div className="relative">
@@ -778,5 +778,3 @@ export default function BillFormPage() {
     </div>
   );
 }
-
-    

@@ -10,15 +10,16 @@ import { useTheme } from "@/contexts/theme-provider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const menuItems = [
-  { href: "/home", label: "Home", icon: Home },
-  { href: "/index", label: "Index", icon: List },
-  { href: "/issue-form", label: "Issue Packets", icon: FilePlus },
-  { href: "/bill-form", label: "Bill Forms", icon: FileText },
-  { href: "/teachers", label: "Teachers Data", icon: Users },
+  { href: "/home", label: "Home", icon: Home, colorClass: "bg-nav-home" },
+  { href: "/index", label: "Index", icon: List, colorClass: "bg-nav-index" },
+  { href: "/issue-form", label: "Issue Packets", icon: FilePlus, colorClass: "bg-nav-issue" },
+  { href: "/bill-form", label: "Bill Forms", icon: FileText, colorClass: "bg-nav-bill" },
+  { href: "/teachers", label: "Teachers Data", icon: Users, colorClass: "bg-nav-teachers" },
   { 
       href: "/trash", 
       label: "Trash", 
       icon: Trash2,
+      colorClass: "bg-nav-trash",
       subItems: [
         { href: "/trash/index", label: "Index Trash", icon: Trash2 },
         { href: "/trash/issues", label: "Issue Trash", icon: Trash2 },
@@ -26,7 +27,7 @@ const menuItems = [
         { href: "/trash/teachers", label: "Teacher Trash", icon: Users },
       ] 
   },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/settings", label: "Settings", icon: Settings, colorClass: "bg-nav-settings" },
 ];
 
 export default function Sidebar() {
@@ -44,7 +45,11 @@ export default function Sidebar() {
             {menuItems.map((item) => {
              const isActive = item.subItems 
                 ? item.subItems.some(sub => pathname.startsWith(sub.href))
-                : pathname.startsWith(item.href);
+                : pathname === item.href || (item.href !== "/home" && pathname.startsWith(item.href));
+
+              const activeClasses = isActive 
+                ? `${item.colorClass} text-primary-foreground hover:${item.colorClass}/90`
+                : "ghost";
 
               if (item.subItems) {
                 return (
@@ -54,7 +59,7 @@ export default function Sidebar() {
                           variant={isActive ? "default" : "ghost"}
                           className={cn(
                             'w-full justify-start text-base py-6',
-                            isActive && 'text-primary-foreground'
+                            isActive && activeClasses
                           )}
                         >
                           <item.icon className="mr-3 h-5 w-5" />
@@ -81,7 +86,7 @@ export default function Sidebar() {
                     variant={isActive ? "default" : "ghost"}
                     className={cn(
                     'w-full justify-start text-base py-6',
-                    isActive && 'text-primary-foreground'
+                     isActive && activeClasses
                     )}
                 >
                     <item.icon className="mr-3 h-5 w-5" />

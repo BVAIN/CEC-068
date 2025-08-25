@@ -122,7 +122,7 @@ export default function IndexTrashPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Index Trash</h1>
-        <p className="text-lg text-muted-foreground mt-2">View and manage deleted index entries.</p>
+        <p className="text-lg text-muted-foreground mt-2"></p>
       </header>
       
       <AlertDialog onOpenChange={(open) => !open && (setDeleteConfirmation(''), setSecondDeleteConfirmation(false))}>
@@ -225,5 +225,3 @@ export default function IndexTrashPage() {
     </div>
   );
 }
-
-    

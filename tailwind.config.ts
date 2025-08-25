@@ -48,6 +48,13 @@ export default {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        'nav-home': 'hsl(var(--nav-home))',
+        'nav-index': 'hsl(var(--nav-index))',
+        'nav-issue': 'hsl(var(--nav-issue))',
+        'nav-bill': 'hsl(var(--nav-bill))',
+        'nav-teachers': 'hsl(var(--nav-teachers))',
+        'nav-trash': 'hsl(var(--nav-trash))',
+        'nav-settings': 'hsl(var(--nav-settings))',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
