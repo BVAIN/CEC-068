@@ -337,13 +337,13 @@ export default function BillViewPage() {
                         <h1 className="text-xl md:text-2xl font-bold uppercase print-header-title">University of Delhi</h1>
                         <h2 className="text-lg md:text-xl font-bold print-header-subtitle">Central Evaluation Centre, SGTB Khalsa College</h2>
                         <div className="flex items-baseline justify-center">
-                            <div className="flex items-baseline">
-                            <span className="font-bold">Bill,</span>
-                            <Input className="w-auto manual-input font-bold text-center" value={globalSettings.billName} readOnly />
+                             <div className="flex items-baseline">
+                                <span className="font-bold">Bill,</span>
+                                <span style={{minWidth: '180px', borderBottom: '1px dotted black', display: 'inline-block', marginLeft: '8px'}}></span>
                             </div>
                             <div className="flex items-baseline ml-4">
-                            <span className="font-bold">Examination</span>
-                            <Input className="w-auto manual-input font-bold text-center" value={globalSettings.examinationName} readOnly />
+                                <span className="font-bold">Examination</span>
+                                <span style={{minWidth: '120px', borderBottom: '1px dotted black', display: 'inline-block', marginLeft: '8px'}}></span>
                             </div>
                         </div>
                     </div>
@@ -555,3 +555,5 @@ export default function BillViewPage() {
   );
 
 }
+
+    
