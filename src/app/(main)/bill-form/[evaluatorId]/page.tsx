@@ -178,13 +178,14 @@ export default function BillViewPage() {
                     min-width: 200px;
                 }
 
-                .print-bill-only .bill-card-page { visibility: visible; }
+                .print-bill-only .bill-card-page, .print-bill-only .bill-card-page * { visibility: visible; }
                 .print-bill-only .undertaking-page { visibility: hidden; display: none; }
                 
                 .print-undertaking-only .bill-card-page { visibility: hidden; display: none; }
-                .print-undertaking-only .undertaking-page { visibility: visible; page-break-before: auto !important; }
-
-                .print-undertaking-only .undertaking-page, .print-undertaking-only .undertaking-page * {
+                .print-undertaking-only .undertaking-page, .print-undertaking-only .undertaking-page * { visibility: visible; page-break-before: auto !important; }
+                
+                .undertaking-page {
+                    display: block;
                     visibility: visible;
                 }
             }
@@ -525,3 +526,5 @@ export default function BillViewPage() {
   );
 
 }
+
+    
