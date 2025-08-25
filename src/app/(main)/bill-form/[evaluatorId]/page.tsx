@@ -70,7 +70,7 @@ export default function BillViewPage() {
     }
   }, [params.evaluatorId, router, toast]);
   
-   const handlePrint = (option: 'bill' | 'undertaking' | 'both') => {
+   const handlePrint = (option: 'bill' | 'undertaking') => {
     const printSection = document.getElementById('print-section');
     if (!printSection) return;
 
@@ -82,8 +82,6 @@ export default function BillViewPage() {
     } else if (option === 'undertaking') {
         printSection.classList.add('print-undertaking-only');
     }
-    
-    // For 'both', no extra class is needed as default is to print all
     
     window.print();
   };
@@ -292,9 +290,6 @@ export default function BillViewPage() {
                     <DropdownMenuItem onClick={() => handlePrint('undertaking')}>
                         Print Undertaking
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handlePrint('both')}>
-                        Print Both
-                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
@@ -483,7 +478,7 @@ export default function BillViewPage() {
                             <div className="flex flex-col">
                                 <span className="font-bold">Coordinator</span>
                                 <div className="flex items-center text-sm">
-                                    <span>CEC</span>
+                                    <span>CEC:</span>
                                     <Input className="w-auto h-8 manual-input font-bold text-center" value={globalSettings.coordinatorName} readOnly />
                                 </div>
                             </div>
@@ -501,7 +496,7 @@ export default function BillViewPage() {
             </div>
             <div className="mt-8 space-y-4 text-base">
                 <p>
-                    I clerify that none of my relations (husband, wife, son, daughter, brother, sister, nephew, niece, sister-in-law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
+                    I, <span className="underlined-value">{billDetails.evaluatorName}</span>, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
                 </p>
                 <div className="flex justify-end pt-8">
                     <div className="text-left space-y-1 undertaking-details">
