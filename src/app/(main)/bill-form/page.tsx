@@ -328,90 +328,121 @@ export default function BillFormPage() {
   ];
 
   const generateBillPreviewHTML = (billDetails: BillFormValues) => {
-    const signatureImage = billDetails.signature ? `<img src="${billDetails.signature}" alt="Evaluator's Signature" style="max-height: 40px;" />` : '';
+    const signatureImage = billDetails.signature ? `<img src="${billDetails.signature}" alt="Evaluator's Signature" style="max-height: 40px; filter: contrast(1.5) brightness(1.1); mix-blend-mode: multiply;" />` : '';
 
     return `
-      <div style="font-family: sans-serif; max-width: 800px; margin: auto; border: 1px solid #eee; padding: 20px; page-break-after: always;">
-        <div style="display: flex; justify-content: flex-end; font-size: 0.875rem;">
-          <div style="display: grid; grid-template-columns: 1fr; gap: 4px; text-align: right;">
-            <span>Page No. ....................</span>
-            <span>Reg. No. ....................</span>
-          </div>
-        </div>
-        <div style="text-align: center; margin-bottom: 1rem;">
-          <h1 style="font-size: 1.5rem; font-weight: bold; text-transform: uppercase;">University of Delhi</h1>
-          <h2 style="font-size: 1.25rem; font-weight: bold;">Central Evaluation Centre, SGTB Khalsa College</h2>
-        </div>
-        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
-          <span style="font-weight: bold;">Bill,</span>
-          <span style="border-bottom: 1px dotted black; min-width: 180px; display: inline-block;"></span>
-          <span style="font-weight: bold;">Examination</span>
-          <span style="border-bottom: 1px dotted black; min-width: 120px; display: inline-block;"></span>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; font-size: 0.875rem; margin-bottom: 1rem;">
-          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Evaluator ID:</span><span>${billDetails.evaluatorId}</span></div>
-          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Evaluator Name:</span><span>${billDetails.evaluatorName}</span></div>
-          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Address:</span> <span>${billDetails.address}</span></div>
-          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Course:</span> <span>${billDetails.course}</span></div>
-          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Email ID:</span><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${billDetails.email}</span></div>
-          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Mobile No:</span><span>${billDetails.mobileNo}</span></div>
-          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">College Name:</span> <span>${billDetails.collegeName}</span></div>
-          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Distance (Km) Up-Down:</span> <span>${billDetails.distance}</span></div>
-        </div>
-        <div style="margin-bottom: 1rem;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; font-size: 0.875rem;">
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Bank Name:</span><span>${billDetails.bankName}</span></div>
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Branch:</span><span>${billDetails.branch}</span></div>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem 2rem; font-size: 0.875rem; margin-top: 4px;">
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">PAN No.:</span><span>${billDetails.panNo}</span></div>
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Account No:</span><span>${billDetails.bankAccountNo}</span></div>
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">IFSC Code:</span><span>${billDetails.ifscCode}</span></div>
-          </div>
-          <div style="display: flex; justify-content: space-between; margin-top: 8px;"><span>Paper No.........................................................................................................</span><span style="margin-left: 1rem;">Duration of Paper...................</span></div>
-        </div>
-        <div style="margin-bottom: 1rem;">
-          <h3 style="text-align: center; font-weight: bold;">Part I Examiner /Additional Examiner</h3>
-          <table style="width: 100%; border-collapse: collapse; border: 1px solid black; margin-top: 8px;">
-            <thead>
-              <tr>
-                <th style="font-weight: bold; border: 1px solid black; padding: 4px; font-size: 0.75rem; width: 15%;">Total No. of Ans. Scripts Evaluated</th>
-                <th style="font-weight: bold; border: 1px solid black; padding: 4px; font-size: 0.75rem;">Rate Per Ans. Script</th>
-                <th style="font-weight: bold; border: 1px solid black; padding: 4px; font-size: 0.75rem;">Remuneration Claimed</th>
-                <th style="font-weight: bold; border: 1px solid black; padding: 4px; font-size: 0.75rem;">Total No. of Visits</th>
-                <th style="font-weight: bold; border: 1px solid black; padding: 4px; font-size: 0.75rem; width: 40%;">Date of Visits:</th>
-              </tr>
-            </thead>
-            <tbody><tr style="height: 96px;"><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td></tr></tbody>
-          </table>
-          <div style="text-align: center; padding-top: 4px;"><span style="font-weight: bold; text-decoration: underline;">Optimum no. of Copies</span></div>
-        </div>
-        <div style="margin-bottom: 1rem;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-            <div style="width: 66%;"><h3 style="text-align: left; font-weight: bold;">Part II (for use of Head/Additional Head Examiner)</h3><div style="padding-top: 8px;"><span>Payment claimed Rs............................................................</span></div></div>
-            <div style="text-align: center;">${signatureImage}<h3 style="font-weight: bold; font-size: 0.875rem; margin-top: 4px;">Signature of Examiner</h3></div>
-          </div>
-          <hr style="margin: 8px 0; border-top: 1px solid #6b7280;" />
-          <div style="text-align: center;"><span style="font-weight: bold; text-decoration: underline;">Official Use</span></div>
-          <div style="padding-top: 8px; space-y: 4px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;"><span>I) Remuneration for the Scripts Valued :</span><span style="text-align: right;">Rs. ____________________________</span></div>
-            <div style="display: flex; justify-content: space-between; align-items: center;"><span>II) Payment on account of Additional Examiner (If any) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
-            <div style="display: flex; justify-content: space-between; align-items: center;"><span>Total of (I+II) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
-            <div style="display: flex; justify-content: space-between; align-items: center;"><span>Less: 5% TWF :</span><span style="text-align: right;">Rs. ____________________________</span></div>
-            <div style="display: flex; justify-content: space-between; align-items: center;"><span>Balance :</span><span style="text-align: right;">Rs. ____________________________</span></div>
-            <div>
-              <div style="display: flex; justify-content: space-between; align-items: center;"><span>Conveyance @ Rs. _________ Per day</span><span style="text-align: right;">Rs. ____________________________</span></div>
-              <div style="padding-left: 1rem;"><span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span></div>
+      <div style="font-family: sans-serif; max-width: 800px; margin: auto; border: 1px solid #eee; padding: 20px;">
+        <div class="bill-card-page">
+            <div style="display: flex; justify-content: flex-end; font-size: 0.875rem;">
+              <div style="display: grid; grid-template-columns: 1fr; gap: 4px; text-align: right;">
+                <span>Page No. ....................</span>
+                <span>Reg. No. ....................</span>
+              </div>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;"><span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
-            <div style="display: flex; justify-content: space-between; align-items: center;"><span>Net Payable :</span><span style="text-align: right;">Rs. ____________________________</span></div>
-          </div>
+            <div style="text-align: center; margin-bottom: 1rem;">
+              <h1 style="font-size: 1.5rem; font-weight: bold; text-transform: uppercase;">University of Delhi</h1>
+              <h2 style="font-size: 1.25rem; font-weight: bold;">Central Evaluation Centre, SGTB Khalsa College</h2>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+              <span style="font-weight: bold;">Bill,</span>
+              <span style="border-bottom: 1px dotted black; min-width: 180px; display: inline-block;"></span>
+              <span style="font-weight: bold;">Examination</span>
+              <span style="border-bottom: 1px dotted black; min-width: 120px; display: inline-block;"></span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; font-size: 0.875rem; margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Evaluator ID:</span><span>${billDetails.evaluatorId}</span></div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Evaluator Name:</span><span>${billDetails.evaluatorName}</span></div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Address:</span> <span>${billDetails.address}</span></div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Course:</span> <span>${billDetails.course}</span></div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Email ID:</span><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${billDetails.email}</span></div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Mobile No:</span><span>${billDetails.mobileNo}</span></div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">College Name:</span> <span>${billDetails.collegeName}</span></div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Distance (Km) Up-Down:</span> <span>${billDetails.distance}</span></div>
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; font-size: 0.875rem;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Bank Name:</span><span>${billDetails.bankName}</span></div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Branch:</span><span>${billDetails.branch}</span></div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem 2rem; font-size: 0.875rem; margin-top: 4px;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">PAN No.:</span><span>${billDetails.panNo}</span></div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Account No:</span><span>${billDetails.bankAccountNo}</span></div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">IFSC Code:</span><span>${billDetails.ifscCode}</span></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-top: 8px;"><span>Paper No.........................................................................................................</span><span style="margin-left: 1rem;">Duration of Paper...................</span></div>
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <h3 style="text-align: center; font-weight: bold;">Part I Examiner /Additional Examiner</h3>
+              <table style="width: 100%; border-collapse: collapse; border: 1px solid black; margin-top: 8px;">
+                <thead>
+                  <tr>
+                    <th style="font-weight: bold; border: 1px solid black; padding: 4px; font-size: 0.75rem; width: 15%;">Total No. of Ans. Scripts Evaluated</th>
+                    <th style="font-weight: bold; border: 1px solid black; padding: 4px; font-size: 0.75rem;">Rate Per Ans. Script</th>
+                    <th style="font-weight: bold; border: 1px solid black; padding: 4px; font-size: 0.75rem;">Remuneration Claimed</th>
+                    <th style="font-weight: bold; border: 1px solid black; padding: 4px; font-size: 0.75rem;">Total No. of Visits</th>
+                    <th style="font-weight: bold; border: 1px solid black; padding: 4px; font-size: 0.75rem; width: 40%;">Date of Visits:</th>
+                  </tr>
+                </thead>
+                <tbody><tr style="height: 96px;"><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td></tr></tbody>
+              </table>
+              <div style="text-align: center; padding-top: 4px;"><span style="font-weight: bold; text-decoration: underline;">Optimum no. of Copies</span></div>
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div style="width: 66%;"><h3 style="text-align: left; font-weight: bold;">Part II (for use of Head/Additional Head Examiner)</h3><div style="padding-top: 8px;"><span>Payment claimed Rs............................................................</span></div></div>
+                <div style="text-align: center;">${signatureImage}<h3 style="font-weight: bold; font-size: 0.875rem; margin-top: 4px;">Signature of Examiner</h3></div>
+              </div>
+              <hr style="margin: 8px 0; border-top: 1px solid #6b7280;" />
+              <div style="text-align: center;"><span style="font-weight: bold; text-decoration: underline;">Official Use</span></div>
+              <div style="padding-top: 8px; space-y: 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;"><span>I) Remuneration for the Scripts Valued :</span><span style="text-align: right;">Rs. ____________________________</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center;"><span>II) Payment on account of Additional Examiner (If any) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center;"><span>Total of (I+II) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center;"><span>Less: 5% TWF :</span><span style="text-align: right;">Rs. ____________________________</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center;"><span>Balance :</span><span style="text-align: right;">Rs. ____________________________</span></div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: center;"><span>Conveyance @ Rs. _________ Per day</span><span style="text-align: right;">Rs. ____________________________</span></div>
+                  <div style="padding-left: 1rem;"><span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;"><span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center;"><span>Net Payable :</span><span style="text-align: right;">Rs. ____________________________</span></div>
+              </div>
+            </div>
+            <div style="padding-top: 3rem;">
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+                <div style="display: flex; flex-direction: column;"><span style="font-weight: bold;">Coordinator</span><div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 0.875rem;">CEC</span><span style="border-bottom: 1px dotted black; width: 100px; height: 32px; display: inline-block;"></span></div></div>
+                <span>Dealing Assistant</span>
+              </div>
+            </div>
         </div>
-        <div style="padding-top: 3rem;">
-          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
-            <div style="display: flex; flex-direction: column;"><span style="font-weight: bold;">Coordinator</span><div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 0.875rem;">CEC</span><span style="border-bottom: 1px dotted black; width: 100px; height: 32px; display: inline-block;"></span></div></div>
-            <span>Dealing Assistant</span>
-          </div>
+        <div class="undertaking-page" style="page-break-before: always; padding-top: 3rem;">
+             <div style="text-align: center;">
+                <h2 style="font-size: 1.5rem; font-weight: bold; text-decoration: underline;">EXAMINATION WING</h2>
+                <p style="font-weight: bold; text-decoration: underline;">UNDERTAKING</p>
+            </div>
+            <div style="margin-top: 2rem; font-size: 1rem; line-height: 1.5;">
+                <p>
+                    I clerify that none of my relations (husband, wife, son, daughter, brother, sister, nephew, niece, sister-in-law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
+                </p>
+                <div style="display: flex; justify-content: flex-end; padding-top: 2rem;">
+                    <div style="text-align: left; display: grid; gap: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Teacher ID:</span> <span style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.evaluatorId}</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Teacher Name:</span> <span style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.evaluatorName}</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">College Name:</span> <span style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.collegeName}</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Mobile No.:</span> <span style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.mobileNo}</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Email ID:</span> <span style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.email}</span></div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; padding-top: 4rem;">
+                    <div style="text-align: center;">
+                        <div style="display: flex; justify-content: center; align-items: center; padding: 4px; min-height: 3rem;">
+                           ${signatureImage}
+                        </div>
+                        <h3 style="font-weight: bold; font-size: 0.875rem; margin-top: 4px;">(Signature of the Teacher)</h3>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
     `;
@@ -434,7 +465,7 @@ export default function BillFormPage() {
               body { font-family: 'Inter', sans-serif; }
               @media print {
                 body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                .page-break { page-break-after: always; }
+                .undertaking-page { page-break-before: always; }
               }
            </style>
         </head>
@@ -747,5 +778,3 @@ export default function BillFormPage() {
     </div>
   );
 }
-
-    
