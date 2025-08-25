@@ -20,6 +20,8 @@ type GlobalBillSettings = {
     billName: string;
     examinationName: string;
     coordinatorName: string;
+    conveyanceUnder30: number;
+    conveyanceOver30: number;
 }
 
 export default function BillViewPage() {
@@ -32,7 +34,9 @@ export default function BillViewPage() {
   const [globalSettings, setGlobalSettings] = useState<GlobalBillSettings>({
       billName: '',
       examinationName: '',
-      coordinatorName: ''
+      coordinatorName: '',
+      conveyanceUnder30: 450,
+      conveyanceOver30: 600,
   });
   
 
@@ -42,7 +46,9 @@ export default function BillViewPage() {
         // Load global settings
         const storedSettings = localStorage.getItem(GLOBAL_BILL_SETTINGS_KEY);
         if (storedSettings) {
-            setGlobalSettings(JSON.parse(storedSettings));
+            // Merging with defaults to ensure new fields are present
+            const parsedSettings = JSON.parse(storedSettings);
+            setGlobalSettings(prev => ({ ...prev, ...parsedSettings}));
         }
 
         const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
@@ -117,7 +123,7 @@ export default function BillViewPage() {
                 body * {
                     visibility: hidden;
                 }
-                #print-section, #print-section * {
+                 #print-section, #print-section .bill-card-page, #print-section .undertaking-page, #print-section * {
                     visibility: visible;
                 }
                 #print-section {
@@ -253,7 +259,7 @@ export default function BillViewPage() {
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="examinationName" className="text-right">Examination Name</Label>
+                            <Label htmlFor="examinationName" className="text-right">Examination</Label>
                             <Input
                                 id="examinationName"
                                 value={globalSettings.examinationName}
@@ -270,6 +276,28 @@ export default function BillViewPage() {
                                 onChange={(e) => setGlobalSettings(s => ({ ...s, coordinatorName: e.target.value }))}
                                 className="col-span-3"
                                 placeholder="e.g., Dr. ABC"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="conveyanceUnder30" className="text-right">Rate (≤30km)</Label>
+                            <Input
+                                id="conveyanceUnder30"
+                                type="number"
+                                value={globalSettings.conveyanceUnder30}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, conveyanceUnder30: Number(e.target.value) }))}
+                                className="col-span-3"
+                                placeholder="e.g., 450"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="conveyanceOver30" className="text-right">Rate (&gt;30km)</Label>
+                            <Input
+                                id="conveyanceOver30"
+                                type="number"
+                                value={globalSettings.conveyanceOver30}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, conveyanceOver30: Number(e.target.value) }))}
+                                className="col-span-3"
+                                placeholder="e.g., 600"
                             />
                         </div>
                     </div>
@@ -459,7 +487,7 @@ export default function BillViewPage() {
                                     <span className="text-right">Rs. ____________________________</span>
                                 </div>
                                 <div className="pl-4">
-                                    <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
+                                    <span>(Up to 30 Km Rs.{globalSettings.conveyanceUnder30}/- & above Rs. {globalSettings.conveyanceOver30}/-)</span>
                                 </div>
                             </div>
                             <div className="flex justify-between items-center">
@@ -496,7 +524,7 @@ export default function BillViewPage() {
             </div>
             <div className="mt-8 space-y-4 text-base">
                 <p>
-                    I, <span className="underlined-value">{billDetails.evaluatorName}</span>, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
+                    I clerify that none of my relations (husband, wife, son, daughter, brother, sister, nephew, niece, sister-in-law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
                 </p>
                 <div className="flex justify-end pt-8">
                     <div className="text-left space-y-1 undertaking-details">
