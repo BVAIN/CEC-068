@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "@
 import { BILLS_STORAGE_KEY, GLOBAL_BILL_SETTINGS_KEY } from "@/lib/constants";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 
 type GlobalBillSettings = {
@@ -69,9 +70,24 @@ export default function BillViewPage() {
     }
   }, [params.evaluatorId, router, toast]);
   
-  const handlePrint = () => {
+   const handlePrint = (option: 'bill' | 'undertaking' | 'both') => {
+    const printSection = document.getElementById('print-section');
+    if (!printSection) return;
+
+    // Reset classes
+    printSection.classList.remove('print-bill-only', 'print-undertaking-only');
+
+    if (option === 'bill') {
+        printSection.classList.add('print-bill-only');
+    } else if (option === 'undertaking') {
+        printSection.classList.add('print-undertaking-only');
+    }
+    
+    // For 'both', no extra class is needed as default is to print all
+    
     window.print();
   };
+
 
   const handleSaveSettings = () => {
     localStorage.setItem(GLOBAL_BILL_SETTINGS_KEY, JSON.stringify(globalSettings));
@@ -161,6 +177,16 @@ export default function BillViewPage() {
                     display: inline-block;
                     min-width: 200px;
                 }
+
+                .print-bill-only .bill-card-page { visibility: visible; }
+                .print-bill-only .undertaking-page { visibility: hidden; display: none; }
+                
+                .print-undertaking-only .bill-card-page { visibility: hidden; display: none; }
+                .print-undertaking-only .undertaking-page { visibility: visible; page-break-before: auto !important; }
+
+                .print-undertaking-only .undertaking-page, .print-undertaking-only .undertaking-page * {
+                    visibility: visible;
+                }
             }
              .manual-input {
                 border: none;
@@ -248,206 +274,223 @@ export default function BillViewPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-            <Button onClick={handlePrint}><Printer className="mr-2 h-4 w-4" /> Print Bill</Button>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button><Printer className="mr-2 h-4 w-4" /> Print</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handlePrint('bill')}>
+                        Print Bill Form
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handlePrint('undertaking')}>
+                        Print Undertaking
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handlePrint('both')}>
+                        Print Both
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
       </header>
       
       <div id="print-section">
-        <Card className="shadow-none border-none">
-            <CardHeader className="p-4 md:p-6 print:p-0">
-                <div className="flex justify-end text-sm">
-                    <div className="grid grid-cols-1 gap-1 text-right">
-                        <span>Page No. ....................</span>
-                        <span>Reg. No. ....................</span>
-                    </div>
-                </div>
-                <div className="text-center">
-                    <h1 className="text-xl md:text-2xl font-bold uppercase print-header-title">University of Delhi</h1>
-                    <h2 className="text-lg md:text-xl font-bold print-header-subtitle">Central Evaluation Centre, SGTB Khalsa College</h2>
-                    <div className="flex items-baseline justify-center">
-                        <div className="flex items-baseline">
-                           <span className="font-bold">Bill,</span>
-                           <Input className="w-auto manual-input font-bold text-center" value={globalSettings.billName} readOnly />
-                        </div>
-                        <div className="flex items-baseline ml-4">
-                           <span className="font-bold">Examination</span>
-                           <Input className="w-auto manual-input font-bold text-center" value={globalSettings.examinationName} readOnly />
+        <div className="bill-card-page">
+            <Card className="shadow-none border-none">
+                <CardHeader className="p-4 md:p-6 print:p-0">
+                    <div className="flex justify-end text-sm">
+                        <div className="grid grid-cols-1 gap-1 text-right">
+                            <span>Page No. ....................</span>
+                            <span>Reg. No. ....................</span>
                         </div>
                     </div>
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-2 text-base p-4 md:p-6 print:p-0 print:text-sm">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-                    <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">Evaluator ID:</span>
-                        <span className="text-right">{billDetails.evaluatorId}</span>
-                    </div>
-                    <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">Evaluator Name:</span>
-                        <span className="text-right">{billDetails.evaluatorName}</span>
-                    </div>
-                     <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">Address:</span> <span className="text-right">{billDetails.address}</span>
-                    </div>
-                     <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">Course:</span> <span className="text-right">{billDetails.course}</span>
-                    </div>
-                    <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">Email ID:</span>
-                        <span className="truncate text-right">{billDetails.email}</span>
-                    </div>
-                    <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">Mobile No:</span>
-                        <span className="text-right">{billDetails.mobileNo}</span>
-                    </div>
-                     <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">College Name:</span> <span className="text-right">{billDetails.collegeName}</span>
-                    </div>
-                    <div className="flex justify-between items-baseline border-b pb-1">
-                        <span className="font-bold shrink-0">Distance (Km) Up-Down:</span> <span className="text-right">{billDetails.distance}</span>
-                    </div>
-                </div>
-
-
-                <div className="pt-2">
-                     <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-                        <div className="flex justify-between items-baseline border-b pb-1">
-                            <span className="font-bold shrink-0">Bank Name:</span>
-                            <span className="text-right">{billDetails.bankName}</span>
-                        </div>
-                        <div className="flex justify-between items-baseline border-b pb-1">
-                            <span className="font-bold shrink-0">Branch:</span>
-                            <span className="text-right">{billDetails.branch}</span>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-x-8 gap-y-1 mt-1">
-                        <div className="flex justify-between items-baseline border-b pb-1">
-                            <span className="font-bold shrink-0">PAN No.:</span>
-                            <span className="text-right">{billDetails.panNo}</span>
-                        </div>
-                        <div className="flex justify-between items-baseline border-b pb-1">
-                            <span className="font-bold shrink-0">Account No:</span>
-                            <span className="font-mono text-right">{billDetails.bankAccountNo}</span>
-                        </div>
-                        <div className="flex justify-between items-baseline border-b pb-1">
-                            <span className="font-bold shrink-0">IFSC Code:</span>
-                            <span className="font-mono text-right">{billDetails.ifscCode}</span>
-                        </div>
-                    </div>
-                     <div className="flex justify-between">
-                        <span>Paper No.........................................................................................................</span>
-                        <span className="ml-4">Duration of Paper...................</span>
-                    </div>
-                </div>
-                
-                <div className="pt-2">
-                    <h3 className="text-center font-bold">Part I Examiner /Additional Examiner</h3>
-                    <Table className="mt-1 border print-table w-full">
-                         <TableHeader>
-                            <TableRow>
-                                <TableHead className="font-bold border print-table total-scripts-cell text-xs">Total No. of Ans. Scripts Evaluated</TableHead>
-                                <TableHead className="font-bold border print-table text-xs">Rate Per Ans. Script</TableHead>
-                                <TableHead className="font-bold border print-table text-xs">Remuneration Claimed</TableHead>
-                                <TableHead className="font-bold border print-table text-xs">Total No. of Visits</TableHead>
-                                <TableHead className="font-bold border print-table date-of-visits-cell text-xs">Date of Visits:</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow className="h-24">
-                                <TableCell className="border print-table total-scripts-cell"></TableCell>
-                                <TableCell className="border print-table"></TableCell>
-                                <TableCell className="border print-table"></TableCell>
-                                <TableCell className="border print-table"></TableCell>
-                                <TableCell className="border print-table date-of-visits-cell"></TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                    <div className="text-center pt-1">
-                        <span className="font-bold underline">Optimum no. of Copies</span>
-                    </div>
-                </div>
-
-                <div className="pt-2">
-                    <div className="flex justify-between items-end">
-                        <div className="w-2/3 space-y-1">
-                            <h3 className="text-left font-bold">Part II (for use of Head/Additional Head Examiner)</h3>
-                            <div className="pt-1">
-                                <span>Payment claimed Rs............................................................</span>
-                            </div>
-                        </div>
-                        {billDetails.signature && (
-                            <div className="text-center">
-                                <div className="flex justify-center items-center rounded-md p-1 min-h-[3rem]">
-                                    <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12 signature-image" />
-                                </div>
-                                <h3 className="font-bold text-sm mt-1">Signature of Examiner</h3>
-                            </div>
-                        )}
-                    </div>
-                    <hr className="my-2 border-t border-foreground" />
                     <div className="text-center">
-                        <span className="font-bold underline">Official Use</span>
+                        <h1 className="text-xl md:text-2xl font-bold uppercase print-header-title">University of Delhi</h1>
+                        <h2 className="text-lg md:text-xl font-bold print-header-subtitle">Central Evaluation Centre, SGTB Khalsa College</h2>
+                        <div className="flex items-baseline justify-center">
+                            <div className="flex items-baseline">
+                            <span className="font-bold">Bill,</span>
+                            <Input className="w-auto manual-input font-bold text-center" value={globalSettings.billName} readOnly />
+                            </div>
+                            <div className="flex items-baseline ml-4">
+                            <span className="font-bold">Examination</span>
+                            <Input className="w-auto manual-input font-bold text-center" value={globalSettings.examinationName} readOnly />
+                            </div>
+                        </div>
                     </div>
-                     <div className="pt-2 space-y-1">
-                        <div className="flex justify-between items-center">
-                            <span>I) Remuneration for the Scripts Valued :</span>
-                            <span className="text-right">Rs. ____________________________</span>
+                </CardHeader>
+                <CardContent className="space-y-2 text-base p-4 md:p-6 print:p-0 print:text-sm">
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-1">
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">Evaluator ID:</span>
+                            <span className="text-right">{billDetails.evaluatorId}</span>
                         </div>
-                        <div className="flex justify-between items-center">
-                            <span>II) Payment on account of Additional Examiner (If any) :</span>
-                            <span className="text-right">Rs. ____________________________</span>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">Evaluator Name:</span>
+                            <span className="text-right">{billDetails.evaluatorName}</span>
                         </div>
-                        <div className="flex justify-between items-center">
-                           <span>Total of (I+II) :</span>
-                           <span className="text-right">Rs. ____________________________</span>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">Address:</span> <span className="text-right">{billDetails.address}</span>
                         </div>
-                         <div className="flex justify-between items-center">
-                            <span>Less: 5% TWF :</span>
-                            <span className="text-right">Rs. ____________________________</span>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">Course:</span> <span className="text-right">{billDetails.course}</span>
                         </div>
-                        <div className="flex justify-between items-center">
-                            <span>Balance :</span>
-                            <span className="text-right">Rs. ____________________________</span>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">Email ID:</span>
+                            <span className="truncate text-right">{billDetails.email}</span>
                         </div>
-                        <div>
-                           <div className="flex justify-between items-center">
-                                <span>Conveyance @ Rs. _________ Per day</span>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">Mobile No:</span>
+                            <span className="text-right">{billDetails.mobileNo}</span>
+                        </div>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">College Name:</span> <span className="text-right">{billDetails.collegeName}</span>
+                        </div>
+                        <div className="flex justify-between items-baseline border-b pb-1">
+                            <span className="font-bold shrink-0">Distance (Km) Up-Down:</span> <span className="text-right">{billDetails.distance}</span>
+                        </div>
+                    </div>
+
+
+                    <div className="pt-2">
+                        <div className="grid grid-cols-2 gap-x-8 gap-y-1">
+                            <div className="flex justify-between items-baseline border-b pb-1">
+                                <span className="font-bold shrink-0">Bank Name:</span>
+                                <span className="text-right">{billDetails.bankName}</span>
+                            </div>
+                            <div className="flex justify-between items-baseline border-b pb-1">
+                                <span className="font-bold shrink-0">Branch:</span>
+                                <span className="text-right">{billDetails.branch}</span>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-x-8 gap-y-1 mt-1">
+                            <div className="flex justify-between items-baseline border-b pb-1">
+                                <span className="font-bold shrink-0">PAN No.:</span>
+                                <span className="text-right">{billDetails.panNo}</span>
+                            </div>
+                            <div className="flex justify-between items-baseline border-b pb-1">
+                                <span className="font-bold shrink-0">Account No:</span>
+                                <span className="font-mono text-right">{billDetails.bankAccountNo}</span>
+                            </div>
+                            <div className="flex justify-between items-baseline border-b pb-1">
+                                <span className="font-bold shrink-0">IFSC Code:</span>
+                                <span className="font-mono text-right">{billDetails.ifscCode}</span>
+                            </div>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Paper No.........................................................................................................</span>
+                            <span className="ml-4">Duration of Paper...................</span>
+                        </div>
+                    </div>
+                    
+                    <div className="pt-2">
+                        <h3 className="text-center font-bold">Part I Examiner /Additional Examiner</h3>
+                        <Table className="mt-1 border print-table w-full">
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="font-bold border print-table total-scripts-cell text-xs">Total No. of Ans. Scripts Evaluated</TableHead>
+                                    <TableHead className="font-bold border print-table text-xs">Rate Per Ans. Script</TableHead>
+                                    <TableHead className="font-bold border print-table text-xs">Remuneration Claimed</TableHead>
+                                    <TableHead className="font-bold border print-table text-xs">Total No. of Visits</TableHead>
+                                    <TableHead className="font-bold border print-table date-of-visits-cell text-xs">Date of Visits:</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow className="h-24">
+                                    <TableCell className="border print-table total-scripts-cell"></TableCell>
+                                    <TableCell className="border print-table"></TableCell>
+                                    <TableCell className="border print-table"></TableCell>
+                                    <TableCell className="border print-table"></TableCell>
+                                    <TableCell className="border print-table date-of-visits-cell"></TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                        <div className="text-center pt-1">
+                            <span className="font-bold underline">Optimum no. of Copies</span>
+                        </div>
+                    </div>
+
+                    <div className="pt-2">
+                        <div className="flex justify-between items-end">
+                            <div className="w-2/3 space-y-1">
+                                <h3 className="text-left font-bold">Part II (for use of Head/Additional Head Examiner)</h3>
+                                <div className="pt-1">
+                                    <span>Payment claimed Rs............................................................</span>
+                                </div>
+                            </div>
+                            {billDetails.signature && (
+                                <div className="text-center">
+                                    <div className="flex justify-center items-center rounded-md p-1 min-h-[3rem]">
+                                        <img src={billDetails.signature} alt="Evaluator's Signature" className="max-h-12 signature-image" />
+                                    </div>
+                                    <h3 className="font-bold text-sm mt-1">Signature of Examiner</h3>
+                                </div>
+                            )}
+                        </div>
+                        <hr className="my-2 border-t border-foreground" />
+                        <div className="text-center">
+                            <span className="font-bold underline">Official Use</span>
+                        </div>
+                        <div className="pt-2 space-y-1">
+                            <div className="flex justify-between items-center">
+                                <span>I) Remuneration for the Scripts Valued :</span>
                                 <span className="text-right">Rs. ____________________________</span>
                             </div>
-                             <div className="pl-4">
-                                <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
+                            <div className="flex justify-between items-center">
+                                <span>II) Payment on account of Additional Examiner (If any) :</span>
+                                <span className="text-right">Rs. ____________________________</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                            <span>Total of (I+II) :</span>
+                            <span className="text-right">Rs. ____________________________</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span>Less: 5% TWF :</span>
+                                <span className="text-right">Rs. ____________________________</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span>Balance :</span>
+                                <span className="text-right">Rs. ____________________________</span>
+                            </div>
+                            <div>
+                            <div className="flex justify-between items-center">
+                                    <span>Conveyance @ Rs. _________ Per day</span>
+                                    <span className="text-right">Rs. ____________________________</span>
+                                </div>
+                                <div className="pl-4">
+                                    <span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span>
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
+                                <span className="text-right">Rs. ____________________________</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span>Net Payable :</span>
+                                <span className="text-right">Rs. ____________________________</span>
                             </div>
                         </div>
-                        <div className="flex justify-between items-center">
-                            <span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span>
-                            <span className="text-right">Rs. ____________________________</span>
-                        </div>
-                         <div className="flex justify-between items-center">
-                            <span>Net Payable :</span>
-                            <span className="text-right">Rs. ____________________________</span>
-                        </div>
                     </div>
-                </div>
 
-                <div className="pt-12">
-                    <div className="flex items-start justify-between">
-                        <div className="flex flex-col">
-                            <span className="font-bold">Coordinator</span>
-                            <div className="flex items-center text-sm">
-                                <span>CEC</span>
-                                <Input className="w-auto h-8 manual-input font-bold text-center" value={globalSettings.coordinatorName} readOnly />
+                    <div className="pt-12">
+                        <div className="flex items-start justify-between">
+                            <div className="flex flex-col">
+                                <span className="font-bold">Coordinator</span>
+                                <div className="flex items-center text-sm">
+                                    <span>CEC</span>
+                                    <Input className="w-auto h-8 manual-input font-bold text-center" value={globalSettings.coordinatorName} readOnly />
+                                </div>
                             </div>
+                            <span>Dealing Assistant</span>
                         </div>
-                        <span>Dealing Assistant</span>
                     </div>
-                </div>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+        </div>
 
         <div className="undertaking-page pt-12">
             <div className="text-center">
-                <p className="font-bold underline">EXAMINATION WING</p>
-                <h2 className="text-2xl font-bold underline">UNDERTAKING</h2>
+                <h2 className="text-2xl font-bold underline">EXAMINATION WING</h2>
+                <p className="font-bold underline">UNDERTAKING</p>
             </div>
             <div className="mt-8 space-y-4 text-base">
                 <p>
