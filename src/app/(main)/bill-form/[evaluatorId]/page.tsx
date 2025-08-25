@@ -80,7 +80,7 @@ export default function BillViewPage() {
     const printSection = document.getElementById('print-section');
     if (!printSection) return;
 
-    // Reset classes
+    // Reset classes to default state for "Print Both"
     printSection.classList.remove('print-bill-only', 'print-undertaking-only');
 
     if (option === 'bill') {
@@ -503,11 +503,10 @@ export default function BillViewPage() {
 
                     <div className="pt-12">
                         <div className="flex items-start justify-between">
-                            <div className="flex flex-col">
+                             <div className="flex flex-col">
                                 <span className="font-bold">Coordinator</span>
-                                <div className="flex items-center text-sm">
-                                    <span>CEC:</span>
-                                    <Input className="w-auto h-8 manual-input font-bold text-center" value={globalSettings.coordinatorName} readOnly />
+                                <div className="text-sm">
+                                    <span>CEC: {globalSettings.coordinatorName}</span>
                                 </div>
                             </div>
                             <span>Dealing Assistant</span>
