@@ -445,9 +445,11 @@ export default function BillViewPage() {
         </Card>
 
         <div className="undertaking-page pt-12">
-            <h2 className="text-2xl font-bold text-center underline">UNDERTAKING</h2>
+            <div className="text-center">
+                <p className="font-bold underline">EXAMINATION WING</p>
+                <h2 className="text-2xl font-bold underline">UNDERTAKING</h2>
+            </div>
             <div className="mt-8 space-y-4 text-base">
-                <p className="text-center underline font-bold">EXAMINATION WING</p>
                 <p>
                     I clerify that none of my relations (husband, wife, son, daughter, brother, sister, nephew, niece, sister-in-law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
                 </p>
