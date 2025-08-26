@@ -26,11 +26,15 @@ export default function TeacherTrashPage() {
 
   useEffect(() => {
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
     const storedTrash = localStorage.getItem(TEACHER_TRASH_STORAGE_KEY);
     if (storedTrash) {
       setTrashedTeachers(JSON.parse(storedTrash));
     }
-  }, []);
+  }, [hydrated]);
   
   const updateAndSaveTrash = (newTrash: TeacherData[]) => {
     setTrashedTeachers(newTrash);

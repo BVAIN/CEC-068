@@ -25,11 +25,15 @@ export default function IssueTrashPage() {
 
   useEffect(() => {
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
     const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
     if (storedTrash) {
       setTrashedIssues(JSON.parse(storedTrash));
     }
-  }, []);
+  }, [hydrated]);
   
   const updateAndSaveTrash = (newTrash: IssueFormValues[]) => {
     setTrashedIssues(newTrash);

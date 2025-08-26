@@ -27,11 +27,15 @@ export default function BillTrashPage() {
 
   useEffect(() => {
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
     const storedTrash = localStorage.getItem(BILL_TRASH_STORAGE_KEY);
     if (storedTrash) {
       setTrashedBills(JSON.parse(storedTrash));
     }
-  }, []);
+  }, [hydrated]);
   
   const updateAndSaveTrash = (newTrash: BillFormValues[]) => {
     setTrashedBills(newTrash);

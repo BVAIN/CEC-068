@@ -27,11 +27,15 @@ export default function IndexTrashPage() {
 
   useEffect(() => {
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
     const storedTrash = localStorage.getItem(INDEX_TRASH_STORAGE_KEY);
     if (storedTrash) {
       setTrashedEntries(JSON.parse(storedTrash));
     }
-  }, []);
+  }, [hydrated]);
   
   const updateAndSaveTrash = (newTrash: PublicIssueFormValues[]) => {
     setTrashedEntries(newTrash);

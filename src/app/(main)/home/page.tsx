@@ -29,6 +29,10 @@ export default function HomePage() {
 
   useEffect(() => {
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
     try {
       const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
       if (storedIssues) {
@@ -78,7 +82,7 @@ export default function HomePage() {
     } catch (error) {
       console.error("Error calculating totals from localStorage:", error);
     }
-  }, []);
+  }, [hydrated]);
   
   const StatCard = ({ title, stats, className }: { title: string, stats: ScriptStats, className?: string }) => (
     <Card className={className}>
