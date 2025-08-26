@@ -128,7 +128,4 @@
   .home-glass-card span {
     color: #FFF !important;
   }
-  .dark .home-glass-card {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
 }
