@@ -23,6 +23,7 @@ type FilterValues = {
     evaluatorName: string;
     evaluatorId: string;
     course: string;
+    collegeName: string;
 };
 
 export default function TeachersDataPage() {
@@ -30,7 +31,7 @@ export default function TeachersDataPage() {
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [filters, setFilters] = useState<FilterValues>({ evaluatorName: '', evaluatorId: '', course: '' });
+  const [filters, setFilters] = useState<FilterValues>({ evaluatorName: '', evaluatorId: '', course: '', collegeName: '' });
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -65,7 +66,8 @@ export default function TeachersDataPage() {
         const filterMatch = 
             (filters.evaluatorName ? teacher.evaluatorName.toLowerCase().includes(filters.evaluatorName.toLowerCase()) : true) &&
             (filters.evaluatorId ? teacher.evaluatorId.toLowerCase().includes(filters.evaluatorId.toLowerCase()) : true) &&
-            (filters.course ? teacher.course.toLowerCase().includes(filters.course.toLowerCase()) : true);
+            (filters.course ? teacher.course.toLowerCase().includes(filters.course.toLowerCase()) : true) &&
+            (filters.collegeName ? teacher.collegeName.toLowerCase().includes(filters.collegeName.toLowerCase()) : true);
 
         return searchMatch && filterMatch;
     });
@@ -179,6 +181,15 @@ export default function TeachersDataPage() {
                                             id="filter-course"
                                             value={filters.course}
                                             onChange={(e) => handleFilterChange('course', e.target.value)}
+                                            className="col-span-2 h-8"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-3 items-center gap-4">
+                                        <Label htmlFor="filter-college">College</Label>
+                                        <Input
+                                            id="filter-college"
+                                            value={filters.collegeName}
+                                            onChange={(e) => handleFilterChange('collegeName', e.target.value)}
                                             className="col-span-2 h-8"
                                         />
                                     </div>
