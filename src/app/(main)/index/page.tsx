@@ -507,7 +507,7 @@ export default function IndexPage() {
       
       {!activeView && (
         <div className="grid md:grid-cols-2 gap-8 pt-8">
-            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 active:scale-95 bg-blue-500/80 text-white flex flex-col justify-between" onClick={() => setActiveView("North")}>
+            <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 active:scale-95 bg-blue-500/80 text-white flex flex-col justify-between hover:scale-105" onClick={() => setActiveView("North")}>
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center text-primary-foreground">North Campus</CardTitle>
                 </CardHeader>
@@ -515,7 +515,7 @@ export default function IndexPage() {
                     <span className="text-xs text-center w-full text-primary-foreground/80">Entries: {northEntriesCount}</span>
                 </CardFooter>
             </Card>
-             <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 active:scale-95 bg-red-500/80 text-white flex flex-col justify-between" onClick={() => setActiveView("South")}>
+             <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 active:scale-95 bg-red-500/80 text-white flex flex-col justify-between hover:scale-105" onClick={() => setActiveView("South")}>
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center text-primary-foreground">South Campus</CardTitle>
                 </CardHeader>
