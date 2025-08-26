@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as XLSX from "xlsx";
 import QRCode from "qrcode.react";
 import { saveAs } from "file-saver";
@@ -68,8 +69,9 @@ const editableFields = [
 
 type EditableField = typeof editableFields[number]['value'];
 
-export default function BillFormPage() {
+function BillFormPageComponent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [bills, setBills] = useState<BillFormValues[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -89,8 +91,12 @@ export default function BillFormPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setPublicFormUrl(`${window.location.origin}/entry`);
+      const searchFromParams = searchParams.get('search');
+      if (searchFromParams) {
+        setSearchTerm(searchFromParams);
+      }
     }
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -778,3 +784,13 @@ export default function BillFormPage() {
     </div>
   );
 }
+
+export default function BillFormPage() {
+    return (
+        <React.Suspense fallback={<div>Loading...</div>}>
+            <BillFormPageComponent />
+        </React.Suspense>
+    )
+}
+
+    

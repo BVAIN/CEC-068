@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FileDown, Trash2, Search, Filter } from "lucide-react";
+import { FileDown, Trash2, Search, Filter, Edit } from "lucide-react";
 import { BILLS_STORAGE_KEY, TEACHER_TRASH_STORAGE_KEY } from "@/lib/constants";
 import type { BillFormValues } from "../bill-form/page";
 import * as XLSX from "xlsx";
@@ -16,6 +16,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 type TeacherData = Omit<BillFormValues, 'id' | 'signature'>;
 
@@ -27,6 +28,7 @@ type FilterValues = {
 };
 
 export default function TeachersDataPage() {
+  const router = useRouter();
   const [teachers, setTeachers] = useState<TeacherData[]>([]);
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
   const { toast } = useToast();
@@ -121,6 +123,12 @@ export default function TeachersDataPage() {
 
   const handleFilterChange = (field: keyof FilterValues, value: string) => {
     setFilters(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleEdit = (teacher: TeacherData) => {
+      // Redirect to the bill form page and pre-fill the search with the teacher's ID
+      // to show all bills for that teacher, allowing the user to edit them.
+      router.push(`/bill-form?search=${encodeURIComponent(teacher.evaluatorId)}`);
   };
 
   return (
@@ -264,23 +272,28 @@ export default function TeachersDataPage() {
                       <TableCell>{teacher.mobileNo}</TableCell>
                       <TableCell>{teacher.email}</TableCell>
                       <TableCell className="text-right">
-                          <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                  <Button variant="destructive" size="icon">
-                                      <Trash2 className="h-4 w-4" />
-                                  </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                      <AlertDialogDescription>This will move this teacher to the trash.</AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => handleDelete([teacher.evaluatorId])}>Continue</AlertDialogAction>
-                                  </AlertDialogFooter>
-                              </AlertDialogContent>
-                          </AlertDialog>
+                          <div className="flex gap-2 justify-end">
+                              <Button variant="outline" size="icon" onClick={() => handleEdit(teacher)} style={{backgroundColor: 'green', color: 'white'}}>
+                                  <Edit className="h-4 w-4" />
+                              </Button>
+                              <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                      <Button variant="destructive" size="icon">
+                                          <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                          <AlertDialogDescription>This will move this teacher to the trash.</AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => handleDelete([teacher.evaluatorId])}>Continue</AlertDialogAction>
+                                      </AlertDialogFooter>
+                                  </AlertDialogContent>
+                              </AlertDialog>
+                          </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -298,3 +311,5 @@ export default function TeachersDataPage() {
     </div>
   );
 }
+
+    
