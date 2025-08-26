@@ -119,7 +119,7 @@ export default function BillViewPage() {
             }
             @media print {
                 body, .main-layout {
-                    background-color: white !important;
+                    background: white !important;
                     color: black !important;
                 }
                 body * {
@@ -127,7 +127,11 @@ export default function BillViewPage() {
                 }
                  #print-section, #print-section .bill-card-page, #print-section .undertaking-page, #print-section * {
                     visibility: visible;
+                    color: black !important;
                 }
+                 #print-section h1, #print-section h2, #print-section h3, #print-section span, #print-section div, #print-section p, #print-section th, #print-section td {
+                    color: black !important;
+                 }
                 #print-section {
                     position: absolute;
                     left: 0;
@@ -136,6 +140,7 @@ export default function BillViewPage() {
                     margin: 0;
                     padding: 1.5cm;
                     box-sizing: border-box;
+                    background: white !important;
                 }
                  #print-section .print-header-title {
                     font-size: 1.25rem;
@@ -169,8 +174,8 @@ export default function BillViewPage() {
                     border-collapse: collapse;
                 }
                  .signature-image {
-                    filter: none;
-                    mix-blend-mode: multiply;
+                    filter: none !important;
+                    mix-blend-mode: initial !important;
                  }
                 
                 .undertaking-page {
