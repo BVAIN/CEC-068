@@ -23,8 +23,10 @@ export default function BillTrashPage() {
   const { toast } = useToast();
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const { isConnected, writeFile } = useGoogleDrive();
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    setHydrated(true);
     const storedTrash = localStorage.getItem(BILL_TRASH_STORAGE_KEY);
     if (storedTrash) {
       setTrashedBills(JSON.parse(storedTrash));
@@ -83,6 +85,9 @@ export default function BillTrashPage() {
     }
   };
 
+  if (!hydrated) {
+    return null; // or a loading skeleton
+  }
 
   return (
     <div className="space-y-8">
@@ -138,7 +143,7 @@ export default function BillTrashPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-primary hover:bg-primary/90">
+                  <TableRow className="bg-nav-bill hover:bg-nav-bill/90">
                      <TableHead className="text-primary-foreground">
                         <Checkbox
                           onCheckedChange={handleSelectAll}

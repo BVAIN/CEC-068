@@ -22,9 +22,11 @@ export default function IndexTrashPage() {
   const { toast } = useToast();
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [secondDeleteConfirmation, setSecondDeleteConfirmation] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
 
   useEffect(() => {
+    setHydrated(true);
     const storedTrash = localStorage.getItem(INDEX_TRASH_STORAGE_KEY);
     if (storedTrash) {
       setTrashedEntries(JSON.parse(storedTrash));
@@ -118,6 +120,10 @@ export default function IndexTrashPage() {
     </AlertDialogContent>
   );
 
+  if (!hydrated) {
+    return null; // or a loading skeleton
+  }
+
   return (
     <div className="space-y-8">
       <header>
@@ -152,7 +158,7 @@ export default function IndexTrashPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-primary hover:bg-primary/90">
+                  <TableRow className="bg-nav-index hover:bg-nav-index/90">
                      <TableHead className="text-primary-foreground">
                         <Checkbox
                           onCheckedChange={handleSelectAll}

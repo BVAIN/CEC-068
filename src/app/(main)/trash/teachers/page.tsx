@@ -22,8 +22,10 @@ export default function TeacherTrashPage() {
   const [selectedTrash, setSelectedTrash] = useState<string[]>([]);
   const { toast } = useToast();
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    setHydrated(true);
     const storedTrash = localStorage.getItem(TEACHER_TRASH_STORAGE_KEY);
     if (storedTrash) {
       setTrashedTeachers(JSON.parse(storedTrash));
@@ -69,6 +71,10 @@ export default function TeacherTrashPage() {
       setSelectedTrash([]);
     }
   };
+  
+  if (!hydrated) {
+    return null; // or a loading skeleton
+  }
 
   return (
     <div className="space-y-8">
@@ -124,7 +130,7 @@ export default function TeacherTrashPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-primary hover:bg-primary/90">
+                  <TableRow className="bg-nav-teachers hover:bg-nav-teachers/90">
                      <TableHead className="text-primary-foreground">
                         <Checkbox
                           onCheckedChange={handleSelectAll}
