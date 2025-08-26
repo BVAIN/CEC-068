@@ -81,7 +81,7 @@ export default function HomePage() {
   }, []);
   
   const StatCard = ({ title, stats, className }: { title: string, stats: ScriptStats, className?: string }) => (
-    <Card className={cn("text-primary-foreground", className)}>
+    <Card className={cn("text-primary-foreground home-glass-card", className)}>
       <CardHeader>
         <CardTitle className="text-primary-foreground">{title}</CardTitle>
       </CardHeader>
@@ -105,7 +105,7 @@ export default function HomePage() {
   );
   
   const SimpleStatCard = ({ title, value, className }: { title: string, value: number, className?: string }) => (
-    <Card className={cn("text-primary-foreground", className)}>
+    <Card className={cn("text-primary-foreground home-glass-card", className)}>
         <CardHeader>
             <CardTitle className="text-primary-foreground">{title}</CardTitle>
         </CardHeader>
@@ -126,10 +126,10 @@ export default function HomePage() {
       </header>
       
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Regular" stats={regularStats} className="bg-nav-home/50 border-nav-home/70" />
-        <StatCard title="NCWEB" stats={ncwebStats} className="bg-nav-issue/50 border-nav-issue/70" />
-        <StatCard title="SOL" stats={solStats} className="bg-nav-bill/50 border-nav-bill/70" />
-        <StatCard title="All Data" stats={allDataStats} className="bg-nav-index/50 border-nav-index/70" />
+        <StatCard title="Regular" stats={regularStats} />
+        <StatCard title="NCWEB" stats={ncwebStats} />
+        <StatCard title="SOL" stats={solStats} />
+        <StatCard title="All Data" stats={allDataStats} />
       </div>
 
        <Separator />

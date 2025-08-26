@@ -112,3 +112,23 @@
     z-index: -1;
   }
 }
+
+@layer components {
+  .home-glass-card {
+    background-color: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #FFF !important; /* Force white text */
+  }
+
+  .home-glass-card .text-primary-foreground,
+  .home-glass-card .text-muted-foreground,
+  .home-glass-card .font-medium,
+  .home-glass-card .font-bold,
+  .home-glass-card span {
+    color: #FFF !important;
+  }
+  .dark .home-glass-card {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
