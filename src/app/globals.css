@@ -80,20 +80,52 @@
   .animate-fade-in {
     animation: fade-in 0.5s ease-out forwards;
   }
+
+  @keyframes gradient-animation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+      -45deg,
+      hsl(var(--nav-home) / 0.1),
+      hsl(var(--nav-index) / 0.1),
+      hsl(var(--nav-issue) / 0.1),
+      hsl(var(--nav-bill) / 0.1)
+    );
+    background-size: 400% 400%;
+    animation: gradient-animation 15s ease infinite;
+    z-index: -1;
+  }
 }
 
 @layer components {
   .glass-button {
       @apply relative overflow-hidden rounded-lg shadow-lg;
-      background-color: hsl(var(--primary));
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background-color: hsl(var(--primary) / 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid hsl(var(--primary) / 0.2);
   }
 
   .glass-button:hover {
-      background-color: hsl(var(--primary) / 0.9);
+      background-color: hsl(var(--primary) / 0.25);
   }
   
   .glass-button span {
-      @apply relative z-10 text-primary-foreground;
+      @apply relative z-10;
   }
 }

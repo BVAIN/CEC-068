@@ -8,6 +8,7 @@ import type { BillFormValues } from "../bill-form/page";
 import { ISSUES_STORAGE_KEY, BILLS_STORAGE_KEY, PUBLIC_ISSUES_STORAGE_KEY } from "@/lib/constants";
 import type { PublicIssueFormValues } from "@/app/(public)/entry/page";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 type ScriptStats = {
   asPerChallan: number;
@@ -24,9 +25,10 @@ export default function HomePage() {
   const [ncwebStats, setNcwebStats] = useState<ScriptStats>({ asPerChallan: 0, netScripts: 0, difference: 0 });
   const [solStats, setSolStats] = useState<ScriptStats>({ asPerChallan: 0, netScripts: 0, difference: 0 });
   const [allDataStats, setAllDataStats] = useState<ScriptStats>({ asPerChallan: 0, netScripts: 0, difference: 0 });
-
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    setHydrated(true);
     try {
       const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
       if (storedIssues) {
@@ -78,18 +80,18 @@ export default function HomePage() {
     }
   }, []);
   
-  const StatCard = ({ title, stats }: { title: string, stats: ScriptStats }) => (
-    <Card>
+  const StatCard = ({ title, stats, className }: { title: string, stats: ScriptStats, className?: string }) => (
+    <Card className={cn("glass-button text-primary-foreground", className)}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-primary-foreground">{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">As Per Challan:</span>
+          <span>As Per Challan:</span>
           <span className="font-medium">{stats.asPerChallan}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Net Scripts:</span>
+          <span>Net Scripts:</span>
           <span className="font-medium">{stats.netScripts}</span>
         </div>
       </CardContent>
@@ -101,6 +103,21 @@ export default function HomePage() {
       </CardFooter>
     </Card>
   );
+  
+  const SimpleStatCard = ({ title, value, className }: { title: string, value: number, className?: string }) => (
+    <Card className={cn("glass-button text-primary-foreground", className)}>
+        <CardHeader>
+            <CardTitle className="text-primary-foreground">{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p className="text-4xl font-bold">{value}</p>
+        </CardContent>
+    </Card>
+  );
+
+  if (!hydrated) {
+    return null; // or a loading skeleton
+  }
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -109,39 +126,18 @@ export default function HomePage() {
       </header>
       
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Regular" stats={regularStats} />
-        <StatCard title="NCWEB" stats={ncwebStats} />
-        <StatCard title="SOL" stats={solStats} />
-        <StatCard title="All Data" stats={allDataStats} />
+        <StatCard title="Regular" stats={regularStats} className="bg-nav-home/50 border-nav-home/70" />
+        <StatCard title="NCWEB" stats={ncwebStats} className="bg-nav-issue/50 border-nav-issue/70" />
+        <StatCard title="SOL" stats={solStats} className="bg-nav-bill/50 border-nav-bill/70" />
+        <StatCard title="All Data" stats={allDataStats} className="bg-nav-index/50 border-nav-index/70" />
       </div>
 
        <Separator />
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-            <CardHeader>
-                <CardTitle>Total Scripts Issued</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-4xl font-bold">{totalScripts}</p>
-            </CardContent>
-        </Card>
-        <Card>
-            <CardHeader>
-                <CardTitle>Total Evaluated scripts at CEC</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-4xl font-bold">{totalEvaluatedScripts}</p>
-            </CardContent>
-        </Card>
-        <Card>
-            <CardHeader>
-                <CardTitle>Total Bills Submitted</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-4xl font-bold">{totalBills}</p>
-            </CardContent>
-        </Card>
+        <SimpleStatCard title="Total Scripts Issued" value={totalScripts} />
+        <SimpleStatCard title="Total Evaluated scripts at CEC" value={totalEvaluatedScripts} />
+        <SimpleStatCard title="Total Bills Submitted" value={totalBills} />
       </div>
 
     </div>

@@ -56,8 +56,10 @@ export default function IndexPage() {
   const [isEditingRemarks, setIsEditingRemarks] = useState(false);
   const [northEntriesCount, setNorthEntriesCount] = useState(0);
   const [southEntriesCount, setSouthEntriesCount] = useState(0);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    setHydrated(true);
     if (typeof window === 'undefined') return;
     const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
     if (storedEntries) {
@@ -461,6 +463,10 @@ export default function IndexPage() {
      </>
   )};
 
+  if (!hydrated) {
+    return null; // or a loading skeleton
+  }
+
   return (
     <div className="space-y-8">
       <header className="flex justify-between items-center">
@@ -497,20 +503,20 @@ export default function IndexPage() {
       
       {!activeView && (
         <div className="grid md:grid-cols-2 gap-8 pt-8">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-blue-500 text-white flex flex-col justify-between" onClick={() => setActiveView("North")}>
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-blue-500/80 text-white flex flex-col justify-between glass-button" onClick={() => setActiveView("North")}>
                 <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-center">North Campus</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-center text-primary-foreground">North Campus</CardTitle>
                 </CardHeader>
                 <CardFooter>
-                    <span className="text-xs text-center w-full">Entries: {northEntriesCount}</span>
+                    <span className="text-xs text-center w-full text-primary-foreground/80">Entries: {northEntriesCount}</span>
                 </CardFooter>
             </Card>
-             <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-red-500 text-white flex flex-col justify-between" onClick={() => setActiveView("South")}>
+             <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-red-500/80 text-white flex flex-col justify-between glass-button" onClick={() => setActiveView("South")}>
                 <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-center">South Campus</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-center text-primary-foreground">South Campus</CardTitle>
                 </CardHeader>
                 <CardFooter>
-                    <span className="text-xs text-center w-full">Entries: {southEntriesCount}</span>
+                    <span className="text-xs text-center w-full text-primary-foreground/80">Entries: {southEntriesCount}</span>
                 </CardFooter>
             </Card>
         </div>
@@ -547,4 +553,3 @@ export default function IndexPage() {
     </div>
   );
 }
-
