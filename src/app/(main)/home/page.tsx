@@ -81,7 +81,7 @@ export default function HomePage() {
   }, []);
   
   const StatCard = ({ title, stats, className }: { title: string, stats: ScriptStats, className?: string }) => (
-    <Card className={cn("glass-button text-primary-foreground", className)}>
+    <Card className={cn("text-primary-foreground", className)}>
       <CardHeader>
         <CardTitle className="text-primary-foreground">{title}</CardTitle>
       </CardHeader>
@@ -105,7 +105,7 @@ export default function HomePage() {
   );
   
   const SimpleStatCard = ({ title, value, className }: { title: string, value: number, className?: string }) => (
-    <Card className={cn("glass-button text-primary-foreground", className)}>
+    <Card className={cn("text-primary-foreground", className)}>
         <CardHeader>
             <CardTitle className="text-primary-foreground">{title}</CardTitle>
         </CardHeader>

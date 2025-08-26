@@ -112,20 +112,3 @@
     z-index: -1;
   }
 }
-
-@layer components {
-  .glass-button {
-      @apply relative overflow-hidden rounded-lg shadow-lg;
-      background-color: hsl(var(--primary) / 0.15);
-      backdrop-filter: blur(10px);
-      border: 1px solid hsl(var(--primary) / 0.2);
-  }
-
-  .glass-button:hover {
-      background-color: hsl(var(--primary) / 0.25);
-  }
-  
-  .glass-button span {
-      @apply relative z-10;
-  }
-}

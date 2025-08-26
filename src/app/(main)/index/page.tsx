@@ -61,12 +61,16 @@ export default function IndexPage() {
   useEffect(() => {
     setHydrated(true);
     if (typeof window === 'undefined') return;
-    const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
-    if (storedEntries) {
-      const parsedEntries = JSON.parse(storedEntries);
-      setEntries(parsedEntries);
-      setNorthEntriesCount(parsedEntries.filter((e: PublicIssueFormValues) => e.campus === 'North').length);
-      setSouthEntriesCount(parsedEntries.filter((e: PublicIssueFormValues) => e.campus === 'South').length);
+    try {
+      const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
+      if (storedEntries) {
+        const parsedEntries = JSON.parse(storedEntries);
+        setEntries(parsedEntries);
+        setNorthEntriesCount(parsedEntries.filter((e: PublicIssueFormValues) => e.campus === 'North').length);
+        setSouthEntriesCount(parsedEntries.filter((e: PublicIssueFormValues) => e.campus === 'South').length);
+      }
+    } catch (error) {
+        console.error("Error parsing localStorage data:", error);
     }
   }, []);
 
@@ -503,7 +507,7 @@ export default function IndexPage() {
       
       {!activeView && (
         <div className="grid md:grid-cols-2 gap-8 pt-8">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-blue-500/80 text-white flex flex-col justify-between glass-button" onClick={() => setActiveView("North")}>
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-blue-500/80 text-white flex flex-col justify-between" onClick={() => setActiveView("North")}>
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center text-primary-foreground">North Campus</CardTitle>
                 </CardHeader>
@@ -511,7 +515,7 @@ export default function IndexPage() {
                     <span className="text-xs text-center w-full text-primary-foreground/80">Entries: {northEntriesCount}</span>
                 </CardFooter>
             </Card>
-             <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-red-500/80 text-white flex flex-col justify-between glass-button" onClick={() => setActiveView("South")}>
+             <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-red-500/80 text-white flex flex-col justify-between" onClick={() => setActiveView("South")}>
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center text-primary-foreground">South Campus</CardTitle>
                 </CardHeader>
