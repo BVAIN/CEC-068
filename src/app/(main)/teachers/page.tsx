@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -24,6 +23,7 @@ export default function TeachersDataPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
     if (storedBills) {
       const allBills: BillFormValues[] = JSON.parse(storedBills);
@@ -155,7 +155,7 @@ export default function TeachersDataPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-primary hover:bg-primary/90">
+                  <TableRow className="bg-nav-teachers hover:bg-nav-teachers/90">
                     <TableHead className="text-primary-foreground w-12">
                          <Checkbox
                             onCheckedChange={handleSelectAll}

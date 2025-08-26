@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -58,6 +57,7 @@ export default function IndexPage() {
   const [southEntriesCount, setSouthEntriesCount] = useState(0);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
     if (storedEntries) {
       const parsedEntries = JSON.parse(storedEntries);
@@ -365,7 +365,7 @@ export default function IndexPage() {
             <CardContent>
                 <Table>
                 <TableHeader>
-                    <TableRow className="bg-primary hover:bg-primary/90">
+                    <TableRow className="bg-nav-index hover:bg-nav-index/90">
                     <TableHead className="w-12 text-primary-foreground">
                         <Checkbox
                             onCheckedChange={handleSelectAll(data)}

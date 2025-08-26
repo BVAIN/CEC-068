@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -95,29 +94,30 @@ export default function BillFormPage() {
 
   useEffect(() => {
     const loadData = async () => {
+      let loadedBills: BillFormValues[] = [];
+      if (typeof window === 'undefined') return;
+
       if (isConnected) {
         try {
           const fileContent = await readFile(BILLS_FILE_NAME);
           if (fileContent) {
             const driveBills = JSON.parse(fileContent);
-            setBills(driveBills);
+            loadedBills = driveBills;
             localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(driveBills));
           } else {
-            // If no file on drive, check local storage
             const localBills = localStorage.getItem(BILLS_STORAGE_KEY);
-            if (localBills) {
-              setBills(JSON.parse(localBills));
-            }
+            if (localBills) loadedBills = JSON.parse(localBills);
           }
         } catch (e) {
             console.error("Failed to load from Drive, using local fallback", e);
             const localBills = localStorage.getItem(BILLS_STORAGE_KEY);
-            if (localBills) setBills(JSON.parse(localBills));
+            if (localBills) loadedBills = JSON.parse(localBills);
         }
       } else {
          const localBills = localStorage.getItem(BILLS_STORAGE_KEY);
-         if (localBills) setBills(JSON.parse(localBills));
+         if (localBills) loadedBills = JSON.parse(localBills);
       }
+      setBills(loadedBills);
     };
     loadData();
   }, [isConnected, readFile]);
@@ -483,7 +483,7 @@ export default function BillFormPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Bill Forms And Undertaking</h1>
-        <p className="text-lg text-muted-foreground mt-2"></p>
+        
       </header>
 
       <Form {...form}>
@@ -491,7 +491,7 @@ export default function BillFormPage() {
           <Card>
             <CardHeader>
               <CardTitle>{editingId ? 'Update Bill' : 'New Bill Entry'}</CardTitle>
-              <CardDescription></CardDescription>
+              
             </CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-6">
                 <FormField control={form.control} name="evaluatorId" render={({ field }) => (<FormItem><FormLabel>Evaluator ID</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -545,7 +545,7 @@ export default function BillFormPage() {
                 <div className="flex justify-between items-center gap-4 flex-wrap">
                     <div>
                         <CardTitle>Submitted Bills ({filteredBills.length})</CardTitle>
-                        <CardDescription></CardDescription>
+                        
                     </div>
                      <div className="flex items-center gap-2">
                         <div className="relative">
@@ -702,7 +702,7 @@ export default function BillFormPage() {
                  <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-primary hover:bg-primary/90">
+                            <TableRow className="bg-nav-bill hover:bg-nav-bill/90">
                                 <TableHead className="w-12 text-primary-foreground">
                                      <Checkbox
                                       onCheckedChange={handleSelectAll}

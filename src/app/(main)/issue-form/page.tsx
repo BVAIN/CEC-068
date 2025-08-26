@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -104,6 +103,7 @@ export default function ScriptsIssueFormPage() {
 
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     seedQpUpcMap();
     try {
         const storedMap = localStorage.getItem(QP_UPC_MAP_KEY);
@@ -123,6 +123,7 @@ export default function ScriptsIssueFormPage() {
 
   useEffect(() => {
     const loadData = async () => {
+        if (typeof window === 'undefined') return;
         let loadedIssues: IssueFormValues[] = [];
         if (isConnected) {
             try {
@@ -453,7 +454,7 @@ export default function ScriptsIssueFormPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Scripts Issue Form</h1>
-        <p className="text-lg text-muted-foreground mt-2"></p>
+        
       </header>
 
       <Form {...form}>
@@ -461,7 +462,7 @@ export default function ScriptsIssueFormPage() {
           <Card>
             <CardHeader>
               <CardTitle>{editingIndex !== null ? 'Update Issue' : 'Issue Details'}</CardTitle>
-              <CardDescription></CardDescription>
+              
             </CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-6">
               <FormField control={form.control} name="dateOfIssue" render={({ field }) => (<FormItem><FormLabel>Date of Issue</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -593,7 +594,7 @@ export default function ScriptsIssueFormPage() {
             <div className="flex justify-between items-center gap-4 flex-wrap">
               <div>
                 <CardTitle>Submitted Issues</CardTitle>
-                <CardDescription></CardDescription>
+                
               </div>
               <div className="flex items-center gap-2">
                  <div className="relative">
@@ -680,7 +681,7 @@ export default function ScriptsIssueFormPage() {
                     </div>
                   </PopoverContent>
                 </Popover>
-                <Button onClick={handlePrint} variant="outline"><Printer className="mr-2 h-4 w-4" /> Print</Button>
+                <Button onClick={handlePrint} className="bg-nav-issue text-primary-foreground hover:bg-nav-issue/90"><Printer className="mr-2 h-4 w-4" /> Print</Button>
                 {selectedIssues.length > 0 && (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -716,7 +717,7 @@ export default function ScriptsIssueFormPage() {
              <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-primary hover:bg-primary/90">
+                <TableRow className="bg-nav-issue hover:bg-nav-issue/90">
                   <TableHead className="text-primary-foreground">
                     <Checkbox
                       onCheckedChange={handleSelectAll}
