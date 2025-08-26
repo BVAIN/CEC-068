@@ -27,7 +27,7 @@ export default function LogoutButton() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost">
+        <Button variant="ghost" className="hover:bg-destructive hover:text-destructive-foreground">
           <LogOut className="mr-2 h-4 w-4" />
           Logout
         </Button>
