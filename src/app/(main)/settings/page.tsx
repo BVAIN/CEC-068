@@ -49,7 +49,6 @@ export default function SettingsPage() {
     <div className="space-y-8 max-w-4xl mx-auto">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline">Settings</h1>
-        <p className="text-lg text-muted-foreground mt-2">Manage your account and application settings.</p>
       </header>
 
       <Card>

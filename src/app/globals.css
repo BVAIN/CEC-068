@@ -33,7 +33,7 @@
     --nav-teachers: 330 80% 60%; /* Pink */
     --nav-trash: 0 84% 60%; /* Red */
     --nav-settings: 45 90% 50%; /* Dark Yellow */
-    --nav-about: 180 80% 50%; /* Aqua Blue */
+    --nav-about: 180 70% 40%; /* Dark Aqua Blue */
   }
 
   .dark {
@@ -64,7 +64,7 @@
     --nav-teachers: 330 80% 60%;
     --nav-trash: 0 70% 50%;
     --nav-settings: 45 90% 50%;
-    --nav-about: 180 80% 50%; /* Aqua Blue */
+    --nav-about: 180 70% 40%; /* Dark Aqua Blue */
   }
 }
 
