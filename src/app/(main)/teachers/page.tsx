@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FileDown, Trash2, Search } from "lucide-react";
+import { FileDown, Trash2, Search, Filter } from "lucide-react";
 import { BILLS_STORAGE_KEY, TEACHER_TRASH_STORAGE_KEY } from "@/lib/constants";
 import type { BillFormValues } from "../bill-form/page";
 import * as XLSX from "xlsx";
@@ -13,14 +14,23 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
 
 type TeacherData = Omit<BillFormValues, 'id' | 'signature'>;
+
+type FilterValues = {
+    evaluatorName: string;
+    evaluatorId: string;
+    course: string;
+};
 
 export default function TeachersDataPage() {
   const [teachers, setTeachers] = useState<TeacherData[]>([]);
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState<FilterValues>({ evaluatorName: '', evaluatorId: '', course: '' });
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -44,16 +54,22 @@ export default function TeachersDataPage() {
 
   const filteredTeachers = useMemo(() => {
     const lowercasedTerm = searchTerm.toLowerCase();
-    if (!lowercasedTerm) return teachers;
     return teachers.filter(teacher => {
-        return (
+        const searchMatch = !lowercasedTerm || (
             teacher.evaluatorName.toLowerCase().includes(lowercasedTerm) ||
             teacher.evaluatorId.toLowerCase().includes(lowercasedTerm) ||
             teacher.course.toLowerCase().includes(lowercasedTerm) ||
             teacher.mobileNo.toLowerCase().includes(lowercasedTerm)
         );
+
+        const filterMatch = 
+            (filters.evaluatorName ? teacher.evaluatorName.toLowerCase().includes(filters.evaluatorName.toLowerCase()) : true) &&
+            (filters.evaluatorId ? teacher.evaluatorId.toLowerCase().includes(filters.evaluatorId.toLowerCase()) : true) &&
+            (filters.course ? teacher.course.toLowerCase().includes(filters.course.toLowerCase()) : true);
+
+        return searchMatch && filterMatch;
     });
-  }, [teachers, searchTerm]);
+  }, [teachers, searchTerm, filters]);
   
   const updateTeachersStateAndStorage = (updatedTeachers: TeacherData[]) => {
       setTeachers(updatedTeachers);
@@ -101,6 +117,10 @@ export default function TeachersDataPage() {
     }
   };
 
+  const handleFilterChange = (field: keyof FilterValues, value: string) => {
+    setFilters(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
     <div className="space-y-8">
       <header className="flex justify-between items-center">
@@ -125,6 +145,47 @@ export default function TeachersDataPage() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button className="bg-pink-500 hover:bg-pink-600 text-white"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80">
+                             <div className="grid gap-4">
+                                <div className="space-y-2">
+                                    <h4 className="font-medium leading-none">Filters</h4>
+                                </div>
+                                <div className="grid gap-2">
+                                    <div className="grid grid-cols-3 items-center gap-4">
+                                        <Label htmlFor="filter-name">Name</Label>
+                                        <Input
+                                            id="filter-name"
+                                            value={filters.evaluatorName}
+                                            onChange={(e) => handleFilterChange('evaluatorName', e.target.value)}
+                                            className="col-span-2 h-8"
+                                        />
+                                    </div>
+                                     <div className="grid grid-cols-3 items-center gap-4">
+                                        <Label htmlFor="filter-id">Teacher ID</Label>
+                                        <Input
+                                            id="filter-id"
+                                            value={filters.evaluatorId}
+                                            onChange={(e) => handleFilterChange('evaluatorId', e.target.value)}
+                                            className="col-span-2 h-8"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-3 items-center gap-4">
+                                        <Label htmlFor="filter-course">Course</Label>
+                                        <Input
+                                            id="filter-course"
+                                            value={filters.course}
+                                            onChange={(e) => handleFilterChange('course', e.target.value)}
+                                            className="col-span-2 h-8"
+                                        />
+                                    </div>
+                                </div>
+                             </div>
+                        </PopoverContent>
+                    </Popover>
                     {selectedTeachers.length > 0 && (
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -171,7 +232,7 @@ export default function TeachersDataPage() {
                     <TableHead className="text-primary-foreground">Course</TableHead>
                     <TableHead className="text-primary-foreground">Mobile No.</TableHead>
                     <TableHead className="text-primary-foreground">Email</TableHead>
-                    <TableHead className="text-primary-foreground text-right">Actions</TableHead>
+                    <TableHead className="text-right text-primary-foreground">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
