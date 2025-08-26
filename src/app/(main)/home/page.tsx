@@ -81,9 +81,9 @@ export default function HomePage() {
   }, []);
   
   const StatCard = ({ title, stats, className }: { title: string, stats: ScriptStats, className?: string }) => (
-    <Card className={cn("text-primary-foreground home-glass-card", className)}>
+    <Card className={className}>
       <CardHeader>
-        <CardTitle className="text-primary-foreground">{title}</CardTitle>
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex justify-between text-sm">
@@ -105,9 +105,9 @@ export default function HomePage() {
   );
   
   const SimpleStatCard = ({ title, value, className }: { title: string, value: number, className?: string }) => (
-    <Card className={cn("text-primary-foreground home-glass-card", className)}>
+    <Card className={className}>
         <CardHeader>
-            <CardTitle className="text-primary-foreground">{title}</CardTitle>
+            <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent>
             <p className="text-4xl font-bold">{value}</p>

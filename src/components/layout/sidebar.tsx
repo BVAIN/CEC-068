@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive, List, Users } from "lucide-react";
+import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive, List, Users, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-provider";
@@ -28,6 +28,10 @@ const menuItems = [
       ] 
   },
   { href: "/settings", label: "Settings", icon: Settings, colorClass: "bg-nav-settings" },
+];
+
+const secondaryMenuItems = [
+    { href: "/about", label: "About", icon: Info, colorClass: "bg-nav-about" }
 ];
 
 export default function Sidebar() {
@@ -118,6 +122,21 @@ export default function Sidebar() {
                 </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
+             {secondaryMenuItems.map((item) => {
+                const isActive = pathname.startsWith(item.href);
+                const activeClasses = isActive ? `${item.colorClass} text-primary-foreground hover:${item.colorClass}/90` : "ghost";
+                return (
+                    <Link key={item.href} href={item.href} passHref>
+                        <Button
+                            variant={isActive ? "default" : "ghost"}
+                            className={cn('w-full justify-start text-base py-6', isActive && activeClasses)}
+                        >
+                            <item.icon className="mr-3 h-5 w-5" />
+                            <span>{item.label}</span>
+                        </Button>
+                    </Link>
+                );
+             })}
         </div>
       </nav>
     </aside>

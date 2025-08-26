@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -55,6 +56,7 @@ export default {
         'nav-teachers': 'hsl(var(--nav-teachers))',
         'nav-trash': 'hsl(var(--nav-trash))',
         'nav-settings': 'hsl(var(--nav-settings))',
+        'nav-about': 'hsl(var(--nav-about))',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
