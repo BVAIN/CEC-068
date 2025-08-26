@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -334,7 +335,6 @@ export default function IndexPage() {
                             <div className="grid gap-4">
                                 <div className="space-y-2">
                                     <h4 className="font-medium leading-none">Filters</h4>
-                                    <p className="text-sm text-muted-foreground">Filter entries by the following criteria.</p>
                                 </div>
                                 <div className="grid gap-2">
                                     {filterFields.map(field => (
@@ -365,7 +365,12 @@ export default function IndexPage() {
             <CardContent>
                 <Table>
                 <TableHeader>
-                    <TableRow className="bg-nav-index hover:bg-nav-index/90">
+                    <TableRow className={cn(
+                        "hover:bg-nav-index/90",
+                        activeView === 'North' && "bg-blue-500 hover:bg-blue-600",
+                        activeView === 'South' && "bg-red-500 hover:bg-red-600",
+                        activeView === 'Search' && "bg-nav-index"
+                    )}>
                     <TableHead className="w-12 text-primary-foreground">
                         <Checkbox
                             onCheckedChange={handleSelectAll(data)}
@@ -542,3 +547,4 @@ export default function IndexPage() {
     </div>
   );
 }
+
