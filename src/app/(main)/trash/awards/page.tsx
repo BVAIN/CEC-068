@@ -27,7 +27,6 @@ type AwardEntry = {
 };
 
 type AwardDispatchData = {
-  awardListCount?: string;
   awardsCount?: string;
   dispatchDate?: string;
   noOfPages?: string;

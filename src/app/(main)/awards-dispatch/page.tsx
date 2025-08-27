@@ -26,7 +26,6 @@ type AwardEntry = {
 };
 
 type AwardDispatchData = {
-  awardListCount?: string;
   awardsCount?: string;
   dispatchDate?: string;
   noOfPages?: string;
@@ -49,11 +48,10 @@ export default function AwardsDispatchPage() {
   const { toast } = useToast();
   const [hydrated, setHydrated] = useState(false);
 
-  const { totalNorth, totalSouth, grandTotal, totalAwardLists, totalAwards, totalPages } = useMemo(() => {
+  const { totalNorth, totalSouth, grandTotal, totalAwards, totalPages } = useMemo(() => {
     let totalNorth = 0;
     let totalSouth = 0;
     let grandTotal = 0;
-    let totalAwardLists = 0;
     let totalAwards = 0;
     let totalPages = 0;
 
@@ -65,13 +63,12 @@ export default function AwardsDispatchPage() {
         const key = `${entry.dateOfExam}-${entry.upc}-${entry.qpNo}`;
         const data = dispatchData[key];
         if (data) {
-            totalAwardLists += Number(data.awardListCount || 0);
-            totalAwards += Number(data.awardsCount || 0);
-            totalPages += Number(data.noOfPages || 0);
+            totalAwards += parseInt(data.awardsCount || '0', 10) || 0;
+            totalPages += parseInt(data.noOfPages || '0', 10) || 0;
         }
     });
 
-    return { totalNorth, totalSouth, grandTotal, totalAwardLists, totalAwards, totalPages };
+    return { totalNorth, totalSouth, grandTotal, totalAwards, totalPages };
   }, [awardEntries, dispatchData]);
 
   useEffect(() => {
@@ -203,7 +200,6 @@ export default function AwardsDispatchPage() {
             "North": entry.northChallan,
             "South": entry.southChallan,
             "Total": entry.totalChallan,
-            "No. of Award List": extraData.awardListCount || '',
             "No. of Awards": extraData.awardsCount || '',
             "No. of Pages": extraData.noOfPages || '',
             "Date of Dispatch": extraData.dispatchDate || '',
@@ -253,7 +249,6 @@ export default function AwardsDispatchPage() {
                   <TableHead className="text-primary-foreground">North</TableHead>
                   <TableHead className="text-primary-foreground">South</TableHead>
                   <TableHead className="text-primary-foreground">Total</TableHead>
-                  <TableHead className="text-primary-foreground">No. of Award list</TableHead>
                   <TableHead className="text-primary-foreground">No. of Awards</TableHead>
                   <TableHead className="text-primary-foreground">No. of Pages</TableHead>
                   <TableHead className="text-primary-foreground">Date of Dispatch</TableHead>
@@ -274,14 +269,6 @@ export default function AwardsDispatchPage() {
                       <TableCell className="text-blue-600 font-medium">{entry.northChallan}</TableCell>
                       <TableCell className="text-red-600 font-medium">{entry.southChallan}</TableCell>
                       <TableCell className="font-bold">{entry.totalChallan}</TableCell>
-                      <TableCell>
-                        <Input 
-                          type="text"
-                          className="w-24"
-                          value={currentData.awardListCount || ''}
-                          onChange={(e) => handleInputChange(key, 'awardListCount', e.target.value)}
-                        />
-                      </TableCell>
                        <TableCell>
                         <Input
                           type="text"
@@ -336,7 +323,7 @@ export default function AwardsDispatchPage() {
                   );
                 }) : (
                     <TableRow>
-                        <TableCell colSpan={13} className="text-center h-24 text-muted-foreground">
+                        <TableCell colSpan={12} className="text-center h-24 text-muted-foreground">
                             No index entries found. Please add entries in the Index page.
                         </TableCell>
                     </TableRow>
@@ -349,7 +336,6 @@ export default function AwardsDispatchPage() {
                         <TableCell className="font-bold text-blue-600">{totalNorth}</TableCell>
                         <TableCell className="font-bold text-red-600">{totalSouth}</TableCell>
                         <TableCell className="font-bold">{grandTotal}</TableCell>
-                        <TableCell className="font-bold">{totalAwardLists}</TableCell>
                         <TableCell className="font-bold">{totalAwards}</TableCell>
                         <TableCell className="font-bold">{totalPages}</TableCell>
                         <TableCell colSpan={2}></TableCell>
