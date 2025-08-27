@@ -45,6 +45,25 @@ const initialFormValues: Omit<PublicIssueFormValues, 'campus' | 'type'> & { camp
   remarks: "",
 };
 
+const getNextPageNo = (course: string, campus: "North" | "South", type: "Regular" | "NCWEB" | "SOL"): string => {
+    const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
+    const entries: PublicIssueFormValues[] = storedEntries ? JSON.parse(storedEntries) : [];
+
+    let relevantEntries: PublicIssueFormValues[];
+
+    if (type === 'SOL') {
+        relevantEntries = entries.filter(e => e.course === course && e.campus === campus && e.type === 'SOL' && e.pageNo);
+    } else {
+        relevantEntries = entries.filter(e => e.course === course && e.campus === campus && (e.type === 'Regular' || e.type === 'NCWEB') && e.pageNo);
+    }
+
+    let lastPageNo = 0;
+    if (relevantEntries.length > 0) {
+        lastPageNo = Math.max(0, ...relevantEntries.map(e => parseInt(e.pageNo!, 10) || 0));
+    }
+    return (lastPageNo + 1).toString();
+};
+
 
 export default function PublicIssueEntryPage() {
   const { toast } = useToast();
@@ -78,36 +97,19 @@ export default function PublicIssueEntryPage() {
   const watchedCampus = watch('campus');
   const watchedType = watch('type');
 
-  const calculateNextPageNo = useCallback(() => {
+  const calculateAndSetNextPageNo = useCallback(() => {
     if (editingId) return;
 
     const { course, campus, type } = getValues();
     if (!course || !campus || !type) return;
-
-    const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
-    const entries: PublicIssueFormValues[] = storedEntries ? JSON.parse(storedEntries) : [];
-
-    let relevantEntries: PublicIssueFormValues[];
-
-    if (type === 'SOL') {
-        // SOL has its own numbering sequence per course and campus
-        relevantEntries = entries.filter(e => e.course === course && e.campus === campus && e.type === 'SOL' && e.pageNo);
-    } else {
-        // Regular and NCWEB share a numbering sequence per course and campus
-        relevantEntries = entries.filter(e => e.course === course && e.campus === campus && (e.type === 'Regular' || e.type === 'NCWEB') && e.pageNo);
-    }
-
-    let lastPageNo = 0;
-    if (relevantEntries.length > 0) {
-        lastPageNo = Math.max(0, ...relevantEntries.map(e => parseInt(e.pageNo!, 10) || 0));
-    }
-
-    setValue('pageNo', (lastPageNo + 1).toString());
+    
+    const nextPageNo = getNextPageNo(course, campus, type);
+    setValue('pageNo', nextPageNo);
   }, [editingId, getValues, setValue]);
 
   useEffect(() => {
-      calculateNextPageNo();
-  }, [watchedCourse, watchedCampus, watchedType, calculateNextPageNo]);
+    calculateAndSetNextPageNo();
+  }, [watchedCourse, watchedCampus, watchedType, calculateAndSetNextPageNo]);
 
 
   const onSubmit = (data: z.infer<typeof publicIssueFormSchema>) => {
@@ -121,7 +123,9 @@ export default function PublicIssueEntryPage() {
             );
             toast({ title: "Entry Updated!", description: "Your entry has been updated." });
         } else {
-            const newEntry = { ...data, id: `${Date.now()}-${data.pageNo}` };
+            // Recalculate page number on submit to ensure it's correct
+            const finalPageNo = getNextPageNo(data.course, data.campus, data.type);
+            const newEntry = { ...data, pageNo: finalPageNo, id: `${Date.now()}-${finalPageNo}` };
             entries.push(newEntry);
             toast({
               title: "Entry Submitted!",
