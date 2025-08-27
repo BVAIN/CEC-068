@@ -26,7 +26,6 @@ export default function IndexTrashPage() {
   const [selectedTrash, setSelectedTrash] = useState<string[]>([]);
   const { toast } = useToast();
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
-  const [secondDeleteConfirmation, setSecondDeleteConfirmation] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
 
@@ -66,7 +65,6 @@ export default function IndexTrashPage() {
     toast({ variant: "destructive", title: "Entries Deleted", description: `${ids.length} entries have been permanently deleted.`});
     setSelectedTrash([]);
     setDeleteConfirmation('');
-    setSecondDeleteConfirmation(false);
   };
   
   const handleSelectTrash = (id: string, checked: boolean) => {
@@ -85,50 +83,6 @@ export default function IndexTrashPage() {
     }
   };
 
-  const FirstDeleteDialog = ({ onContinue }: { onContinue: () => void }) => (
-     <AlertDialogContent>
-        <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the selected entries.
-            </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={onContinue}>Continue</AlertDialogAction>
-        </AlertDialogFooter>
-    </AlertDialogContent>
-  );
-
-  const SecondDeleteDialog = ({ ids, onCancel }: { ids: string[], onCancel: () => void}) => (
-      <AlertDialogContent>
-        <AlertDialogHeader>
-            <AlertDialogTitle>Final Confirmation</AlertDialogTitle>
-            <AlertDialogDescription>
-            This is your final warning. To permanently delete these entries, type "DELETE".
-            </AlertDialogDescription>
-        </AlertDialogHeader>
-        <div className="space-y-2">
-            <Label htmlFor="delete-confirm">Confirmation</Label>
-            <Input
-                id="delete-confirm"
-                value={deleteConfirmation}
-                onChange={(e) => setDeleteConfirmation(e.target.value)}
-                placeholder='Type "DELETE" to confirm'
-            />
-        </div>
-        <AlertDialogFooter>
-            <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-            onClick={() => handleDeletePermanent(ids)}
-            disabled={deleteConfirmation !== 'DELETE'}
-            >
-            Delete Permanently
-            </AlertDialogAction>
-        </AlertDialogFooter>
-    </AlertDialogContent>
-  );
-
   if (!hydrated) {
     return null; // or a loading skeleton
   }
@@ -139,23 +93,45 @@ export default function IndexTrashPage() {
         <h1 className="text-4xl font-bold tracking-tight font-headline">Index Trash</h1>
       </header>
       
-      <AlertDialog onOpenChange={(open) => !open && (setDeleteConfirmation(''), setSecondDeleteConfirmation(false))}>
-        {trashedEntries.length > 0 && selectedTrash.length > 0 && (
-            <Card>
-                <CardContent className="pt-6 flex gap-4">
-                    <Button onClick={() => handleRestore(selectedTrash)} className="bg-green-500 hover:bg-green-600 text-white"><History className="mr-2 h-4 w-4" /> Restore Selected ({selectedTrash.length})</Button>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="destructive"><ShieldX className="mr-2 h-4 w-4" /> Delete Selected ({selectedTrash.length})</Button>
-                    </AlertDialogTrigger>
-                </CardContent>
-            </Card>
-        )}
-
-        {!secondDeleteConfirmation ? 
-            <FirstDeleteDialog onContinue={() => setSecondDeleteConfirmation(true)} /> :
-            <SecondDeleteDialog ids={selectedTrash} onCancel={() => setSecondDeleteConfirmation(false)} />
-        }
-      </AlertDialog>
+      
+      {trashedEntries.length > 0 && selectedTrash.length > 0 && (
+          <Card>
+              <CardContent className="pt-6 flex gap-4">
+                  <Button onClick={() => handleRestore(selectedTrash)} className="bg-green-500 hover:bg-green-600 text-white"><History className="mr-2 h-4 w-4" /> Restore Selected ({selectedTrash.length})</Button>
+                  <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                           <Button variant="destructive" onClick={() => setDeleteConfirmation('')}><ShieldX className="mr-2 h-4 w-4" /> Delete Selected ({selectedTrash.length})</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                          <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                  This action will permanently delete {selectedTrash.length} entries. This cannot be undone. To confirm, type "DELETE".
+                              </AlertDialogDescription>
+                          </AlertDialogHeader>
+                            <div className="space-y-2">
+                                <Label htmlFor="delete-confirm-bulk">Confirmation</Label>
+                                <Input
+                                    id="delete-confirm-bulk"
+                                    value={deleteConfirmation}
+                                    onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                    placeholder='Type "DELETE" to confirm'
+                                />
+                            </div>
+                          <AlertDialogFooter>
+                              <AlertDialogCancel onClick={() => setDeleteConfirmation('')}>Cancel</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={() => handleDeletePermanent(selectedTrash)}
+                                disabled={deleteConfirmation !== 'DELETE'}
+                              >
+                                Delete Permanently
+                              </AlertDialogAction>
+                          </AlertDialogFooter>
+                      </AlertDialogContent>
+                  </AlertDialog>
+              </CardContent>
+          </Card>
+      )}
 
 
       {trashedEntries.length > 0 ? (
@@ -214,14 +190,36 @@ export default function IndexTrashPage() {
                             <Button variant="outline" size="sm" onClick={() => handleRestore([entry.id!])} className="bg-green-500 hover:bg-green-600 text-white">
                               <History className="mr-2 h-4 w-4" /> Restore
                             </Button>
-                             <AlertDialog onOpenChange={(open) => !open && (setDeleteConfirmation(''), setSecondDeleteConfirmation(false))}>
+                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                    <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
+                                    <Button variant="destructive" size="sm" onClick={() => setDeleteConfirmation('')}><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
                                 </AlertDialogTrigger>
-                                {!secondDeleteConfirmation ? 
-                                    <FirstDeleteDialog onContinue={() => setSecondDeleteConfirmation(true)} /> :
-                                    <SecondDeleteDialog ids={[entry.id!]} onCancel={() => setSecondDeleteConfirmation(false)} />
-                                }
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action will permanently delete this entry. To confirm, type "DELETE".
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`delete-confirm-${entry.id}`}>Confirmation</Label>
+                                        <Input
+                                            id={`delete-confirm-${entry.id}`}
+                                            value={deleteConfirmation}
+                                            onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                            placeholder='Type "DELETE" to confirm'
+                                        />
+                                    </div>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel onClick={() => setDeleteConfirmation('')}>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction 
+                                        onClick={() => handleDeletePermanent([entry.id!])}
+                                        disabled={deleteConfirmation !== 'DELETE'}
+                                        >
+                                        Delete Permanently
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
                             </AlertDialog>
                         </div>
                       </TableCell>
