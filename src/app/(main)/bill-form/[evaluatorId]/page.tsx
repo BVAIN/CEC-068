@@ -20,6 +20,7 @@ type GlobalBillSettings = {
     billName: string;
     examinationName: string;
     coordinatorName: string;
+    twfText: string;
     conveyanceUnder30: number;
     conveyanceOver30: number;
 }
@@ -35,6 +36,7 @@ export default function BillViewPage() {
       billName: '',
       examinationName: '',
       coordinatorName: '',
+      twfText: '5% TWF',
       conveyanceUnder30: 450,
       conveyanceOver30: 600,
   });
@@ -286,6 +288,16 @@ export default function BillViewPage() {
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="twfText" className="text-right">TWF Text</Label>
+                            <Input
+                                id="twfText"
+                                value={globalSettings.twfText}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, twfText: e.target.value }))}
+                                className="col-span-3"
+                                placeholder="e.g., 5% TWF"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="conveyanceUnder30" className="text-right">Rate (≤30km)</Label>
                             <Input
                                 id="conveyanceUnder30"
@@ -481,7 +493,7 @@ export default function BillViewPage() {
                             <span className="text-right">Rs. ____________________________</span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span>Less: 5% TWF :</span>
+                                <span>Less: {globalSettings.twfText} :</span>
                                 <span className="text-right">Rs. ____________________________</span>
                             </div>
                             <div className="flex justify-between items-center">

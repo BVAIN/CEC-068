@@ -21,7 +21,7 @@ const publicIssueFormSchema = z.object({
   dateOfExam: z.string().min(1, "Date of Exam is required"),
   upc: z.string().optional(),
   qpNo: z.string().optional(),
-  pageNo: z.string().min(1, "Page No. is required"),
+  pageNo: z.string().optional(),
   asPerChallan: z.coerce.number().min(1, "As per Challan is required"),
   netScripts: z.coerce.number().optional(),
   course: z.string().min(1, "Course is required"),
@@ -227,3 +227,5 @@ export default function PublicIssueEntryPage() {
     </main>
   );
 }
+
+    
