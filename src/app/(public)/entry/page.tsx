@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,9 +58,6 @@ export default function PublicIssueEntryPage() {
   });
 
   const { watch, setValue, getValues } = form;
-  const watchedCourse = watch('course');
-  const watchedCampus = watch('campus');
-  const watchedType = watch('type');
   
   useEffect(() => {
     const editId = searchParams.get('edit');
@@ -77,36 +74,40 @@ export default function PublicIssueEntryPage() {
     }
   }, [searchParams, form]);
 
-  useEffect(() => {
+  const watchedCourse = watch('course');
+  const watchedCampus = watch('campus');
+  const watchedType = watch('type');
+
+  const calculateNextPageNo = useCallback(() => {
     if (editingId) return;
 
-    const calculateNextPageNo = () => {
-        const { course, campus, type } = getValues();
-        if (!course || !campus || !type) return;
+    const { course, campus, type } = getValues();
+    if (!course || !campus || !type) return;
 
-        const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
-        const entries: PublicIssueFormValues[] = storedEntries ? JSON.parse(storedEntries) : [];
+    const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
+    const entries: PublicIssueFormValues[] = storedEntries ? JSON.parse(storedEntries) : [];
 
-        let relevantEntries: PublicIssueFormValues[];
+    let relevantEntries: PublicIssueFormValues[];
 
-        if (type === 'SOL') {
-            // SOL has its own numbering sequence per course and campus
-            relevantEntries = entries.filter(e => e.course === course && e.campus === campus && e.type === 'SOL' && e.pageNo);
-        } else {
-            // Regular and NCWEB share a numbering sequence per course and campus
-            relevantEntries = entries.filter(e => e.course === course && e.campus === campus && (e.type === 'Regular' || e.type === 'NCWEB') && e.pageNo);
-        }
+    if (type === 'SOL') {
+        // SOL has its own numbering sequence per course and campus
+        relevantEntries = entries.filter(e => e.course === course && e.campus === campus && e.type === 'SOL' && e.pageNo);
+    } else {
+        // Regular and NCWEB share a numbering sequence per course and campus
+        relevantEntries = entries.filter(e => e.course === course && e.campus === campus && (e.type === 'Regular' || e.type === 'NCWEB') && e.pageNo);
+    }
 
-        let lastPageNo = 0;
-        if (relevantEntries.length > 0) {
-            lastPageNo = Math.max(...relevantEntries.map(e => parseInt(e.pageNo!, 10) || 0));
-        }
+    let lastPageNo = 0;
+    if (relevantEntries.length > 0) {
+        lastPageNo = Math.max(0, ...relevantEntries.map(e => parseInt(e.pageNo!, 10) || 0));
+    }
 
-        setValue('pageNo', (lastPageNo + 1).toString());
-    };
+    setValue('pageNo', (lastPageNo + 1).toString());
+  }, [editingId, getValues, setValue]);
 
-    calculateNextPageNo();
-  }, [watchedCourse, watchedCampus, watchedType, setValue, getValues, editingId]);
+  useEffect(() => {
+      calculateNextPageNo();
+  }, [watchedCourse, watchedCampus, watchedType, calculateNextPageNo]);
 
 
   const onSubmit = (data: z.infer<typeof publicIssueFormSchema>) => {
