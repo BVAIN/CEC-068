@@ -63,7 +63,7 @@ export default function LoginForm() {
           title: "Login Successful",
           description: "Welcome back! Redirecting...",
         });
-        router.push("/home");
+        router.push("/sessions");
       } else {
         toast({
           variant: "destructive",

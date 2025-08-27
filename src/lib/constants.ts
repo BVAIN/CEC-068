@@ -1,20 +1,40 @@
 
-export const BILLS_STORAGE_KEY = 'cec068_bills';
-export const ISSUES_STORAGE_KEY = 'cec068_issues';
-export const PUBLIC_ISSUES_STORAGE_KEY = 'cec068_public_issues';
-export const TRASH_STORAGE_KEY = 'cec068_trash';
-export const BILL_TRASH_STORAGE_KEY = 'cec068_bill_trash';
-export const INDEX_TRASH_STORAGE_KEY = 'cec068_index_trash';
-export const TEACHER_TRASH_STORAGE_KEY = 'cec068_teacher_trash';
-export const QP_UPC_MAP_KEY = 'cec068_qp_upc_map';
-export const TEACHER_COURSE_TOKEN_MAP_KEY = 'cec068_teacher_course_token_map';
+// Session management keys
+export const SESSIONS_STORAGE_KEY = 'cec068_sessions';
+export const CURRENT_SESSION_KEY = 'cec068_current_session';
+
+
+// Session-scoped data keys - these functions will prefix keys with the current session ID
+const getSessionKey = (baseKey: string) => {
+    if (typeof window !== 'undefined') {
+        const sessionId = localStorage.getItem(CURRENT_SESSION_KEY);
+        return sessionId ? `${sessionId}_${baseKey}` : baseKey;
+    }
+    return baseKey; // Fallback for SSR or non-browser environments
+};
+
+export const getBillsStorageKey = () => getSessionKey('bills');
+export const getIssuesStorageKey = () => getSessionKey('issues');
+export const getPublicIssuesStorageKey = () => getSessionKey('public_issues');
+export const getTrashStorageKey = () => getSessionKey('trash');
+export const getBillTrashStorageKey = () => getSessionKey('bill_trash');
+export const getIndexTrashStorageKey = () => getSessionKey('index_trash');
+export const getTeacherTrashStorageKey = () => getSessionKey('teacher_trash');
+export const getQpUpcMapKey = () => getSessionKey('qp_upc_map');
+export const getTeacherCourseTokenMapKey = () => getSessionKey('teacher_course_token_map');
+export const getGlobalBillSettingsKey = () => getSessionKey('global_bill_settings');
+
+
+// Non-session-scoped keys
 export const DRIVE_TOKEN_KEY = "google_drive_token_placeholder";
 export const DRIVE_STORAGE_KEY = "google_drive_files_placeholder";
-export const BILLS_FILE_NAME = 'DriveSync_Bills.json';
-export const ISSUES_FILE_NAME = 'DriveSync_Issues.json';
-export const GLOBAL_BILL_SETTINGS_KEY = 'cec068_global_bill_settings';
 
-// Sidebar visibility keys
+// File names for Google Drive sync should probably also be session-scoped
+export const getBillsFileName = () => `${localStorage.getItem(CURRENT_SESSION_KEY)}_DriveSync_Bills.json`;
+export const getIssuesFileName = () => `${localStorage.getItem(CURRENT_SESSION_KEY)}_DriveSync_Issues.json`;
+
+
+// Sidebar visibility keys (remain global)
 export const SIDEBAR_AWARDS_VISIBILITY_KEY = 'cec068_sidebar_awards_visibility';
 export const SIDEBAR_INDEX_VISIBILITY_KEY = 'cec068_sidebar_index_visibility';
 export const SIDEBAR_ISSUE_VISIBILITY_KEY = 'cec068_sidebar_issue_visibility';

@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import type { IssueFormValues } from "../issue-form/page";
 import type { BillFormValues } from "../bill-form/page";
-import { ISSUES_STORAGE_KEY, BILLS_STORAGE_KEY, PUBLIC_ISSUES_STORAGE_KEY } from "@/lib/constants";
+import { getIssuesStorageKey, getBillsStorageKey, getPublicIssuesStorageKey } from "@/lib/constants";
 import type { PublicIssueFormValues } from "@/app/(public)/entry/page";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@ export default function HomePage() {
   useEffect(() => {
     if (!hydrated) return;
     try {
-      const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+      const storedIssues = localStorage.getItem(getIssuesStorageKey());
       if (storedIssues) {
         const issues: IssueFormValues[] = JSON.parse(storedIssues);
         const totalScriptsCount = issues.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
@@ -46,13 +46,13 @@ export default function HomePage() {
         setTotalEvaluatedScripts(totalEvaluatedScriptsCount);
       }
 
-      const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
+      const storedBills = localStorage.getItem(getBillsStorageKey());
       if (storedBills) {
         const bills: BillFormValues[] = JSON.parse(storedBills);
         setTotalBills(bills.length);
       }
 
-      const storedPublicIssues = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
+      const storedPublicIssues = localStorage.getItem(getPublicIssuesStorageKey());
       if (storedPublicIssues) {
           const publicIssues: PublicIssueFormValues[] = JSON.parse(storedPublicIssues);
           
