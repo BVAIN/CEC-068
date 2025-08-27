@@ -494,7 +494,7 @@ export default function BillViewPage() {
                                     <span className="text-right">Rs. ____________________________</span>
                                 </div>
                                 <div className="pl-4">
-                                    <span>(Up to 30 Km Rs.${globalSettings.conveyanceUnder30}/- & above Rs. ${globalSettings.conveyanceOver30}/-)</span>
+                                    <span>(Up to 30 Km Rs.{globalSettings.conveyanceUnder30}/- & above Rs. {globalSettings.conveyanceOver30}/-)</span>
                                 </div>
                             </div>
                             <div className="flex justify-between items-center">

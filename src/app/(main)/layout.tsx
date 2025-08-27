@@ -34,12 +34,14 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
         }
     }, [router, pathname, searchParams]);
     
+    const showLogoutButton = pathname === '/sessions' || pathname === '/home';
+    
     return (
         <div className="flex min-h-screen bg-background">
           <Sidebar />
           <div className="flex flex-1 flex-col">
             <header className="flex h-16 items-center justify-end border-b bg-card px-4 sm:px-6 lg:px-8">
-              <LogoutButton />
+              {showLogoutButton && <LogoutButton />}
             </header>
             <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto animate-fade-in">
               {children}
@@ -61,3 +63,5 @@ export default function MainLayout({
     </React.Suspense>
   );
 }
+
+    
