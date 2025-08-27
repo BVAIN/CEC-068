@@ -69,10 +69,12 @@ export default function Sidebar() {
   
   return (
     <aside className="w-64 bg-card text-card-foreground flex-shrink-0 flex-col border-r hidden md:flex">
-      <div className="p-4 border-b flex items-center gap-3">
-        <Rocket className="w-8 h-8 text-primary" />
-        <h1 className="text-xl font-bold font-headline">CEC-068</h1>
-      </div>
+      <Link href="/sessions">
+        <div className="p-4 border-b flex items-center gap-3 hover:bg-accent cursor-pointer transition-colors">
+          <Rocket className="w-8 h-8 text-primary" />
+          <h1 className="text-xl font-bold font-headline">CEC-068</h1>
+        </div>
+      </Link>
       <nav className="flex-1 p-4 space-y-2 flex flex-col justify-between">
         <div className="space-y-2">
             {visibleItems.map((item) => {
