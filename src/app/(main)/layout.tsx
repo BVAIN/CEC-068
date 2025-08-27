@@ -4,7 +4,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Sidebar from "@/components/layout/sidebar";
-import LogoutButton from "@/components/auth/logout-button";
 import { CURRENT_SESSION_KEY } from '@/lib/constants';
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
@@ -51,9 +50,6 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
         <div className="flex min-h-screen bg-background">
           {showSidebar && <Sidebar />}
           <div className="flex flex-1 flex-col">
-            <header className="flex h-16 items-center justify-end border-b bg-card px-4 sm:px-6 lg:px-8">
-              <LogoutButton />
-            </header>
             <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto animate-fade-in">
               {children}
             </main>

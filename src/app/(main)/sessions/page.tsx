@@ -40,6 +40,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { SESSIONS_STORAGE_KEY, CURRENT_SESSION_KEY, SESSION_TRASH_STORAGE_KEY } from '@/lib/constants';
+import LogoutButton from '@/components/auth/logout-button';
 
 type Session = {
   id: string;
@@ -157,8 +158,11 @@ export default function SessionsPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 md:p-8">
       <div className="w-full max-w-4xl mx-auto">
-        <header className="text-center mb-12">
+        <header className="text-center mb-12 flex items-center justify-center relative">
           <h1 className="text-5xl font-bold tracking-tight font-headline">Select a Session</h1>
+          <div className="absolute right-0">
+            <LogoutButton />
+          </div>
         </header>
 
         <main className="space-y-6">

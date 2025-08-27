@@ -9,6 +9,7 @@ import { getIssuesStorageKey, getBillsStorageKey, getPublicIssuesStorageKey } fr
 import type { PublicIssueFormValues } from "@/app/(public)/entry/page";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import LogoutButton from "@/components/auth/logout-button";
 
 type ScriptStats = {
   asPerChallan: number;
@@ -125,8 +126,9 @@ export default function HomePage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <header>
+      <header className="flex items-center justify-between">
         <h1 className="text-4xl font-bold tracking-tight font-headline lg:text-5xl">Welcome to CEC-068</h1>
+        <LogoutButton />
       </header>
       
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
