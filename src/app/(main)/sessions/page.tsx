@@ -137,9 +137,6 @@ export default function SessionsPage() {
       <div className="w-full max-w-4xl mx-auto">
         <header className="text-center mb-12">
           <h1 className="text-5xl font-bold tracking-tight font-headline">Select a Session</h1>
-          <p className="text-muted-foreground mt-4 text-lg">
-            Choose a session to manage its data or create a new one.
-          </p>
         </header>
 
         <main className="space-y-6">
