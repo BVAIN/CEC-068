@@ -53,6 +53,29 @@ export default function AwardsDispatchPage() {
     setHydrated(true);
   }, []);
 
+  const { totalNorth, totalSouth, grandTotal, totalAwardLists, totalAwards } = useMemo(() => {
+    let totalNorth = 0;
+    let totalSouth = 0;
+    let grandTotal = 0;
+    let totalAwardLists = 0;
+    let totalAwards = 0;
+
+    awardEntries.forEach(entry => {
+        totalNorth += entry.northChallan;
+        totalSouth += entry.southChallan;
+        grandTotal += entry.totalChallan;
+        
+        const key = `${entry.dateOfExam}-${entry.upc}-${entry.qpNo}`;
+        const data = dispatchData[key];
+        if (data) {
+            totalAwardLists += Number(data.awardListCount || 0);
+            totalAwards += Number(data.awardsCount || 0);
+        }
+    });
+
+    return { totalNorth, totalSouth, grandTotal, totalAwardLists, totalAwards };
+  }, [awardEntries, dispatchData]);
+
   useEffect(() => {
     if (!hydrated) return;
 
@@ -153,29 +176,6 @@ export default function AwardsDispatchPage() {
   if (!hydrated) {
     return null; // Or a loading skeleton
   }
-
-  const { totalNorth, totalSouth, grandTotal, totalAwardLists, totalAwards } = useMemo(() => {
-    let totalNorth = 0;
-    let totalSouth = 0;
-    let grandTotal = 0;
-    let totalAwardLists = 0;
-    let totalAwards = 0;
-
-    awardEntries.forEach(entry => {
-        totalNorth += entry.northChallan;
-        totalSouth += entry.southChallan;
-        grandTotal += entry.totalChallan;
-        
-        const key = `${entry.dateOfExam}-${entry.upc}-${entry.qpNo}`;
-        const data = dispatchData[key];
-        if (data) {
-            totalAwardLists += Number(data.awardListCount || 0);
-            totalAwards += Number(data.awardsCount || 0);
-        }
-    });
-
-    return { totalNorth, totalSouth, grandTotal, totalAwardLists, totalAwards };
-  }, [awardEntries, dispatchData]);
 
   return (
     <div className="space-y-8 animate-fade-in">
