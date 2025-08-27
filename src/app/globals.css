@@ -34,15 +34,15 @@
     --ring: 217 91% 60%;
     
     /* Nav Colors */
-    --nav-home: 217 91% 60%;
-    --nav-index: 30 90% 60%;
-    --nav-issue: 260 70% 65%;
-    --nav-bill: 145 63% 49%;
-    --nav-teachers: 330 80% 60%;
-    --nav-awards: 80 60% 45%;
-    --nav-trash: 0 84% 60%;
-    --nav-settings: 45 90% 50%;
-    --nav-about: 180 70% 40%;
+    --nav-home: 217 91% 60%; /* Blue */
+    --nav-index: 25 84% 50%; /* Dark Orange */
+    --nav-issue: 260 70% 65%; /* Light Purple */
+    --nav-bill: 145 63% 49%; /* Light Green */
+    --nav-teachers: 330 80% 60%; /* Pink */
+    --nav-awards: 80 60% 45%; /* Olive Green */
+    --nav-trash: 0 84% 60%; /* Red */
+    --nav-settings: 45 90% 50%; /* Mango Yellow */
+    --nav-about: 180 70% 40%; /* Dark Aqua */
   }
 
   .dark {

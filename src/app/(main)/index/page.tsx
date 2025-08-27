@@ -410,12 +410,7 @@ export default function IndexPage() {
             <CardContent>
                 <Table>
                 <TableHeader>
-                    <TableRow className={cn(
-                        "hover:bg-nav-index/90",
-                        activeView === 'North' && "bg-blue-500 hover:bg-blue-600",
-                        activeView === 'South' && "bg-red-500 hover:bg-red-600",
-                        activeView === 'Search' && "bg-nav-index"
-                    )}>
+                    <TableRow className="bg-nav-index hover:bg-nav-index/90">
                     <TableHead className="w-12 text-primary-foreground">
                         <Checkbox
                             onCheckedChange={handleSelectAll(data)}
