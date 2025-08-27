@@ -56,6 +56,10 @@ export default function PublicIssueEntryPage() {
     resolver: zodResolver(publicIssueFormSchema),
     defaultValues: initialFormValues,
   });
+
+  const { watch, setValue, getValues } = form;
+  const watchedCampus = watch('campus');
+  const watchedType = watch('type');
   
   useEffect(() => {
     const editId = searchParams.get('edit');
@@ -71,6 +75,37 @@ export default function PublicIssueEntryPage() {
         }
     }
   }, [searchParams, form]);
+
+  useEffect(() => {
+    if (editingId) return; // Don't auto-update pageNo when editing an existing entry
+
+    const calculateNextPageNo = () => {
+      const campus = getValues('campus');
+      const type = getValues('type');
+      
+      if (!campus || !type) return;
+
+      const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
+      const entries: PublicIssueFormValues[] = storedEntries ? JSON.parse(storedEntries) : [];
+
+      let lastPageNo = 0;
+      if (type === 'SOL') {
+        const solEntries = entries.filter(e => e.campus === campus && e.type === 'SOL' && e.pageNo);
+        if (solEntries.length > 0) {
+          lastPageNo = Math.max(...solEntries.map(e => parseInt(e.pageNo!, 10) || 0));
+        }
+      } else { // Regular or NCWEB
+        const otherEntries = entries.filter(e => e.campus === campus && (e.type === 'Regular' || e.type === 'NCWEB') && e.pageNo);
+        if (otherEntries.length > 0) {
+          lastPageNo = Math.max(...otherEntries.map(e => parseInt(e.pageNo!, 10) || 0));
+        }
+      }
+      
+      setValue('pageNo', (lastPageNo + 1).toString());
+    };
+
+    calculateNextPageNo();
+  }, [watchedCampus, watchedType, setValue, getValues, editingId]);
 
   const onSubmit = (data: z.infer<typeof publicIssueFormSchema>) => {
     try {
@@ -227,5 +262,3 @@ export default function PublicIssueEntryPage() {
     </main>
   );
 }
-
-    
