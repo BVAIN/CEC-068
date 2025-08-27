@@ -101,7 +101,7 @@ export default function Sidebar() {
   }, [pathname]); // Re-run when path changes to catch session switches
 
   const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (!hasSession && href !== '/sessions') {
+    if (!hasSession && !['/sessions', '/settings', '/about'].includes(href)) {
       e.preventDefault();
       toast({
         variant: 'destructive',
@@ -147,7 +147,7 @@ export default function Sidebar() {
                             'w-full justify-start text-base py-6',
                             isActive && activeClasses
                           )}
-                          onClick={(e) => {
+                           onClick={(e) => {
                             if (!hasSession) {
                               e.preventDefault();
                                toast({
@@ -164,7 +164,7 @@ export default function Sidebar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       {item.subItems.map(subItem => (
-                         <Link key={subItem.href} href={subItem.href} onClick={(e) => handleLinkClick(e as any, subItem.href)}>
+                         <Link key={subItem.href} href={subItem.href} onClick={(e) => handleLinkClick(e, subItem.href)}>
                             <DropdownMenuItem>
                               <subItem.icon className="mr-2 h-4 w-4" />
                               <span>{subItem.label}</span>
@@ -177,7 +177,7 @@ export default function Sidebar() {
               }
               
               return (
-                <Link key={item.href} href={item.href} onClick={(e) => handleLinkClick(e as any, item.href)}>
+                <Link key={item.href} href={item.href} onClick={(e) => handleLinkClick(e, item.href)}>
                     <Button
                         variant={isActive ? "default" : "ghost"}
                         className={cn(
@@ -218,7 +218,7 @@ export default function Sidebar() {
                 const isActive = pathname.startsWith(item.href);
                 const activeClasses = isActive ? `${item.colorClass} text-primary-foreground hover:${item.colorClass}/90` : "ghost";
                 return (
-                    <Link key={item.href} href={item.href} onClick={(e) => handleLinkClick(e as any, item.href)}>
+                    <Link key={item.href} href={item.href} onClick={(e) => handleLinkClick(e, item.href)}>
                         <Button
                             variant={isActive ? "default" : "ghost"}
                             className={cn('w-full justify-start text-base py-6', isActive && activeClasses)}
