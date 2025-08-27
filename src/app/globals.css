@@ -12,21 +12,40 @@
     --card-foreground: 220 10% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 10% 10%;
-    --primary: 217 91% 60%; /* Medium Blue */
-    --primary-foreground: 0 0% 100%; 
-    --secondary: 216 100% 95%; /* Lighter Blue */
-    --secondary-foreground: 217 91% 60%;
-    --muted: 220 10% 90%;
-    --muted-foreground: 220 10% 40%;
-    --accent: 220 10% 90%;
-    --accent-foreground: 220 10% 10%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
     --border: 220 10% 85%;
     --input: 220 10% 85%;
-    --ring: 217 91% 60%;
     --radius: 0.75rem;
 
+    /* Theme Colors in HSL */
+    --primary-h: 217; --primary-s: 91%; --primary-l: 60%;
+    --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%;
+    
+    --secondary-h: 216; --secondary-s: 100%; --secondary-l: 95%;
+    --secondary-foreground-h: 217; --secondary-foreground-s: 91%; --secondary-foreground-l: 60%;
+
+    --muted-h: 220; --muted-s: 10%; --muted-l: 90%;
+    --muted-foreground-h: 220; --muted-foreground-s: 10%; --muted-foreground-l: 40%;
+    
+    --accent-h: 220; --accent-s: 10%; --accent-l: 90%;
+    --accent-foreground-h: 220; --accent-foreground-s: 10%; --accent-foreground-l: 10%;
+
+    --destructive-h: 0; --destructive-s: 84%; --destructive-l: 60%;
+    --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%;
+
+    --ring-h: 217; --ring-s: 91%; --ring-l: 60%;
+
+    /* Applying Saturation */
+    --primary: hsl(var(--primary-h) var(--saturation) var(--primary-l));
+    --primary-foreground: hsl(var(--primary-foreground-h) var(--saturation) var(--primary-foreground-l));
+    --secondary: hsl(var(--secondary-h) var(--saturation) var(--secondary-l));
+    --secondary-foreground: hsl(var(--secondary-foreground-h) var(--saturation) var(--secondary-foreground-l));
+    --muted: hsl(var(--muted-h) var(--saturation) var(--muted-l));
+    --accent: hsl(var(--accent-h) var(--saturation) var(--accent-l));
+    --destructive: hsl(var(--destructive-h) var(--saturation) var(--destructive-l));
+    --destructive-foreground: hsl(var(--destructive-foreground-h) var(--saturation) var(--destructive-foreground-l));
+    --ring: hsl(var(--ring-h) var(--saturation) var(--ring-l));
+
+    /* Nav Colors */
     --nav-home-h: 217; --nav-home-s: 91%; --nav-home-l: 60%;
     --nav-index-h: 30; --nav-index-s: 90%; --nav-index-l: 60%;
     --nav-issue-h: 260; --nav-issue-s: 70%; --nav-issue-l: 65%;
@@ -56,19 +75,26 @@
     --card-foreground: 210 20% 98%;
     --popover: 0 0% 12%;
     --popover-foreground: 210 20% 98%;
-    --primary: 217 91% 60%; /* Medium Blue */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 216 100% 75%; /* Lighter Blue */
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 210 20% 80%;
-    --accent: 0 0% 15%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 210 20% 98%;
     --border: 0 0% 15%;
     --input: 0 0% 15%;
-    --ring: 217 91% 60%;
+
+    /* Theme Colors in HSL */
+    --primary-h: 217; --primary-s: 91%; --primary-l: 60%;
+    --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%;
+    
+    --secondary-h: 216; --secondary-s: 100%; --secondary-l: 75%;
+    --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 100%;
+    
+    --muted-h: 0; --muted-s: 0%; --muted-l: 15%;
+    --muted-foreground-h: 210; --muted-foreground-s: 20%; --muted-foreground-l: 80%;
+
+    --accent-h: 0; --accent-s: 0%; --accent-l: 15%;
+    --accent-foreground-h: 210; --accent-foreground-s: 20%; --accent-foreground-l: 98%;
+
+    --destructive-h: 0; --destructive-s: 70%; --destructive-l: 50%;
+    --destructive-foreground-h: 210; --destructive-foreground-s: 20%; --destructive-foreground-l: 98%;
+
+    --ring-h: 217; --ring-s: 91%; --ring-l: 60%;
   }
 }
 
