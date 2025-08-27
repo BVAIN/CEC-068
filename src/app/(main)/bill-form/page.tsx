@@ -448,12 +448,12 @@ function BillFormPageComponent() {
         </div>
         <div class="undertaking-page" style="padding-top: 3rem;">
              <div style="text-align: center;">
-                <h3 style="font-size: 1.25rem; font-weight: bold;">UNDERTAKING</h3>
-                <h2 style="font-size: 1.5rem; font-weight: bold;">EXAMINATION WING</h2>
+                <h2 style="font-size: 1.5rem; font-weight: bold; text-decoration: underline;">EXAMINATION WING</h2>
+                <h3 style="font-size: 1.25rem; font-weight: bold; text-decoration: underline;">UNDERTAKING</h3>
             </div>
             <div style="margin-top: 2rem; font-size: 1rem; line-height: 1.5;">
                 <p>
-                    I, ${billDetails.evaluatorName}, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
+                    I certify that none of my relations (husband, wife, son, daughter, brother, sister nephew, niece, sister-in law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
                 </p>
                 <div style="display: flex; justify-content: flex-end; padding-top: 2rem;">
                     <div style="text-align: left; display: grid; gap: 4px;">
@@ -887,5 +887,3 @@ export default function BillFormPage() {
         </React.Suspense>
     )
 }
-
-    
