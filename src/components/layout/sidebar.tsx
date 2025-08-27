@@ -3,26 +3,33 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive, List, Users, Info, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-provider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { SIDEBAR_AWARDS_VISIBILITY_KEY } from "@/lib/constants";
+import { 
+    SIDEBAR_AWARDS_VISIBILITY_KEY,
+    SIDEBAR_INDEX_VISIBILITY_KEY,
+    SIDEBAR_ISSUE_VISIBILITY_KEY,
+    SIDEBAR_BILL_VISIBILITY_KEY,
+    SIDEBAR_TEACHERS_VISIBILITY_KEY
+} from "@/lib/constants";
 
-const baseMenuItems = [
-  { href: "/home", label: "Home", icon: Home, colorClass: "bg-nav-home" },
-  { href: "/index", label: "Index", icon: List, colorClass: "bg-nav-index" },
-  { href: "/issue-form", label: "Issue Packets", icon: FilePlus, colorClass: "bg-nav-issue" },
-  { href: "/bill-form", label: "Bill Forms", icon: FileText, colorClass: "bg-nav-bill" },
-  { href: "/teachers", label: "Teachers Data", icon: Users, colorClass: "bg-nav-teachers" },
-  { href: "/awards-dispatch", label: "Awards Dispatch Data", icon: Award, colorClass: "bg-nav-awards" },
+const allMenuItems = [
+  { href: "/home", label: "Home", icon: Home, colorClass: "bg-nav-home", storageKey: null },
+  { href: "/index", label: "Index", icon: List, colorClass: "bg-nav-index", storageKey: SIDEBAR_INDEX_VISIBILITY_KEY },
+  { href: "/issue-form", label: "Issue Packets", icon: FilePlus, colorClass: "bg-nav-issue", storageKey: SIDEBAR_ISSUE_VISIBILITY_KEY },
+  { href: "/bill-form", label: "Bill Forms", icon: FileText, colorClass: "bg-nav-bill", storageKey: SIDEBAR_BILL_VISIBILITY_KEY },
+  { href: "/teachers", label: "Teachers Data", icon: Users, colorClass: "bg-nav-teachers", storageKey: SIDEBAR_TEACHERS_VISIBILITY_KEY },
+  { href: "/awards-dispatch", label: "Awards Dispatch Data", icon: Award, colorClass: "bg-nav-awards", storageKey: SIDEBAR_AWARDS_VISIBILITY_KEY },
   { 
       href: "/trash", 
       label: "Trash", 
       icon: Trash2,
       colorClass: "bg-nav-trash",
+      storageKey: null,
       subItems: [
         { href: "/trash/index", label: "Index Trash", icon: Trash2 },
         { href: "/trash/issues", label: "Issue Trash", icon: Trash2 },
@@ -30,7 +37,7 @@ const baseMenuItems = [
         { href: "/trash/teachers", label: "Teacher Trash", icon: Users },
       ] 
   },
-  { href: "/settings", label: "Settings", icon: Settings, colorClass: "bg-nav-settings" },
+  { href: "/settings", label: "Settings", icon: Settings, colorClass: "bg-nav-settings", storageKey: null },
 ];
 
 const secondaryMenuItems = [
@@ -40,23 +47,23 @@ const secondaryMenuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { setTheme } = useTheme();
-  const [menuItems, setMenuItems] = useState(baseMenuItems);
+  const [visibleItems, setVisibleItems] = useState(allMenuItems);
 
   useEffect(() => {
-    const updateAwardsVisibility = () => {
-        const isVisible = JSON.parse(localStorage.getItem(SIDEBAR_AWARDS_VISIBILITY_KEY) ?? 'true');
-        if (isVisible) {
-            setMenuItems(baseMenuItems);
-        } else {
-            setMenuItems(baseMenuItems.filter(item => item.href !== '/awards-dispatch'));
-        }
+    const updateVisibleItems = () => {
+        const filteredItems = allMenuItems.filter(item => {
+            if (!item.storageKey) return true;
+            const isVisible = JSON.parse(localStorage.getItem(item.storageKey) ?? 'true');
+            return isVisible;
+        });
+        setVisibleItems(filteredItems);
     };
     
-    updateAwardsVisibility();
+    updateVisibleItems();
 
-    window.addEventListener('storage', updateAwardsVisibility);
+    window.addEventListener('storage', updateVisibleItems);
     return () => {
-        window.removeEventListener('storage', updateAwardsVisibility);
+        window.removeEventListener('storage', updateVisibleItems);
     };
   }, []);
   
@@ -68,7 +75,7 @@ export default function Sidebar() {
       </div>
       <nav className="flex-1 p-4 space-y-2 flex flex-col justify-between">
         <div className="space-y-2">
-            {menuItems.map((item) => {
+            {visibleItems.map((item) => {
              const isActive = item.subItems 
                 ? item.subItems.some(sub => pathname.startsWith(sub.href))
                 : pathname === item.href || (item.href !== "/home" && pathname.startsWith(item.href));
@@ -164,5 +171,3 @@ export default function Sidebar() {
     </aside>
   );
 }
-
-    

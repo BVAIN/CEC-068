@@ -14,7 +14,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
 import { Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { SIDEBAR_AWARDS_VISIBILITY_KEY } from "@/lib/constants";
+import { 
+    SIDEBAR_AWARDS_VISIBILITY_KEY,
+    SIDEBAR_INDEX_VISIBILITY_KEY,
+    SIDEBAR_ISSUE_VISIBILITY_KEY,
+    SIDEBAR_BILL_VISIBILITY_KEY,
+    SIDEBAR_TEACHERS_VISIBILITY_KEY
+} from "@/lib/constants";
 
 const passwordFormSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
@@ -25,26 +31,50 @@ const passwordFormSchema = z.object({
   path: ["confirmPassword"],
 });
 
+type VisibilitySwitchProps = {
+    id: string;
+    label: string;
+    description: string;
+    storageKey: string;
+}
+
+const VisibilitySwitch = ({ id, label, description, storageKey }: VisibilitySwitchProps) => {
+    const [isVisible, setIsVisible] = useState(true);
+
+    useEffect(() => {
+        const storedVisibility = localStorage.getItem(storageKey);
+        // Default to true if the key doesn't exist
+        if (storedVisibility) {
+            setIsVisible(JSON.parse(storedVisibility));
+        }
+    }, [storageKey]);
+
+    const handleVisibilityChange = (checked: boolean) => {
+        setIsVisible(checked);
+        localStorage.setItem(storageKey, JSON.stringify(checked));
+        // Dispatch a storage event to notify the sidebar to re-render
+        window.dispatchEvent(new Event('storage'));
+    };
+
+    return (
+        <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+                <Label className="text-base" htmlFor={id}>{label}</Label>
+                <p className="text-sm text-muted-foreground">{description}</p>
+            </div>
+            <Switch
+                id={id}
+                checked={isVisible}
+                onCheckedChange={handleVisibilityChange}
+            />
+        </div>
+    );
+};
+
 
 export default function SettingsPage() {
     const { toast } = useToast();
     const { isConnected, isLoading, error, connect, disconnect } = useGoogleDrive();
-    const [showAwardsDispatch, setShowAwardsDispatch] = useState(true);
-
-    useEffect(() => {
-        const storedVisibility = localStorage.getItem(SIDEBAR_AWARDS_VISIBILITY_KEY);
-        if (storedVisibility) {
-            setShowAwardsDispatch(JSON.parse(storedVisibility));
-        }
-    }, []);
-
-    const handleAwardsVisibilityChange = (checked: boolean) => {
-        setShowAwardsDispatch(checked);
-        localStorage.setItem(SIDEBAR_AWARDS_VISIBILITY_KEY, JSON.stringify(checked));
-        // This is a simple way to trigger a re-render of the sidebar.
-        // In a more complex app, this might be handled by a global state manager.
-        window.dispatchEvent(new Event('storage'));
-    };
 
     const form = useForm<z.infer<typeof passwordFormSchema>>({
         resolver: zodResolver(passwordFormSchema),
@@ -142,22 +172,39 @@ export default function SettingsPage() {
        <Card>
         <CardHeader>
           <CardTitle>UI Settings</CardTitle>
-          <CardDescription>Customize the user interface.</CardDescription>
+          <CardDescription>Customize the sidebar navigation items.</CardDescription>
         </CardHeader>
-        <CardContent>
-            <div className="flex items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                    <Label className="text-base" htmlFor="awards-dispatch-visibility">Awards Dispatch Data</Label>
-                    <p className="text-sm text-muted-foreground">
-                        Show or hide the 'Awards Dispatch Data' button in the sidebar.
-                    </p>
-                </div>
-                <Switch
-                    id="awards-dispatch-visibility"
-                    checked={showAwardsDispatch}
-                    onCheckedChange={handleAwardsVisibilityChange}
-                />
-            </div>
+        <CardContent className="space-y-4">
+            <VisibilitySwitch 
+                id="index-visibility"
+                label="Index"
+                description="Show or hide the 'Index' button in the sidebar."
+                storageKey={SIDEBAR_INDEX_VISIBILITY_KEY}
+            />
+            <VisibilitySwitch 
+                id="issue-packets-visibility"
+                label="Issue Packets"
+                description="Show or hide the 'Issue Packets' button in the sidebar."
+                storageKey={SIDEBAR_ISSUE_VISIBILITY_KEY}
+            />
+            <VisibilitySwitch 
+                id="bill-forms-visibility"
+                label="Bill Forms"
+                description="Show or hide the 'Bill Forms' button in the sidebar."
+                storageKey={SIDEBAR_BILL_VISIBILITY_KEY}
+            />
+             <VisibilitySwitch 
+                id="teachers-data-visibility"
+                label="Teachers Data"
+                description="Show or hide the 'Teachers Data' button in the sidebar."
+                storageKey={SIDEBAR_TEACHERS_VISIBILITY_KEY}
+            />
+            <VisibilitySwitch 
+                id="awards-dispatch-visibility"
+                label="Awards Dispatch Data"
+                description="Show or hide the 'Awards Dispatch Data' button in the sidebar."
+                storageKey={SIDEBAR_AWARDS_VISIBILITY_KEY}
+            />
         </CardContent>
       </Card>
 
@@ -189,5 +236,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-    
