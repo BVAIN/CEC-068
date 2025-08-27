@@ -314,7 +314,8 @@ export default function BillViewPage() {
                 .underlined-value {
                     border-bottom: 1px solid black;
                     padding: 0 2px;
-                }
+                    word-break: break-word;
+                 }
                 .undertaking-details .underlined-value {
                     display: inline-block;
                     min-width: 200px;
@@ -373,7 +374,7 @@ export default function BillViewPage() {
          <div className="flex items-center gap-2">
             <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline" size="icon"><Settings className="h-4 w-4" /></Button>
+                    <Button size="icon" className="bg-orange-500 hover:bg-orange-600 text-white"><Settings className="h-4 w-4" /></Button>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
@@ -656,7 +657,7 @@ export default function BillViewPage() {
                                 </div>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span>{customization.refreshmentLabel}</span>
+                                <span dangerouslySetInnerHTML={{ __html: customization.refreshmentLabel }}></span>
                                 <span className="text-right">Rs. ____________________________</span>
                             </div>
                             <div className="flex justify-between items-center">
@@ -719,5 +720,3 @@ export default function BillViewPage() {
   );
 
 }
-
-    
