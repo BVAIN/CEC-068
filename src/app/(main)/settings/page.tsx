@@ -14,8 +14,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
 import { Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
-import { useTheme } from "@/contexts/theme-provider";
 import { 
     SIDEBAR_AWARDS_VISIBILITY_KEY,
     SIDEBAR_INDEX_VISIBILITY_KEY,
@@ -77,7 +75,6 @@ const VisibilitySwitch = ({ id, label, description, storageKey }: VisibilitySwit
 export default function SettingsPage() {
     const { toast } = useToast();
     const { isConnected, isLoading, error, connect, disconnect } = useGoogleDrive();
-    const { saturation, setSaturation } = useTheme();
 
     const form = useForm<z.infer<typeof passwordFormSchema>>({
         resolver: zodResolver(passwordFormSchema),
@@ -170,26 +167,6 @@ export default function SettingsPage() {
                 </CardFooter>
             </form>
         </Form>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Color Settings</CardTitle>
-          <CardDescription>Adjust the color saturation for the application theme.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="saturation-slider">Color Saturation: {saturation}%</Label>
-               <Slider
-                    id="saturation-slider"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={[saturation]}
-                    onValueChange={(value) => setSaturation(value[0])}
-                />
-            </div>
-        </CardContent>
       </Card>
 
        <Card>

@@ -5,7 +5,6 @@
 
 @layer base {
   :root, .light {
-    --saturation: 100%;
     --background: 0 0% 100%;
     --foreground: 220 10% 10%;
     --card: 0 0% 100%;
@@ -17,58 +16,36 @@
     --radius: 0.75rem;
 
     /* Theme Colors in HSL */
-    --primary-h: 217; --primary-s: 91%; --primary-l: 60%;
-    --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
     
-    --secondary-h: 216; --secondary-s: 100%; --secondary-l: 95%;
-    --secondary-foreground-h: 217; --secondary-foreground-s: 91%; --secondary-foreground-l: 60%;
+    --secondary: 216 100% 95%;
+    --secondary-foreground: 217 91% 60%;
 
-    --muted-h: 220; --muted-s: 10%; --muted-l: 90%;
-    --muted-foreground-h: 220; --muted-foreground-s: 10%; --muted-foreground-l: 40%;
+    --muted: 220 10% 90%;
+    --muted-foreground: 220 10% 40%;
     
-    --accent-h: 220; --accent-s: 10%; --accent-l: 90%;
-    --accent-foreground-h: 220; --accent-foreground-s: 10%; --accent-foreground-l: 10%;
+    --accent: 220 10% 90%;
+    --accent-foreground: 220 10% 10%;
 
-    --destructive-h: 0; --destructive-s: 84%; --destructive-l: 60%;
-    --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --ring-h: 217; --ring-s: 91%; --ring-l: 60%;
-
-    /* Applying Saturation */
-    --primary: hsl(var(--primary-h) var(--saturation) var(--primary-l));
-    --primary-foreground: hsl(var(--primary-foreground-h) var(--saturation) var(--primary-foreground-l));
-    --secondary: hsl(var(--secondary-h) var(--saturation) var(--secondary-l));
-    --secondary-foreground: hsl(var(--secondary-foreground-h) var(--saturation) var(--secondary-foreground-l));
-    --muted: hsl(var(--muted-h) var(--saturation) var(--muted-l));
-    --accent: hsl(var(--accent-h) var(--saturation) var(--accent-l));
-    --destructive: hsl(var(--destructive-h) var(--saturation) var(--destructive-l));
-    --destructive-foreground: hsl(var(--destructive-foreground-h) var(--saturation) var(--destructive-foreground-l));
-    --ring: hsl(var(--ring-h) var(--saturation) var(--ring-l));
-
+    --ring: 217 91% 60%;
+    
     /* Nav Colors */
-    --nav-home-h: 217; --nav-home-s: 91%; --nav-home-l: 60%;
-    --nav-index-h: 30; --nav-index-s: 90%; --nav-index-l: 60%;
-    --nav-issue-h: 260; --nav-issue-s: 70%; --nav-issue-l: 65%;
-    --nav-bill-h: 145; --nav-bill-s: 63%; --nav-bill-l: 49%;
-    --nav-teachers-h: 330; --nav-teachers-s: 80%; --nav-teachers-l: 60%;
-    --nav-awards-h: 80; --nav-awards-s: 60%; --nav-awards-l: 45%;
-    --nav-trash-h: 0; --nav-trash-s: 84%; --nav-trash-l: 60%;
-    --nav-settings-h: 45; --nav-settings-s: 90%; --nav-settings-l: 50%;
-    --nav-about-h: 180; --nav-about-s: 70%; --nav-about-l: 40%;
-    
-    --nav-home: hsl(var(--nav-home-h) var(--saturation) var(--nav-home-l));
-    --nav-index: hsl(var(--nav-index-h) var(--saturation) var(--nav-index-l));
-    --nav-issue: hsl(var(--nav-issue-h) var(--saturation) var(--nav-issue-l));
-    --nav-bill: hsl(var(--nav-bill-h) var(--saturation) var(--nav-bill-l));
-    --nav-teachers: hsl(var(--nav-teachers-h) var(--saturation) var(--nav-teachers-l));
-    --nav-awards: hsl(var(--nav-awards-h) var(--saturation) var(--nav-awards-l));
-    --nav-trash: hsl(var(--nav-trash-h) var(--saturation) var(--nav-trash-l));
-    --nav-settings: hsl(var(--nav-settings-h) var(--saturation) var(--nav-settings-l));
-    --nav-about: hsl(var(--nav-about-h) var(--saturation) var(--nav-about-l));
+    --nav-home: 217 91% 60%;
+    --nav-index: 30 90% 60%;
+    --nav-issue: 260 70% 65%;
+    --nav-bill: 145 63% 49%;
+    --nav-teachers: 330 80% 60%;
+    --nav-awards: 80 60% 45%;
+    --nav-trash: 0 84% 60%;
+    --nav-settings: 45 90% 50%;
+    --nav-about: 180 70% 40%;
   }
 
   .dark {
-    --saturation: 100%;
     --background: 0 0% 0%;
     --foreground: 210 20% 98%;
     --card: 0 0% 9%;
@@ -79,22 +56,22 @@
     --input: 0 0% 15%;
 
     /* Theme Colors in HSL */
-    --primary-h: 217; --primary-s: 91%; --primary-l: 60%;
-    --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
     
-    --secondary-h: 216; --secondary-s: 100%; --secondary-l: 75%;
-    --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 100%;
+    --secondary: 216 100% 75%;
+    --secondary-foreground: 0 0% 100%;
     
-    --muted-h: 0; --muted-s: 0%; --muted-l: 15%;
-    --muted-foreground-h: 210; --muted-foreground-s: 20%; --muted-foreground-l: 80%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 210 20% 80%;
 
-    --accent-h: 0; --accent-s: 0%; --accent-l: 15%;
-    --accent-foreground-h: 210; --accent-foreground-s: 20%; --accent-foreground-l: 98%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 210 20% 98%;
 
-    --destructive-h: 0; --destructive-s: 70%; --destructive-l: 50%;
-    --destructive-foreground-h: 210; --destructive-foreground-s: 20%; --destructive-foreground-l: 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 210 20% 98%;
 
-    --ring-h: 217; --ring-s: 91%; --ring-l: 60%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -137,10 +114,10 @@
     height: 100vh;
     background: linear-gradient(
       -45deg,
-      hsl(var(--nav-home-h) var(--saturation) var(--nav-home-l) / 0.1),
-      hsl(var(--nav-index-h) var(--saturation) var(--nav-index-l) / 0.1),
-      hsl(var(--nav-issue-h) var(--saturation) var(--nav-issue-l) / 0.1),
-      hsl(var(--nav-bill-h) var(--saturation) var(--nav-bill-l) / 0.1)
+      hsl(var(--nav-home) / 0.1),
+      hsl(var(--nav-index) / 0.1),
+      hsl(var(--nav-issue) / 0.1),
+      hsl(var(--nav-bill) / 0.1)
     );
     background-size: 400% 400%;
     animation: gradient-animation 15s ease infinite;

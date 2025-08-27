@@ -14,15 +14,11 @@ type ThemeProviderProps = {
 type ThemeProviderState = {
   theme: Theme
   setTheme: (theme: Theme) => void
-  saturation: number
-  setSaturation: (saturation: number) => void
 }
 
 const initialState: ThemeProviderState = {
   theme: "system",
   setTheme: () => null,
-  saturation: 100,
-  setSaturation: () => null,
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
@@ -34,17 +30,13 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(defaultTheme);
-  const [saturation, setSaturation] = useState<number>(100);
-
 
   useEffect(() => {
-    const storedTheme = (localStorage.getItem(storageKey) as Theme) || defaultTheme;
-    setTheme(storedTheme);
-    const storedSaturation = localStorage.getItem(`${storageKey}-saturation`);
-    if (storedSaturation) {
-        setSaturation(JSON.parse(storedSaturation));
+    const storedTheme = localStorage.getItem(storageKey) as Theme | null;
+    if (storedTheme) {
+      setTheme(storedTheme);
     }
-  }, [storageKey, defaultTheme]);
+  }, [storageKey]);
 
   useEffect(() => {
     const root = window.document.documentElement
@@ -58,13 +50,11 @@ export function ThemeProvider({
         : "light"
 
       root.classList.add(systemTheme)
-    } else {
-        root.classList.add(theme)
+      return
     }
 
-    root.style.setProperty('--saturation', `${saturation}%`);
-
-  }, [theme, saturation])
+    root.classList.add(theme)
+  }, [theme])
 
   const value = {
     theme,
@@ -72,11 +62,6 @@ export function ThemeProvider({
       localStorage.setItem(storageKey, theme)
       setTheme(theme)
     },
-    saturation,
-    setSaturation: (newSaturation: number) => {
-      localStorage.setItem(`${storageKey}-saturation`, JSON.stringify(newSaturation));
-      setSaturation(newSaturation);
-    }
   }
 
   return (
