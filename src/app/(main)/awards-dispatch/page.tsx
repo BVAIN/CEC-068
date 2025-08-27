@@ -48,28 +48,19 @@ export default function AwardsDispatchPage() {
   const { toast } = useToast();
   const [hydrated, setHydrated] = useState(false);
 
-  const { totalNorth, totalSouth, grandTotal, totalAwards, totalPages } = useMemo(() => {
+  const { totalNorth, totalSouth, grandTotal } = useMemo(() => {
     let totalNorth = 0;
     let totalSouth = 0;
     let grandTotal = 0;
-    let totalAwards = 0;
-    let totalPages = 0;
 
     awardEntries.forEach(entry => {
         totalNorth += entry.northChallan;
         totalSouth += entry.southChallan;
         grandTotal += entry.totalChallan;
-        
-        const key = `${entry.dateOfExam}-${entry.upc}-${entry.qpNo}`;
-        const data = dispatchData[key];
-        if (data) {
-            totalAwards += parseInt(data.awardsCount || '0', 10) || 0;
-            totalPages += parseInt(data.noOfPages || '0', 10) || 0;
-        }
     });
 
-    return { totalNorth, totalSouth, grandTotal, totalAwards, totalPages };
-  }, [awardEntries, dispatchData]);
+    return { totalNorth, totalSouth, grandTotal };
+  }, [awardEntries]);
 
   useEffect(() => {
     setHydrated(true);
@@ -336,9 +327,7 @@ export default function AwardsDispatchPage() {
                         <TableCell className="font-bold text-blue-600">{totalNorth}</TableCell>
                         <TableCell className="font-bold text-red-600">{totalSouth}</TableCell>
                         <TableCell className="font-bold">{grandTotal}</TableCell>
-                        <TableCell className="font-bold">{totalAwards}</TableCell>
-                        <TableCell className="font-bold">{totalPages}</TableCell>
-                        <TableCell colSpan={2}></TableCell>
+                        <TableCell colSpan={4}></TableCell>
                     </TableRow>
                 </TableFooter>
               )}
