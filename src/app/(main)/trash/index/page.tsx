@@ -183,6 +183,8 @@ export default function IndexTrashPage() {
                     <TableHead className="text-primary-foreground">UPC</TableHead>
                     <TableHead className="text-primary-foreground">QP No.</TableHead>
                     <TableHead className="text-primary-foreground">Page No.</TableHead>
+                    <TableHead className="text-primary-foreground">As Per Challan</TableHead>
+                    <TableHead className="text-primary-foreground">Net Scripts</TableHead>
                     <TableHead className="text-right text-primary-foreground">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -205,6 +207,8 @@ export default function IndexTrashPage() {
                       <TableCell>{entry.upc}</TableCell>
                       <TableCell>{entry.qpNo}</TableCell>
                       <TableCell>{entry.pageNo}</TableCell>
+                      <TableCell>{entry.asPerChallan}</TableCell>
+                      <TableCell>{entry.netScripts}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
                             <Button variant="outline" size="sm" onClick={() => handleRestore([entry.id!])} className="bg-green-500 hover:bg-green-600 text-white">
