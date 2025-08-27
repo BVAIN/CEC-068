@@ -22,10 +22,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-type FilterValues = Partial<Omit<PublicIssueFormValues, "id" | "asPerChallan" | "netScripts" | "difference" | "type">> & {
+type FilterValues = Partial<Omit<PublicIssueFormValues, "id" | "asPerChallan" | "netScripts" | "difference" | "type" | "pageNo">> & {
     asPerChallan: string;
     netScripts: string;
     difference: string;
+    pageNo: string;
     type: ("Regular" | "NCWEB" | "SOL")[];
 };
 
@@ -110,10 +111,12 @@ export default function IndexPage() {
 
     switch(activeView) {
         case 'North':
-            baseEntries = entries.filter(e => e.campus === 'North');
+            baseEntries = entries.filter(e => e.campus === 'North')
+                .sort((a, b) => (parseInt(a.pageNo || '0', 10)) - (parseInt(b.pageNo || '0', 10)));
             break;
         case 'South':
-            baseEntries = entries.filter(e => e.campus === 'South');
+            baseEntries = entries.filter(e => e.campus === 'South')
+                .sort((a, b) => (parseInt(a.pageNo || '0', 10)) - (parseInt(b.pageNo || '0', 10)));
             break;
         case 'Search':
             const lowercasedTerm = searchTerm.toLowerCase();
@@ -462,11 +465,11 @@ export default function IndexPage() {
                 </TableBody>
                 <TableFooter>
                     <TableRow>
-                    <TableCell colSpan={isSearch ? 6 : 7} className="text-right font-bold">Total</TableCell>
+                    <TableCell colSpan={isSearch ? 5 : 7} className="text-right font-bold">Total</TableCell>
                     <TableCell className="font-bold">{totals.totalChallan}</TableCell>
                     <TableCell className="font-bold">{totals.totalNetScripts}</TableCell>
                     <TableCell className="font-bold">{totals.totalDifference}</TableCell>
-                    <TableCell />
+                    <TableCell colSpan={2} />
                     </TableRow>
                 </TableFooter>
                 </Table>
@@ -566,3 +569,5 @@ export default function IndexPage() {
     </div>
   );
 }
+
+    
