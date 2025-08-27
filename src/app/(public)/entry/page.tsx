@@ -188,7 +188,26 @@ export default function PublicIssueEntryPage() {
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="dateOfExam" render={({ field }) => (<FormItem><FormLabel>Date of Exam</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="course" render={({ field }) => (<FormItem><FormLabel>Course</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField
+                      control={form.control}
+                      name="course"
+                      render={({ field }) => (
+                          <FormItem>
+                              <FormLabel>Course</FormLabel>
+                              <FormControl>
+                                  <Input 
+                                      {...field}
+                                      onChange={(e) => {
+                                          const value = e.target.value;
+                                          const capitalized = value.charAt(0).toUpperCase() + value.slice(1);
+                                          field.onChange(capitalized);
+                                      }}
+                                  />
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                      )} 
+                    />
                     <FormField control={form.control} name="upc" render={({ field }) => (<FormItem><FormLabel>UPC</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="qpNo" render={({ field }) => (<FormItem><FormLabel>QP No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="asPerChallan" render={({ field }) => (<FormItem><FormLabel>As per Challan</FormLabel><FormControl><Input type="number" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
