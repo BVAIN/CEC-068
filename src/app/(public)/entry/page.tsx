@@ -59,6 +59,8 @@ export default function PublicIssueEntryPage() {
 
   const { watch, setValue, getValues } = form;
   const watchedCourse = watch('course');
+  const watchedCampus = watch('campus');
+  const watchedType = watch('type');
   
   useEffect(() => {
     const editId = searchParams.get('edit');
@@ -76,27 +78,36 @@ export default function PublicIssueEntryPage() {
   }, [searchParams, form]);
 
   useEffect(() => {
-    if (editingId) return; 
+    if (editingId) return;
 
     const calculateNextPageNo = () => {
-      const course = getValues('course');
-      
-      if (!course) return;
+        const { course, campus, type } = getValues();
+        if (!course || !campus || !type) return;
 
-      const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
-      const entries: PublicIssueFormValues[] = storedEntries ? JSON.parse(storedEntries) : [];
+        const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
+        const entries: PublicIssueFormValues[] = storedEntries ? JSON.parse(storedEntries) : [];
 
-      const courseEntries = entries.filter(e => e.course === course && e.pageNo);
-      let lastPageNo = 0;
-      if (courseEntries.length > 0) {
-        lastPageNo = Math.max(...courseEntries.map(e => parseInt(e.pageNo!, 10) || 0));
-      }
-      
-      setValue('pageNo', (lastPageNo + 1).toString());
+        let relevantEntries: PublicIssueFormValues[];
+
+        if (type === 'SOL') {
+            // SOL has its own numbering sequence per course and campus
+            relevantEntries = entries.filter(e => e.course === course && e.campus === campus && e.type === 'SOL' && e.pageNo);
+        } else {
+            // Regular and NCWEB share a numbering sequence per course and campus
+            relevantEntries = entries.filter(e => e.course === course && e.campus === campus && (e.type === 'Regular' || e.type === 'NCWEB') && e.pageNo);
+        }
+
+        let lastPageNo = 0;
+        if (relevantEntries.length > 0) {
+            lastPageNo = Math.max(...relevantEntries.map(e => parseInt(e.pageNo!, 10) || 0));
+        }
+
+        setValue('pageNo', (lastPageNo + 1).toString());
     };
 
     calculateNextPageNo();
-  }, [watchedCourse, setValue, getValues, editingId]);
+  }, [watchedCourse, watchedCampus, watchedType, setValue, getValues, editingId]);
+
 
   const onSubmit = (data: z.infer<typeof publicIssueFormSchema>) => {
     try {
@@ -122,11 +133,13 @@ export default function PublicIssueEntryPage() {
         if (editingId) {
             router.push('/index');
         } else {
+            const keptValues = {
+                dateOfExam: data.dateOfExam,
+                campus: data.campus,
+            };
             form.reset({
                 ...initialFormValues,
-                dateOfExam: data.dateOfExam, // retain date
-                campus: data.campus,
-                type: data.type,
+                ...keptValues,
                 course: "",
                 pageNo: "",
                 upc: "",
@@ -175,8 +188,7 @@ export default function PublicIssueEntryPage() {
                     <FormField control={form.control} name="qpNo" render={({ field }) => (<FormItem><FormLabel>QP No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="asPerChallan" render={({ field }) => (<FormItem><FormLabel>As per Challan</FormLabel><FormControl><Input type="number" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="netScripts" render={({ field }) => (<FormItem><FormLabel>Net Scripts</FormLabel><FormControl><Input type="number" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
-                     {/* Hidden Page No field, managed by logic */}
-                    <FormField control={form.control} name="pageNo" render={({ field }) => (<FormItem className="hidden"><FormLabel>Page No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="pageNo" render={({ field }) => (<FormItem><FormLabel>Page No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </CardContent>
             </Card>
             <Card>
