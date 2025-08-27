@@ -39,12 +39,6 @@ const sessionFormSchema = z.object({
   name: z.string().min(3, 'Session name must be at least 3 characters long'),
 });
 
-const LEGACY_KEYS = [
-    'bills', 'issues', 'public_issues', 'trash', 'bill_trash', 
-    'index_trash', 'teacher_trash', 'qp_upc_map', 
-    'teacher_course_token_map', 'global_bill_settings'
-];
-
 export default function SessionsPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -84,25 +78,6 @@ export default function SessionsPage() {
     router.push(`/home?session=${session.id}`);
   };
 
-  const migrateLegacyData = (newSessionId: string) => {
-      let migratedCount = 0;
-      LEGACY_KEYS.forEach(key => {
-          const legacyData = localStorage.getItem(key);
-          if (legacyData) {
-              const newKey = `${newSessionId}_${key}`;
-              localStorage.setItem(newKey, legacyData);
-              localStorage.removeItem(key); // Remove old key to prevent re-migration
-              migratedCount++;
-          }
-      });
-      if (migratedCount > 0) {
-          toast({
-              title: "Data Migrated",
-              description: `Your previous data has been moved to the new session.`,
-          });
-      }
-  };
-
   const handleAddOrUpdateSession = (values: z.infer<typeof sessionFormSchema>) => {
     const { name } = values;
     let updatedSessions;
@@ -118,7 +93,6 @@ export default function SessionsPage() {
         name,
       };
       updatedSessions = [...sessions, newSession];
-      migrateLegacyData(newSession.id);
       toast({ title: 'Session Added', description: `Session "${name}" has been created.` });
     }
 
