@@ -16,7 +16,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter, Share2, Copy, PencilRuler, Users } from "lucide-react";
+import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter, Share2, Copy, PencilRuler, Users, Printer } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -24,9 +24,10 @@ import { useGoogleDrive } from "@/hooks/use-google-drive";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import { BILLS_STORAGE_KEY, BILLS_FILE_NAME, BILL_TRASH_STORAGE_KEY } from "@/lib/constants";
+import { BILLS_STORAGE_KEY, BILLS_FILE_NAME, BILL_TRASH_STORAGE_KEY, GLOBAL_BILL_SETTINGS_KEY } from "@/lib/constants";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 
 const billFormSchema = z.object({
@@ -50,6 +51,14 @@ const billFormSchema = z.object({
 export type BillFormValues = z.infer<typeof billFormSchema>;
 
 type FilterValues = Partial<Omit<BillFormValues, 'id' | 'signature' | 'distance'>> & { distance: string };
+
+type GlobalBillSettings = {
+    billName: string;
+    examinationName: string;
+    coordinatorName: string;
+    conveyanceUnder30: number;
+    conveyanceOver30: number;
+}
 
 const editableFields = [
     { value: 'evaluatorId', label: 'Evaluator ID' },
@@ -84,6 +93,13 @@ function BillFormPageComponent() {
   const [bulkEditField, setBulkEditField] = useState<EditableField>('course');
   const [bulkFindValue, setBulkFindValue] = useState('');
   const [bulkReplaceValue, setBulkReplaceValue] = useState('');
+  const [globalSettings, setGlobalSettings] = useState<GlobalBillSettings>({
+      billName: '',
+      examinationName: '',
+      coordinatorName: '',
+      conveyanceUnder30: 450,
+      conveyanceOver30: 600,
+  });
 
 
   const { isConnected, files, readFile, writeFile } = useGoogleDrive();
@@ -94,6 +110,11 @@ function BillFormPageComponent() {
       const searchFromParams = searchParams.get('search');
       if (searchFromParams) {
         setSearchTerm(searchFromParams);
+      }
+      const storedSettings = localStorage.getItem(GLOBAL_BILL_SETTINGS_KEY);
+      if (storedSettings) {
+          const parsedSettings = JSON.parse(storedSettings);
+          setGlobalSettings(prev => ({ ...prev, ...parsedSettings}));
       }
     }
   }, [searchParams]);
@@ -334,10 +355,10 @@ function BillFormPageComponent() {
   ];
 
   const generateBillPreviewHTML = (billDetails: BillFormValues) => {
-    const signatureImage = billDetails.signature ? `<img src="${billDetails.signature}" alt="Evaluator's Signature" style="max-height: 40px; filter: contrast(1.5) brightness(1.1); mix-blend-mode: multiply;" />` : '';
+    const signatureImage = billDetails.signature ? `<img src="${billDetails.signature}" alt="Evaluator's Signature" class="signature-image" style="max-height: 48px;" />` : '';
 
     return `
-      <div style="font-family: sans-serif; max-width: 800px; margin: auto; border: 1px solid #eee; padding: 20px; page-break-after: always;">
+      <div class="bill-page-container">
         <div class="bill-card-page">
             <div style="display: flex; justify-content: flex-end; font-size: 0.875rem;">
               <div style="display: grid; grid-template-columns: 1fr; gap: 4px; text-align: right;">
@@ -345,41 +366,45 @@ function BillFormPageComponent() {
                 <span>Reg. No. ....................</span>
               </div>
             </div>
-            <div style="text-align: center; margin-bottom: 1rem;">
-              <h1 style="font-size: 1.5rem; font-weight: bold; text-transform: uppercase;">University of Delhi</h1>
-              <h2 style="font-size: 1.25rem; font-weight: bold;">Central Evaluation Centre, SGTB Khalsa College</h2>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
-              <span style="font-weight: bold;">Bill,</span>
-              <span style="border-bottom: 1px dotted black; min-width: 180px; display: inline-block;"></span>
-              <span style="font-weight: bold;">Examination</span>
-              <span style="border-bottom: 1px dotted black; min-width: 120px; display: inline-block;"></span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; font-size: 0.875rem; margin-bottom: 1rem;">
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Evaluator ID:</span><span>${billDetails.evaluatorId}</span></div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Evaluator Name:</span><span>${billDetails.evaluatorName}</span></div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Address:</span> <span>${billDetails.address}</span></div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Course:</span> <span>${billDetails.course}</span></div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Email ID:</span><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${billDetails.email}</span></div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Mobile No:</span><span>${billDetails.mobileNo}</span></div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">College Name:</span> <span>${billDetails.collegeName}</span></div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Distance (Km) Up-Down:</span> <span>${billDetails.distance}</span></div>
-            </div>
-            <div style="margin-bottom: 1rem;">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; font-size: 0.875rem;">
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Bank Name:</span><span>${billDetails.bankName}</span></div>
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Branch:</span><span>${billDetails.branch}</span></div>
+            <div style="text-align: center; margin-top: 1rem;">
+              <h1 class="print-header-title" style="font-size: 1.25rem; font-weight: bold; text-transform: uppercase;">University of Delhi</h1>
+              <h2 class="print-header-subtitle" style="font-size: 1.1rem; font-weight: bold;">Central Evaluation Centre, SGTB Khalsa College</h2>
+              <div style="display: flex; align-items: baseline; justify-content: center; gap: 1rem;">
+                <div style="display: flex; align-items: baseline;">
+                    <span style="font-weight: bold;">Bill,</span>
+                    <span style="margin-left: 0.5rem; font-weight: bold;">${globalSettings.billName}</span>
+                </div>
+                <div style="display: flex; align-items: baseline;">
+                    <span style="font-weight: bold;">Examination</span>
+                    <span style="margin-left: 0.5rem; font-weight: bold;">${globalSettings.examinationName}</span>
+                </div>
               </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem 2rem; font-size: 0.875rem; margin-top: 4px;">
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">PAN No.:</span><span>${billDetails.panNo}</span></div>
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">Account No:</span><span>${billDetails.bankAccountNo}</span></div>
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold;">IFSC Code:</span><span>${billDetails.ifscCode}</span></div>
-              </div>
-              <div style="display: flex; justify-content: space-between; margin-top: 8px;"><span>Paper No.........................................................................................................</span><span style="margin-left: 1rem;">Duration of Paper...................</span></div>
             </div>
-            <div style="margin-bottom: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem 2rem; font-size: 1rem; margin-top: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">Evaluator ID:</span><span style="text-align: right;">${billDetails.evaluatorId}</span></div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">Evaluator Name:</span><span style="text-align: right;">${billDetails.evaluatorName}</span></div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">Address:</span> <span style="text-align: right;">${billDetails.address}</span></div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">Course:</span> <span style="text-align: right;">${billDetails.course}</span></div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">Email ID:</span><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right;">${billDetails.email}</span></div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">Mobile No:</span><span style="text-align: right;">${billDetails.mobileNo}</span></div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">College Name:</span> <span style="text-align: right;">${billDetails.collegeName}</span></div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">Distance (Km) Up-Down:</span> <span style="text-align: right;">${billDetails.distance}</span></div>
+            </div>
+            <div style="margin-top: 0.5rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">Bank Name:</span><span style="text-align: right;">${billDetails.bankName}</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">Branch:</span><span style="text-align: right;">${billDetails.branch}</span></div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.25rem 2rem; margin-top: 0.25rem;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">PAN No.:</span><span style="text-align: right;">${billDetails.panNo}</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">Account No:</span><span style="font-family: monospace; text-align: right;">${billDetails.bankAccountNo}</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #ccc; padding-bottom: 4px;"><span style="font-weight: bold; flex-shrink: 0;">IFSC Code:</span><span style="font-family: monospace; text-align: right;">${billDetails.ifscCode}</span></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;"><span>Paper No.........................................................................................................</span><span style="margin-left: 1rem;">Duration of Paper...................</span></div>
+            </div>
+            <div style="margin-top: 0.5rem;">
               <h3 style="text-align: center; font-weight: bold;">Part I Examiner /Additional Examiner</h3>
-              <table style="width: 100%; border-collapse: collapse; border: 1px solid black; margin-top: 8px;">
+              <table class="print-table" style="width: 100%; border-collapse: collapse; border: 1px solid black; margin-top: 0.25rem;">
                 <thead>
                   <tr>
                     <th style="font-weight: bold; border: 1px solid black; padding: 4px; font-size: 0.75rem; width: 15%;">Total No. of Ans. Scripts Evaluated</th>
@@ -391,16 +416,16 @@ function BillFormPageComponent() {
                 </thead>
                 <tbody><tr style="height: 96px;"><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td><td style="border: 1px solid black;"></td></tr></tbody>
               </table>
-              <div style="text-align: center; padding-top: 4px;"><span style="font-weight: bold; text-decoration: underline;">Optimum no. of Copies</span></div>
+              <div style="text-align: center; padding-top: 0.25rem;"><span style="font-weight: bold; text-decoration: underline;">Optimum no. of Copies</span></div>
             </div>
-            <div style="margin-bottom: 1rem;">
+            <div style="margin-top: 0.5rem;">
               <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                <div style="width: 66%;"><h3 style="text-align: left; font-weight: bold;">Part II (for use of Head/Additional Head Examiner)</h3><div style="padding-top: 8px;"><span>Payment claimed Rs............................................................</span></div></div>
-                <div style="text-align: center;">${signatureImage}<h3 style="font-weight: bold; font-size: 0.875rem; margin-top: 4px;">Signature of Examiner</h3></div>
+                <div style="width: 66%;"><h3 style="text-align: left; font-weight: bold;">Part II (for use of Head/Additional Head Examiner)</h3><div style="padding-top: 0.25rem;"><span>Payment claimed Rs............................................................</span></div></div>
+                <div style="text-align: center;"><div style="display: flex; justify-content: center; align-items: center; padding: 4px; min-height: 3rem;">${signatureImage}</div><h3 style="font-weight: bold; font-size: 0.875rem; margin-top: 0.25rem;">Signature of Examiner</h3></div>
               </div>
-              <hr style="margin: 8px 0; border-top: 1px solid #6b7280;" />
+              <hr style="margin: 0.5rem 0; border-top: 1px solid black;" />
               <div style="text-align: center;"><span style="font-weight: bold; text-decoration: underline;">Official Use</span></div>
-              <div style="padding-top: 8px; space-y: 4px;">
+              <div style="padding-top: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center;"><span>I) Remuneration for the Scripts Valued :</span><span style="text-align: right;">Rs. ____________________________</span></div>
                 <div style="display: flex; justify-content: space-between; align-items: center;"><span>II) Payment on account of Additional Examiner (If any) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
                 <div style="display: flex; justify-content: space-between; align-items: center;"><span>Total of (I+II) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
@@ -408,38 +433,37 @@ function BillFormPageComponent() {
                 <div style="display: flex; justify-content: space-between; align-items: center;"><span>Balance :</span><span style="text-align: right;">Rs. ____________________________</span></div>
                 <div>
                   <div style="display: flex; justify-content: space-between; align-items: center;"><span>Conveyance @ Rs. _________ Per day</span><span style="text-align: right;">Rs. ____________________________</span></div>
-                  <div style="padding-left: 1rem;"><span>(Up to-30 Km Rs.450/- & above Rs. 600/-)</span></div>
+                  <div style="padding-left: 1rem;"><span>(Up to 30 Km Rs.${globalSettings.conveyanceUnder30}/- & above Rs. ${globalSettings.conveyanceOver30}/-)</span></div>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center;"><span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
                 <div style="display: flex; justify-content: space-between; align-items: center;"><span>Net Payable :</span><span style="text-align: right;">Rs. ____________________________</span></div>
               </div>
             </div>
             <div style="padding-top: 3rem;">
-              <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
-                <div style="display: flex; flex-direction: column;"><span style="font-weight: bold;">Coordinator</span><div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 0.875rem;">CEC</span><span style="border-bottom: 1px dotted black; width: 100px; height: 32px; display: inline-block;"></span></div></div>
+              <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+                <div style="display: flex; flex-direction: column;"><span style="font-weight: bold;">Coordinator</span><div style="font-size: 0.875rem;"><span>CEC: ${globalSettings.coordinatorName}</span></div></div>
                 <span>Dealing Assistant</span>
               </div>
             </div>
         </div>
-        <div class="undertaking-page" style="page-break-before: always; padding-top: 3rem;">
+        <div class="undertaking-page" style="padding-top: 3rem;">
              <div style="text-align: center;">
-                <h2 style="font-size: 1.5rem; font-weight: bold; text-decoration: underline;">EXAMINATION WING</h2>
-                <p style="font-weight: bold; text-decoration: underline;">UNDERTAKING</p>
+                <h3 style="font-size: 1.25rem; font-weight: bold;">UNDERTAKING</h3>
+                <h2 style="font-size: 1.5rem; font-weight: bold;">EXAMINATION WING</h2>
             </div>
             <div style="margin-top: 2rem; font-size: 1rem; line-height: 1.5;">
                 <p>
-                    I, jeojfo, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
+                    I, ${billDetails.evaluatorName}, hereby undertake that I have not evaluated more than 30 answer scripts of UG Courses in a day. I also undertake that I have not been debarred from any evaluation work by the University of Delhi.
                 </p>
                 <div style="display: flex; justify-content: flex-end; padding-top: 2rem;">
                     <div style="text-align: left; display: grid; gap: 4px;">
-                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Teacher ID:</span> <span style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.evaluatorId}</span></div>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Teacher Name:</span> <span style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.evaluatorName}</span></div>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">College Name:</span> <span style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.collegeName}</span></div>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Mobile No.:</span> <span style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.mobileNo}</span></div>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Email ID:</span> <span style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.email}</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Teacher ID:</span> <span class="underlined-value" style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.evaluatorId}</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Teacher Name:</span> <span class="underlined-value" style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.evaluatorName}</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">College Name:</span> <span class="underlined-value" style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.collegeName}</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Mobile No.:</span> <span class="underlined-value" style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.mobileNo}</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="margin-right: 8px;">Email ID:</span> <span class="underlined-value" style="border-bottom: 1px solid black; padding: 0 2px; display: inline-block; min-width: 200px;">${billDetails.email}</span></div>
                     </div>
                 </div>
-
                 <div style="display: flex; justify-content: flex-end; padding-top: 4rem;">
                     <div style="text-align: center;">
                         <div style="display: flex; justify-content: center; align-items: center; padding: 4px; min-height: 3rem;">
@@ -471,7 +495,7 @@ function BillFormPageComponent() {
               body { font-family: 'Inter', sans-serif; }
               @media print {
                 body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                .undertaking-page { page-break-before: always; }
+                .bill-page-container { page-break-after: always; }
               }
            </style>
         </head>
@@ -482,6 +506,61 @@ function BillFormPageComponent() {
     `;
     const blob = new Blob([fullHTML], { type: "text/html;charset=utf-8" });
     saveAs(blob, "bills_preview.html");
+  };
+
+  const handlePrintAll = (option: 'bill' | 'undertaking') => {
+    const billsToPrint = bills.filter(bill => selectedBills.includes(bill.id!));
+    if (billsToPrint.length === 0) {
+        toast({ variant: "destructive", title: "No bills selected", description: "Please select at least one bill to print." });
+        return;
+    }
+
+    const allBillsHTML = billsToPrint.map(bill => generateBillPreviewHTML(bill)).join('');
+    const printWindowClass = option === 'bill' ? 'print-bill-only' : 'print-undertaking-only';
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Print All</title>
+                <style>
+                    body {
+                        margin: 0;
+                        font-family: sans-serif;
+                    }
+                    @page {
+                        size: A4;
+                        margin: 1.5cm;
+                    }
+                    .bill-page-container {
+                        page-break-after: always;
+                    }
+                    .print-table, .print-table th, .print-table td {
+                        border: 1px solid black !important;
+                        border-collapse: collapse;
+                    }
+                    .signature-image {
+                        filter: none !important;
+                        mix-blend-mode: initial !important;
+                    }
+                    .print-bill-only .undertaking-page { display: none !important; }
+                    .print-undertaking-only .bill-card-page { display: none !important; }
+                </style>
+            </head>
+            <body class="${printWindowClass}">
+                ${allBillsHTML}
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 250);
+    }
   };
 
 
@@ -776,8 +855,24 @@ function BillFormPageComponent() {
                     </Table>
                  </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="justify-between">
                 <Button onClick={() => router.push('/teachers')}><Users className="mr-2 h-4 w-4" /> Teachers Data</Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                         <Button className="bg-purple-500 hover:bg-purple-600 text-white" disabled={selectedBills.length === 0}>
+                            <Printer className="mr-2 h-4 w-4" />
+                             Print Selected ({selectedBills.length})
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => handlePrintAll('bill')}>
+                            Print Bill Forms
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handlePrintAll('undertaking')}>
+                            Print Undertakings
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </CardFooter>
         </Card>
       )}
@@ -792,3 +887,5 @@ export default function BillFormPage() {
         </React.Suspense>
     )
 }
+
+    
