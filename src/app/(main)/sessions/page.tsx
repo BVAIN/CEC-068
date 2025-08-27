@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { PlusCircle, Trash2, Edit } from 'lucide-react';
+import { PlusCircle, Trash2, Edit, AlertTriangle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +16,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import {
   Dialog,
   DialogContent,
@@ -28,7 +39,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { SESSIONS_STORAGE_KEY, CURRENT_SESSION_KEY } from '@/lib/constants';
+import { SESSIONS_STORAGE_KEY, CURRENT_SESSION_KEY, SESSION_TRASH_STORAGE_KEY } from '@/lib/constants';
 
 type Session = {
   id: string;
@@ -46,6 +57,7 @@ export default function SessionsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
 
   useEffect(() => {
     setHydrated(true);
@@ -75,7 +87,9 @@ export default function SessionsPage() {
 
   const handleSelectSession = (session: Session) => {
     localStorage.setItem(CURRENT_SESSION_KEY, session.id);
-    router.push(`/home?session=${session.id}`);
+    // Dispatch a storage event to notify other components (like the sidebar) of the change
+    window.dispatchEvent(new Event('storage')); 
+    router.push(`/home`);
   };
 
   const handleAddOrUpdateSession = (values: z.infer<typeof sessionFormSchema>) => {
@@ -106,19 +120,27 @@ export default function SessionsPage() {
   const handleDeleteSession = (sessionToDelete: Session) => {
     const updatedSessions = sessions.filter((s) => s.id !== sessionToDelete.id);
     
-    // Also remove all data associated with that session
-    Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(sessionToDelete.id)) {
-            localStorage.removeItem(key);
-        }
-    });
+    // Move to session trash instead of deleting permanently
+    const storedTrash = localStorage.getItem(SESSION_TRASH_STORAGE_KEY);
+    const trash = storedTrash ? JSON.parse(storedTrash) : [];
+    
+    // Check if the session is already in trash to avoid duplicates
+    if (!trash.some((s: Session) => s.id === sessionToDelete.id)) {
+        localStorage.setItem(SESSION_TRASH_STORAGE_KEY, JSON.stringify([...trash, sessionToDelete]));
+    }
+    
+    // If the deleted session was the current one, clear it
+    if (localStorage.getItem(CURRENT_SESSION_KEY) === sessionToDelete.id) {
+        localStorage.removeItem(CURRENT_SESSION_KEY);
+        window.dispatchEvent(new Event('storage'));
+    }
 
     localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(updatedSessions));
     setSessions(updatedSessions);
+    setDeleteConfirmation("");
     toast({
-      variant: 'destructive',
-      title: 'Session Deleted',
-      description: `Session "${sessionToDelete.name}" and all its data have been deleted.`,
+      title: 'Session Moved to Trash',
+      description: `Session "${sessionToDelete.name}" has been moved to the trash.`,
     });
   };
 
@@ -203,14 +225,42 @@ export default function SessionsPage() {
                         <Button variant="ghost" size="icon" onClick={() => openEditDialog(session)}>
                             <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => handleDeleteSession(session)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <AlertDialog onOpenChange={() => setDeleteConfirmation("")}>
+                            <AlertDialogTrigger asChild>
+                                 <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </AlertDialogTrigger>
+                             <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action will move the session <span className="font-bold">"{session.name}"</span> to the trash. You can restore it later.
+                                    <br/><br/>
+                                    Please type <strong className="text-destructive">DELETE</strong> to confirm.
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <Input 
+                                    value={deleteConfirmation}
+                                    onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                    placeholder='Type "DELETE" here'
+                                />
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={() => handleDeleteSession(session)}
+                                        disabled={deleteConfirmation !== 'DELETE'}
+                                        className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                                    >
+                                        Delete
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </li>
                   ))}

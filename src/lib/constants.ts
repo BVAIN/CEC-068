@@ -1,4 +1,5 @@
 
+
 // Session management keys
 export const SESSIONS_STORAGE_KEY = 'cec068_sessions';
 export const CURRENT_SESSION_KEY = 'cec068_current_session';
@@ -28,6 +29,8 @@ export const getGlobalBillSettingsKey = () => getSessionKey('global_bill_setting
 // Non-session-scoped keys
 export const DRIVE_TOKEN_KEY = "google_drive_token_placeholder";
 export const DRIVE_STORAGE_KEY = "google_drive_files_placeholder";
+export const SESSION_TRASH_STORAGE_KEY = 'cec068_session_trash';
+
 
 // File names for Google Drive sync should probably also be session-scoped
 export const getBillsFileName = () => `${localStorage.getItem(CURRENT_SESSION_KEY)}_DriveSync_Bills.json`;

@@ -39,6 +39,7 @@ const allMenuItems = [
       colorClass: "bg-nav-trash",
       storageKey: null,
       subItems: [
+        { href: "/trash/sessions", label: "Session Trash", icon: Trash2 },
         { href: "/trash/index", label: "Index Trash", icon: Trash2 },
         { href: "/trash/issues", label: "Issue Trash", icon: Trash2 },
         { href: "/trash/bills", label: "Bill Trash", icon: FileArchive },
@@ -117,7 +118,7 @@ export default function Sidebar() {
   
   return (
     <aside className="w-64 bg-card text-card-foreground flex-shrink-0 flex-col border-r hidden md:flex">
-      <Link href="/sessions" className="block p-4 border-b hover:bg-accent cursor-pointer transition-colors" onClick={(e) => handleLinkClick(e, "/sessions")}>
+      <Link href="/sessions" className="block p-4 border-b hover:bg-accent cursor-pointer transition-colors">
         <div className="flex items-center gap-3">
           <Rocket className="w-8 h-8 text-primary" />
           <div>
@@ -125,7 +126,7 @@ export default function Sidebar() {
              {pathname === '/sessions' ? (
                 <p className="text-xs text-muted-foreground font-medium">Select Session</p>
              ) : (
-                sessionName && <p className="text-xs text-muted-foreground font-medium truncate" title={sessionName}>{sessionName}</p>
+                sessionName ? <p className="text-xs text-muted-foreground font-medium truncate" title={sessionName}>{sessionName}</p> : <p className="text-xs text-muted-foreground font-medium">No Session</p>
              )}
           </div>
         </div>
@@ -152,7 +153,7 @@ export default function Sidebar() {
                             isActive && activeClasses
                           )}
                            onClick={(e) => {
-                            if (!hasSession) {
+                            if (!hasSession && !['/settings', '/about'].some(p => item.href.startsWith(p))) {
                               e.preventDefault();
                                toast({
                                 variant: 'destructive',
