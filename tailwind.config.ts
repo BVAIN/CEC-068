@@ -49,15 +49,15 @@ export default {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        'nav-home': 'hsl(var(--nav-home))',
-        'nav-index': 'hsl(var(--nav-index))',
-        'nav-issue': 'hsl(var(--nav-issue))',
-        'nav-bill': 'hsl(var(--nav-bill))',
-        'nav-teachers': 'hsl(var(--nav-teachers))',
-        'nav-awards': 'hsl(var(--nav-awards))',
-        'nav-trash': 'hsl(var(--nav-trash))',
-        'nav-settings': 'hsl(var(--nav-settings))',
-        'nav-about': 'hsl(var(--nav-about))',
+        'nav-home': 'var(--nav-home)',
+        'nav-index': 'var(--nav-index)',
+        'nav-issue': 'var(--nav-issue)',
+        'nav-bill': 'var(--nav-bill)',
+        'nav-teachers': 'var(--nav-teachers)',
+        'nav-awards': 'var(--nav-awards)',
+        'nav-trash': 'var(--nav-trash)',
+        'nav-settings': 'var(--nav-settings)',
+        'nav-about': 'var(--nav-about)',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
@@ -107,5 +107,3 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
-
-    

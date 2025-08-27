@@ -5,6 +5,7 @@
 
 @layer base {
   :root, .light {
+    --saturation: 100%;
     --background: 0 0% 100%;
     --foreground: 220 10% 10%;
     --card: 0 0% 100%;
@@ -19,25 +20,36 @@
     --muted-foreground: 220 10% 40%;
     --accent: 220 10% 90%;
     --accent-foreground: 220 10% 10%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 220 10% 85%;
     --input: 220 10% 85%;
     --ring: 217 91% 60%;
     --radius: 0.75rem;
 
-    --nav-home: 217 91% 60%;
-    --nav-index: 30 90% 60%; /* Light Orange */
-    --nav-issue: 260 70% 65%; /* Purple */
-    --nav-bill: 145 63% 49%; /* Green */
-    --nav-teachers: 330 80% 60%; /* Pink */
-    --nav-awards: 80 60% 45%; /* Olive Green */
-    --nav-trash: 0 84% 60%; /* Red */
-    --nav-settings: 45 90% 50%; /* Dark Yellow */
-    --nav-about: 180 70% 40%; /* Dark Aqua Blue */
+    --nav-home-h: 217; --nav-home-s: 91%; --nav-home-l: 60%;
+    --nav-index-h: 30; --nav-index-s: 90%; --nav-index-l: 60%;
+    --nav-issue-h: 260; --nav-issue-s: 70%; --nav-issue-l: 65%;
+    --nav-bill-h: 145; --nav-bill-s: 63%; --nav-bill-l: 49%;
+    --nav-teachers-h: 330; --nav-teachers-s: 80%; --nav-teachers-l: 60%;
+    --nav-awards-h: 80; --nav-awards-s: 60%; --nav-awards-l: 45%;
+    --nav-trash-h: 0; --nav-trash-s: 84%; --nav-trash-l: 60%;
+    --nav-settings-h: 45; --nav-settings-s: 90%; --nav-settings-l: 50%;
+    --nav-about-h: 180; --nav-about-s: 70%; --nav-about-l: 40%;
+    
+    --nav-home: hsl(var(--nav-home-h) var(--saturation) var(--nav-home-l));
+    --nav-index: hsl(var(--nav-index-h) var(--saturation) var(--nav-index-l));
+    --nav-issue: hsl(var(--nav-issue-h) var(--saturation) var(--nav-issue-l));
+    --nav-bill: hsl(var(--nav-bill-h) var(--saturation) var(--nav-bill-l));
+    --nav-teachers: hsl(var(--nav-teachers-h) var(--saturation) var(--nav-teachers-l));
+    --nav-awards: hsl(var(--nav-awards-h) var(--saturation) var(--nav-awards-l));
+    --nav-trash: hsl(var(--nav-trash-h) var(--saturation) var(--nav-trash-l));
+    --nav-settings: hsl(var(--nav-settings-h) var(--saturation) var(--nav-settings-l));
+    --nav-about: hsl(var(--nav-about-h) var(--saturation) var(--nav-about-l));
   }
 
   .dark {
+    --saturation: 100%;
     --background: 0 0% 0%;
     --foreground: 210 20% 98%;
     --card: 0 0% 9%;
@@ -52,21 +64,11 @@
     --muted-foreground: 210 20% 80%;
     --accent: 0 0% 15%;
     --accent-foreground: 210 20% 98%;
-    --destructive: 0 63% 31%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 210 20% 98%;
     --border: 0 0% 15%;
     --input: 0 0% 15%;
     --ring: 217 91% 60%;
-
-    --nav-home: 217 91% 60%;
-    --nav-index: 30 90% 60%;
-    --nav-issue: 260 70% 65%;
-    --nav-bill: 145 63% 49%;
-    --nav-teachers: 330 80% 60%;
-    --nav-awards: 80 60% 45%; /* Olive Green */
-    --nav-trash: 0 70% 50%;
-    --nav-settings: 45 90% 50%;
-    --nav-about: 180 70% 40%; /* Dark Aqua Blue */
   }
 }
 
@@ -109,10 +111,10 @@
     height: 100vh;
     background: linear-gradient(
       -45deg,
-      hsl(var(--nav-home) / 0.1),
-      hsl(var(--nav-index) / 0.1),
-      hsl(var(--nav-issue) / 0.1),
-      hsl(var(--nav-bill) / 0.1)
+      hsl(var(--nav-home-h) var(--saturation) var(--nav-home-l) / 0.1),
+      hsl(var(--nav-index-h) var(--saturation) var(--nav-index-l) / 0.1),
+      hsl(var(--nav-issue-h) var(--saturation) var(--nav-issue-l) / 0.1),
+      hsl(var(--nav-bill-h) var(--saturation) var(--nav-bill-l) / 0.1)
     );
     background-size: 400% 400%;
     animation: gradient-animation 15s ease infinite;
