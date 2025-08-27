@@ -21,6 +21,8 @@ export const getTrashStorageKey = () => getSessionKey('trash');
 export const getBillTrashStorageKey = () => getSessionKey('bill_trash');
 export const getIndexTrashStorageKey = () => getSessionKey('index_trash');
 export const getTeacherTrashStorageKey = () => getSessionKey('teacher_trash');
+export const getAwardsDispatchStorageKey = () => getSessionKey('awards_dispatch_data');
+export const getAwardsDispatchTrashStorageKey = () => getSessionKey('awards_dispatch_trash');
 export const getQpUpcMapKey = () => getSessionKey('qp_upc_map');
 export const getTeacherCourseTokenMapKey = () => getSessionKey('teacher_course_token_map');
 export const getGlobalBillSettingsKey = () => getSessionKey('global_bill_settings');

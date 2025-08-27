@@ -44,6 +44,7 @@ const allMenuItems = [
         { href: "/trash/issues", label: "Issue Trash", icon: Trash2 },
         { href: "/trash/bills", label: "Bill Trash", icon: FileArchive },
         { href: "/trash/teachers", label: "Teacher Trash", icon: Users },
+        { href: "/trash/awards", label: "Awards Trash", icon: Award },
       ] 
   },
   { href: "/settings", label: "Settings", icon: Settings, colorClass: "bg-nav-settings", storageKey: null },
