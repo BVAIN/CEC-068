@@ -768,7 +768,7 @@ export default function ScriptsIssueFormPage() {
                     </AlertDialogContent>
                   </AlertDialog>
                 )}
-                <Button onClick={handleExport}><FileDown className="mr-2 h-4 w-4" />Export to Excel</Button>
+                <Button onClick={handleExport} className="bg-green-500 hover:bg-green-600 text-white"><FileDown className="mr-2 h-4 w-4" />Export to Excel</Button>
               </div>
             </div>
           </CardHeader>

@@ -259,7 +259,7 @@ export default function TeachersDataPage() {
                             </AlertDialogContent>
                         </AlertDialog>
                     )}
-                    <Button onClick={handleExport} disabled={filteredTeachers.length === 0}>
+                    <Button onClick={handleExport} disabled={filteredTeachers.length === 0} className="bg-green-500 hover:bg-green-600 text-white">
                         <FileDown className="mr-2 h-4 w-4" /> Export to Excel
                     </Button>
                 </div>

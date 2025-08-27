@@ -803,10 +803,10 @@ function BillFormPageComponent() {
                             </AlertDialog>
                             </>
                         )}
-                        <Button onClick={handleExport}><FileDown className="mr-2 h-4 w-4" /> Export to Excel</Button>
+                        <Button onClick={handleExport} className="bg-green-500 hover:bg-green-600 text-white"><FileDown className="mr-2 h-4 w-4" /> Export to Excel</Button>
                          <Dialog>
                             <DialogTrigger asChild>
-                                <Button className="bg-green-500 hover:bg-green-600 text-white"><Share2 className="mr-2 h-4 w-4" /> Share Form</Button>
+                                <Button className="bg-blue-500 hover:bg-blue-600 text-white"><Share2 className="mr-2 h-4 w-4" /> Share Form</Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-md">
                                 <DialogHeader>
