@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import type { IssueFormValues } from "../page";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { ISSUES_STORAGE_KEY } from "@/lib/constants";
+import { getIssuesStorageKey } from "@/lib/constants";
 
 export default function IssueViewPage() {
   const params = useParams();
@@ -22,7 +22,7 @@ export default function IssueViewPage() {
     const teacherId = params.teacherId;
     if (teacherId) {
         try {
-            const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+            const storedIssues = localStorage.getItem(getIssuesStorageKey());
             if (storedIssues) {
               const allIssues: IssueFormValues[] = JSON.parse(storedIssues);
               const decodedTeacherId = decodeURIComponent(teacherId as string);
@@ -38,7 +38,7 @@ export default function IssueViewPage() {
             }
         } catch (error) {
             console.error("Error parsing localStorage data:", error);
-            localStorage.removeItem(ISSUES_STORAGE_KEY);
+            localStorage.removeItem(getIssuesStorageKey());
             router.push("/issue-form");
         }
     }
@@ -168,3 +168,5 @@ export default function IssueViewPage() {
     </div>
   );
 }
+
+    

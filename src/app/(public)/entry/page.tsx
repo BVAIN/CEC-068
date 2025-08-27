@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { PUBLIC_ISSUES_STORAGE_KEY } from "@/lib/constants";
+import { getPublicIssuesStorageKey } from "@/lib/constants";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const publicIssueFormSchema = z.object({
@@ -58,7 +58,7 @@ export default function PublicIssueEntryPage() {
     const editId = searchParams.get('edit');
     if (editId) {
         setEditingId(editId);
-        const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
+        const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
         if (storedEntries) {
             const entries: PublicIssueFormValues[] = JSON.parse(storedEntries);
             const entryToEdit = entries.find(e => e.id === editId);
@@ -71,7 +71,7 @@ export default function PublicIssueEntryPage() {
 
   const onSubmit = (data: z.infer<typeof publicIssueFormSchema>) => {
     try {
-        const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
+        const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
         let entries = storedEntries ? JSON.parse(storedEntries) : [];
 
         if (editingId) {
@@ -88,7 +88,7 @@ export default function PublicIssueEntryPage() {
             });
         }
         
-        localStorage.setItem(PUBLIC_ISSUES_STORAGE_KEY, JSON.stringify(entries));
+        localStorage.setItem(getPublicIssuesStorageKey(), JSON.stringify(entries));
         
         if (editingId) {
             router.push('/index');

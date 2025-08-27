@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { BillFormValues } from "../../bill-form/page";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { BILLS_STORAGE_KEY, BILL_TRASH_STORAGE_KEY, BILLS_FILE_NAME } from "@/lib/constants";
+import { getBillsStorageKey, getBillTrashStorageKey, getBillsFileName } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
@@ -31,7 +31,7 @@ export default function BillTrashPage() {
 
   useEffect(() => {
     if (!hydrated) return;
-    const storedTrash = localStorage.getItem(BILL_TRASH_STORAGE_KEY);
+    const storedTrash = localStorage.getItem(getBillTrashStorageKey());
     if (storedTrash) {
       setTrashedBills(JSON.parse(storedTrash));
     }
@@ -39,21 +39,21 @@ export default function BillTrashPage() {
   
   const updateAndSaveTrash = (newTrash: BillFormValues[]) => {
     setTrashedBills(newTrash);
-    localStorage.setItem(BILL_TRASH_STORAGE_KEY, JSON.stringify(newTrash));
+    localStorage.setItem(getBillTrashStorageKey(), JSON.stringify(newTrash));
   };
 
   const handleRestore = async (ids: string[]) => {
     const billsToRestore = trashedBills.filter((bill) => ids.includes(bill.id!));
     const newTrash = trashedBills.filter((bill) => !ids.includes(bill.id!));
     
-    const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
+    const storedBills = localStorage.getItem(getBillsStorageKey());
     const bills = storedBills ? JSON.parse(storedBills) : [];
     const updatedBills = [...bills, ...billsToRestore];
     
-    localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(updatedBills));
+    localStorage.setItem(getBillsStorageKey(), JSON.stringify(updatedBills));
     if (isConnected) {
         try {
-            await writeFile(BILLS_FILE_NAME, JSON.stringify(updatedBills, null, 2));
+            await writeFile(getBillsFileName(), JSON.stringify(updatedBills, null, 2));
         } catch (e) {
             console.error("Failed to save restored bills to drive", e);
             toast({ variant: "destructive", title: "Sync Error", description: "Could not save restored bill(s) to Google Drive."});
@@ -236,3 +236,5 @@ export default function BillTrashPage() {
     </div>
   );
 }
+
+    

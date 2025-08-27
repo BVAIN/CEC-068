@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { IssueFormValues } from "../../issue-form/page";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { ISSUES_STORAGE_KEY, TRASH_STORAGE_KEY } from "@/lib/constants";
+import { getIssuesStorageKey, getTrashStorageKey } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -29,7 +29,7 @@ export default function IssueTrashPage() {
 
   useEffect(() => {
     if (!hydrated) return;
-    const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
+    const storedTrash = localStorage.getItem(getTrashStorageKey());
     if (storedTrash) {
       setTrashedIssues(JSON.parse(storedTrash));
     }
@@ -37,16 +37,16 @@ export default function IssueTrashPage() {
   
   const updateAndSaveTrash = (newTrash: IssueFormValues[]) => {
     setTrashedIssues(newTrash);
-    localStorage.setItem(TRASH_STORAGE_KEY, JSON.stringify(newTrash));
+    localStorage.setItem(getTrashStorageKey(), JSON.stringify(newTrash));
   };
 
   const handleRestore = (ids: string[]) => {
     const issuesToRestore = trashedIssues.filter((issue) => ids.includes(issue.id!));
     const newTrash = trashedIssues.filter((issue) => !ids.includes(issue.id!));
     
-    const storedIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+    const storedIssues = localStorage.getItem(getIssuesStorageKey());
     const issues = storedIssues ? JSON.parse(storedIssues) : [];
-    localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify([...issues, ...issuesToRestore]));
+    localStorage.setItem(getIssuesStorageKey(), JSON.stringify([...issues, ...issuesToRestore]));
     
     updateAndSaveTrash(newTrash);
     toast({ title: "Issues Restored", description: `${ids.length} issue(s) have been restored.`});
@@ -231,3 +231,5 @@ export default function IssueTrashPage() {
     </div>
   );
 }
+
+    

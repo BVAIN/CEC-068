@@ -9,7 +9,7 @@ import { History, Trash2, ShieldX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { PUBLIC_ISSUES_STORAGE_KEY, INDEX_TRASH_STORAGE_KEY } from "@/lib/constants";
+import { getPublicIssuesStorageKey, getIndexTrashStorageKey } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { PublicIssueFormValues } from "@/app/(public)/entry/page";
@@ -31,7 +31,7 @@ export default function IndexTrashPage() {
 
   useEffect(() => {
     if (!hydrated) return;
-    const storedTrash = localStorage.getItem(INDEX_TRASH_STORAGE_KEY);
+    const storedTrash = localStorage.getItem(getIndexTrashStorageKey());
     if (storedTrash) {
       setTrashedEntries(JSON.parse(storedTrash));
     }
@@ -39,16 +39,16 @@ export default function IndexTrashPage() {
   
   const updateAndSaveTrash = (newTrash: PublicIssueFormValues[]) => {
     setTrashedEntries(newTrash);
-    localStorage.setItem(INDEX_TRASH_STORAGE_KEY, JSON.stringify(newTrash));
+    localStorage.setItem(getIndexTrashStorageKey(), JSON.stringify(newTrash));
   };
 
   const handleRestore = (ids: string[]) => {
     const entriesToRestore = trashedEntries.filter((entry) => ids.includes(entry.id!));
     const newTrash = trashedEntries.filter((entry) => !ids.includes(entry.id!));
     
-    const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
+    const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
     const entries = storedEntries ? JSON.parse(storedEntries) : [];
-    localStorage.setItem(PUBLIC_ISSUES_STORAGE_KEY, JSON.stringify([...entries, ...entriesToRestore]));
+    localStorage.setItem(getPublicIssuesStorageKey(), JSON.stringify([...entries, ...entriesToRestore]));
     
     updateAndSaveTrash(newTrash);
     toast({ title: "Entries Restored", description: `${ids.length} entries have been restored.`});

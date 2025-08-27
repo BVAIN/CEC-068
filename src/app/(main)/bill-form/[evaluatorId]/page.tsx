@@ -10,7 +10,7 @@ import { ArrowLeft, Printer, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "@/components/ui/table";
-import { BILLS_STORAGE_KEY, GLOBAL_BILL_SETTINGS_KEY } from "@/lib/constants";
+import { getBillsStorageKey, getGlobalBillSettingsKey } from "@/lib/constants";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -45,14 +45,14 @@ export default function BillViewPage() {
     if (evaluatorId) {
         try {
             // Load global settings
-            const storedSettings = localStorage.getItem(GLOBAL_BILL_SETTINGS_KEY);
+            const storedSettings = localStorage.getItem(getGlobalBillSettingsKey());
             if (storedSettings) {
                 // Merging with defaults to ensure new fields are present
                 const parsedSettings = JSON.parse(storedSettings);
                 setGlobalSettings(prev => ({ ...prev, ...parsedSettings}));
             }
 
-            const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
+            const storedBills = localStorage.getItem(getBillsStorageKey());
             if (storedBills) {
                 const allBills: BillFormValues[] = JSON.parse(storedBills);
                 const decodedEvaluatorId = decodeURIComponent(evaluatorId as string);
@@ -96,7 +96,7 @@ export default function BillViewPage() {
 
 
   const handleSaveSettings = () => {
-    localStorage.setItem(GLOBAL_BILL_SETTINGS_KEY, JSON.stringify(globalSettings));
+    localStorage.setItem(getGlobalBillSettingsKey(), JSON.stringify(globalSettings));
     toast({ title: "Settings Saved", description: "The global bill fields have been updated." });
     setIsSettingsOpen(false);
   };
@@ -561,3 +561,5 @@ export default function BillViewPage() {
   );
 
 }
+
+    

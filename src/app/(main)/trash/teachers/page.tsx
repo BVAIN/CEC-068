@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { BillFormValues } from "../../bill-form/page";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { TEACHER_TRASH_STORAGE_KEY } from "@/lib/constants";
+import { getTeacherTrashStorageKey } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ export default function TeacherTrashPage() {
 
   useEffect(() => {
     if (!hydrated) return;
-    const storedTrash = localStorage.getItem(TEACHER_TRASH_STORAGE_KEY);
+    const storedTrash = localStorage.getItem(getTeacherTrashStorageKey());
     if (storedTrash) {
       setTrashedTeachers(JSON.parse(storedTrash));
     }
@@ -38,7 +38,7 @@ export default function TeacherTrashPage() {
   
   const updateAndSaveTrash = (newTrash: TeacherData[]) => {
     setTrashedTeachers(newTrash);
-    localStorage.setItem(TEACHER_TRASH_STORAGE_KEY, JSON.stringify(newTrash));
+    localStorage.setItem(getTeacherTrashStorageKey(), JSON.stringify(newTrash));
   };
 
   const handleRestore = (ids: string[]) => {
@@ -223,3 +223,5 @@ export default function TeacherTrashPage() {
     </div>
   );
 }
+
+    

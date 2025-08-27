@@ -21,7 +21,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { sendEmail } from "@/ai/flows/send-email-flow";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ISSUES_STORAGE_KEY, TRASH_STORAGE_KEY, QP_UPC_MAP_KEY, TEACHER_COURSE_TOKEN_MAP_KEY, ISSUES_FILE_NAME } from "@/lib/constants";
+import { getIssuesStorageKey, getTrashStorageKey, getQpUpcMapKey, getTeacherCourseTokenMapKey, getIssuesFileName } from "@/lib/constants";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -56,13 +56,13 @@ export type IssueFormValues = z.infer<typeof issueFormSchema>;
 
 // Populate with some initial data for demonstration
 const seedQpUpcMap = () => {
-    if (typeof window !== 'undefined' && !localStorage.getItem(QP_UPC_MAP_KEY)) {
+    if (typeof window !== 'undefined' && !localStorage.getItem(getQpUpcMapKey())) {
         const initialMap = {
             'QP123': 'UPC_A',
             'QP456': 'UPC_B',
             'QP789': 'UPC_C',
         };
-        localStorage.setItem(QP_UPC_MAP_KEY, JSON.stringify(initialMap));
+        localStorage.setItem(getQpUpcMapKey(), JSON.stringify(initialMap));
     }
 };
 
@@ -107,18 +107,18 @@ export default function ScriptsIssueFormPage() {
     if (typeof window === 'undefined') return;
     seedQpUpcMap();
     try {
-        const storedMap = localStorage.getItem(QP_UPC_MAP_KEY);
+        const storedMap = localStorage.getItem(getQpUpcMapKey());
         if (storedMap) {
             setQpUpcMap(JSON.parse(storedMap));
         }
-        const storedTokenMap = localStorage.getItem(TEACHER_COURSE_TOKEN_MAP_KEY);
+        const storedTokenMap = localStorage.getItem(getTeacherCourseTokenMapKey());
         if(storedTokenMap) {
             setTeacherCourseTokenMap(JSON.parse(storedTokenMap));
         }
     } catch (error) {
         console.error("Error parsing localStorage data:", error);
-        localStorage.removeItem(QP_UPC_MAP_KEY);
-        localStorage.removeItem(TEACHER_COURSE_TOKEN_MAP_KEY);
+        localStorage.removeItem(getQpUpcMapKey());
+        localStorage.removeItem(getTeacherCourseTokenMapKey());
     }
   }, []);
 
@@ -128,22 +128,22 @@ export default function ScriptsIssueFormPage() {
         let loadedIssues: IssueFormValues[] = [];
         if (isConnected) {
             try {
-                const fileContent = await readFile(ISSUES_FILE_NAME);
+                const fileContent = await readFile(getIssuesFileName());
                 if (fileContent) {
                     const driveIssues = JSON.parse(fileContent);
                     loadedIssues = driveIssues;
-                    localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(driveIssues));
+                    localStorage.setItem(getIssuesStorageKey(), JSON.stringify(driveIssues));
                 } else {
-                    const localIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+                    const localIssues = localStorage.getItem(getIssuesStorageKey());
                     if (localIssues) loadedIssues = JSON.parse(localIssues);
                 }
             } catch (e) {
                 console.error("Failed to load from Drive, using local fallback", e);
-                const localIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+                const localIssues = localStorage.getItem(getIssuesStorageKey());
                 if (localIssues) loadedIssues = JSON.parse(localIssues);
             }
         } else {
-            const localIssues = localStorage.getItem(ISSUES_STORAGE_KEY);
+            const localIssues = localStorage.getItem(getIssuesStorageKey());
             if (localIssues) loadedIssues = JSON.parse(localIssues);
         }
         
@@ -267,10 +267,10 @@ export default function ScriptsIssueFormPage() {
   const updateIssuesStateAndStorage = async (newIssues: IssueFormValues[]) => {
     const sortedIssues = newIssues.sort((a, b) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime());
     setIssues(sortedIssues);
-    localStorage.setItem(ISSUES_STORAGE_KEY, JSON.stringify(sortedIssues));
+    localStorage.setItem(getIssuesStorageKey(), JSON.stringify(sortedIssues));
     if (isConnected) {
         try {
-            await writeFile(ISSUES_FILE_NAME, JSON.stringify(sortedIssues, null, 2));
+            await writeFile(getIssuesFileName(), JSON.stringify(sortedIssues, null, 2));
         } catch (e) {
             console.error("Failed to save issues to drive", e);
             toast({ variant: "destructive", title: "Sync Error", description: "Could not save issues to Google Drive."});
@@ -314,14 +314,14 @@ export default function ScriptsIssueFormPage() {
             currentTokenMap[teacherCourseKey] = courseTokens;
             
             setTeacherCourseTokenMap(currentTokenMap);
-            localStorage.setItem(TEACHER_COURSE_TOKEN_MAP_KEY, JSON.stringify(currentTokenMap));
+            localStorage.setItem(getTeacherCourseTokenMapKey(), JSON.stringify(currentTokenMap));
         }
       const newIssueWithToken = {...data, id: `${Date.now()}-${data.packetNo}`, noOfAbsent: 0, noOfMissing: 0, extraSheets: 0, tokenNo: teacherToken};
       newIssues = [...issues, newIssueWithToken];
       if (data.qpNo && data.upc && !qpUpcMap[data.qpNo]) {
         const newMap = {...qpUpcMap, [data.qpNo]: data.upc};
         setQpUpcMap(newMap);
-        localStorage.setItem(QP_UPC_MAP_KEY, JSON.stringify(newMap));
+        localStorage.setItem(getQpUpcMapKey(), JSON.stringify(newMap));
       }
        // Send email for new issue
       sendEmail({
@@ -367,9 +367,9 @@ export default function ScriptsIssueFormPage() {
     const newIssues = issues.filter((_, i) => i !== index);
     updateIssuesStateAndStorage(newIssues);
 
-    const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
+    const storedTrash = localStorage.getItem(getTrashStorageKey());
     const trash = storedTrash ? JSON.parse(storedTrash) : [];
-    localStorage.setItem(TRASH_STORAGE_KEY, JSON.stringify([...trash, issueToDelete]));
+    localStorage.setItem(getTrashStorageKey(), JSON.stringify([...trash, issueToDelete]));
     
     setSelectedIssues([]);
   };
@@ -379,9 +379,9 @@ export default function ScriptsIssueFormPage() {
     const newIssues = issues.filter((issue) => !issue.id || !selectedIssues.includes(issue.id));
     updateIssuesStateAndStorage(newIssues);
     
-    const storedTrash = localStorage.getItem(TRASH_STORAGE_KEY);
+    const storedTrash = localStorage.getItem(getTrashStorageKey());
     const trash = storedTrash ? JSON.parse(storedTrash) : [];
-    localStorage.setItem(TRASH_STORAGE_KEY, JSON.stringify([...trash, ...issuesToDelete]));
+    localStorage.setItem(getTrashStorageKey(), JSON.stringify([...trash, ...issuesToDelete]));
 
     setSelectedIssues([]);
   };

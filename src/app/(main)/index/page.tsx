@@ -9,7 +9,7 @@ import { PlusCircle, Search, ArrowLeft, Filter, Edit, Trash2, FileDown, MessageS
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
-import { PUBLIC_ISSUES_STORAGE_KEY, INDEX_TRASH_STORAGE_KEY } from "@/lib/constants";
+import { getPublicIssuesStorageKey, getIndexTrashStorageKey } from "@/lib/constants";
 import type { PublicIssueFormValues } from "@/app/(public)/entry/page";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -62,7 +62,7 @@ export default function IndexPage() {
     setHydrated(true);
     if (typeof window === 'undefined') return;
     try {
-      const storedEntries = localStorage.getItem(PUBLIC_ISSUES_STORAGE_KEY);
+      const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
       if (storedEntries) {
         const parsedEntries = JSON.parse(storedEntries);
         setEntries(parsedEntries);
@@ -94,7 +94,7 @@ export default function IndexPage() {
   
   const updateEntriesStateAndStorage = (newEntries: PublicIssueFormValues[]) => {
       setEntries(newEntries);
-      localStorage.setItem(PUBLIC_ISSUES_STORAGE_KEY, JSON.stringify(newEntries));
+      localStorage.setItem(getPublicIssuesStorageKey(), JSON.stringify(newEntries));
       setNorthEntriesCount(newEntries.filter((e: PublicIssueFormValues) => e.campus === 'North').length);
       setSouthEntriesCount(newEntries.filter((e: PublicIssueFormValues) => e.campus === 'South').length);
   };
@@ -196,9 +196,9 @@ export default function IndexPage() {
       const entriesToTrash = entries.filter(entry => ids.includes(entry.id!));
       const remainingEntries = entries.filter(entry => !ids.includes(entry.id!));
       
-      const storedTrash = localStorage.getItem(INDEX_TRASH_STORAGE_KEY);
+      const storedTrash = localStorage.getItem(getIndexTrashStorageKey());
       const trash = storedTrash ? JSON.parse(storedTrash) : [];
-      localStorage.setItem(INDEX_TRASH_STORAGE_KEY, JSON.stringify([...trash, ...entriesToTrash]));
+      localStorage.setItem(getIndexTrashStorageKey(), JSON.stringify([...trash, ...entriesToTrash]));
       
       updateEntriesStateAndStorage(remainingEntries);
       setSelectedEntries([]);

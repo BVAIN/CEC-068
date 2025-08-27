@@ -24,7 +24,7 @@ import { useGoogleDrive } from "@/hooks/use-google-drive";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import { BILLS_STORAGE_KEY, BILLS_FILE_NAME, BILL_TRASH_STORAGE_KEY, GLOBAL_BILL_SETTINGS_KEY } from "@/lib/constants";
+import { getBillsStorageKey, getBillsFileName, getBillTrashStorageKey, getGlobalBillSettingsKey } from "@/lib/constants";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -111,7 +111,7 @@ function BillFormPageComponent() {
       if (searchFromParams) {
         setSearchTerm(searchFromParams);
       }
-      const storedSettings = localStorage.getItem(GLOBAL_BILL_SETTINGS_KEY);
+      const storedSettings = localStorage.getItem(getGlobalBillSettingsKey());
       if (storedSettings) {
           const parsedSettings = JSON.parse(storedSettings);
           setGlobalSettings(prev => ({ ...prev, ...parsedSettings}));
@@ -123,25 +123,28 @@ function BillFormPageComponent() {
     const loadData = async () => {
       let loadedBills: BillFormValues[] = [];
       if (typeof window === 'undefined') return;
+      
+      const billsStorageKey = getBillsStorageKey();
+      const billsFileName = getBillsFileName();
 
       if (isConnected) {
         try {
-          const fileContent = await readFile(BILLS_FILE_NAME);
+          const fileContent = await readFile(billsFileName);
           if (fileContent) {
             const driveBills = JSON.parse(fileContent);
             loadedBills = driveBills;
-            localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(driveBills));
+            localStorage.setItem(billsStorageKey, JSON.stringify(driveBills));
           } else {
-            const localBills = localStorage.getItem(BILLS_STORAGE_KEY);
+            const localBills = localStorage.getItem(billsStorageKey);
             if (localBills) loadedBills = JSON.parse(localBills);
           }
         } catch (e) {
             console.error("Failed to load from Drive, using local fallback", e);
-            const localBills = localStorage.getItem(BILLS_STORAGE_KEY);
+            const localBills = localStorage.getItem(billsStorageKey);
             if (localBills) loadedBills = JSON.parse(localBills);
         }
       } else {
-         const localBills = localStorage.getItem(BILLS_STORAGE_KEY);
+         const localBills = localStorage.getItem(billsStorageKey);
          if (localBills) loadedBills = JSON.parse(localBills);
       }
       setBills(loadedBills);
@@ -213,7 +216,7 @@ function BillFormPageComponent() {
   const updateBillsStateAndStorage = async (newBills: BillFormValues[]) => {
     setBills(newBills);
     try {
-        localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(newBills));
+        localStorage.setItem(getBillsStorageKey(), JSON.stringify(newBills));
     } catch (e) {
         if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
             toast({
@@ -229,7 +232,7 @@ function BillFormPageComponent() {
 
     if (isConnected) {
         try {
-            await writeFile(BILLS_FILE_NAME, JSON.stringify(newBills, null, 2));
+            await writeFile(getBillsFileName(), JSON.stringify(newBills, null, 2));
         } catch (e) {
             console.error("Failed to save to drive", e);
             toast({ variant: "destructive", title: "Sync Error", description: "Could not save bill to Google Drive."});
@@ -263,9 +266,9 @@ function BillFormPageComponent() {
     const newBills = bills.filter(bill => !ids.includes(bill.id!));
     await updateBillsStateAndStorage(newBills);
 
-    const storedTrash = localStorage.getItem(BILL_TRASH_STORAGE_KEY);
+    const storedTrash = localStorage.getItem(getBillTrashStorageKey());
     const trash = storedTrash ? JSON.parse(storedTrash) : [];
-    localStorage.setItem(BILL_TRASH_STORAGE_KEY, JSON.stringify([...trash, ...billsToDelete]));
+    localStorage.setItem(getBillTrashStorageKey(), JSON.stringify([...trash, ...billsToDelete]));
 
     toast({ title: "Bill(s) Deleted", description: "The selected bills have been moved to the trash." });
     setSelectedBills([]);
@@ -887,3 +890,5 @@ export default function BillFormPage() {
         </React.Suspense>
     )
 }
+
+    

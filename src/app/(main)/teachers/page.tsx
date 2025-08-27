@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FileDown, Trash2, Search, Filter, Edit } from "lucide-react";
-import { BILLS_STORAGE_KEY, TEACHER_TRASH_STORAGE_KEY } from "@/lib/constants";
+import { getBillsStorageKey, getTeacherTrashStorageKey } from "@/lib/constants";
 import type { BillFormValues } from "../bill-form/page";
 import * as XLSX from "xlsx";
 import { cn } from "@/lib/utils";
@@ -37,7 +37,7 @@ export default function TeachersDataPage() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
+    const storedBills = localStorage.getItem(getBillsStorageKey());
     if (storedBills) {
       const allBills: BillFormValues[] = JSON.parse(storedBills);
       
@@ -79,12 +79,12 @@ export default function TeachersDataPage() {
       setTeachers(updatedTeachers);
       
       // We need to update the original bills storage to reflect the deletion
-      const storedBills = localStorage.getItem(BILLS_STORAGE_KEY);
+      const storedBills = localStorage.getItem(getBillsStorageKey());
       if (storedBills) {
           let allBills: BillFormValues[] = JSON.parse(storedBills);
           const remainingTeacherIds = new Set(updatedTeachers.map(t => t.evaluatorId));
           const updatedBills = allBills.filter(bill => remainingTeacherIds.has(bill.evaluatorId));
-          localStorage.setItem(BILLS_STORAGE_KEY, JSON.stringify(updatedBills));
+          localStorage.setItem(getBillsStorageKey(), JSON.stringify(updatedBills));
       }
   };
 
@@ -92,9 +92,9 @@ export default function TeachersDataPage() {
     const teachersToDelete = teachers.filter(t => ids.includes(t.evaluatorId));
     const remainingTeachers = teachers.filter(t => !ids.includes(t.evaluatorId));
     
-    const storedTrash = localStorage.getItem(TEACHER_TRASH_STORAGE_KEY);
+    const storedTrash = localStorage.getItem(getTeacherTrashStorageKey());
     const trash = storedTrash ? JSON.parse(storedTrash) : [];
-    localStorage.setItem(TEACHER_TRASH_STORAGE_KEY, JSON.stringify([...trash, ...teachersToDelete]));
+    localStorage.setItem(getTeacherTrashStorageKey(), JSON.stringify([...trash, ...teachersToDelete]));
     
     updateTeachersStateAndStorage(remainingTeachers);
     
