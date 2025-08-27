@@ -32,6 +32,20 @@ const publicIssueFormSchema = z.object({
 
 export type PublicIssueFormValues = z.infer<typeof publicIssueFormSchema>;
 
+const initialFormValues: PublicIssueFormValues = {
+  dateOfExam: "",
+  upc: "",
+  qpNo: "",
+  pageNo: "",
+  asPerChallan: undefined,
+  netScripts: undefined,
+  course: "",
+  campus: undefined,
+  type: undefined,
+  remarks: "",
+};
+
+
 export default function PublicIssueEntryPage() {
   const { toast } = useToast();
   const router = useRouter();
@@ -40,18 +54,7 @@ export default function PublicIssueEntryPage() {
 
   const form = useForm<z.infer<typeof publicIssueFormSchema>>({
     resolver: zodResolver(publicIssueFormSchema),
-    defaultValues: {
-      dateOfExam: "",
-      upc: "",
-      qpNo: "",
-      pageNo: "",
-      asPerChallan: undefined,
-      netScripts: undefined,
-      course: "",
-      campus: undefined,
-      type: undefined,
-      remarks: "",
-    },
+    defaultValues: initialFormValues,
   });
   
   useEffect(() => {
@@ -93,7 +96,7 @@ export default function PublicIssueEntryPage() {
         if (editingId) {
             router.push('/index');
         } else {
-            form.reset();
+            form.reset(initialFormValues);
         }
 
     } catch (error) {
