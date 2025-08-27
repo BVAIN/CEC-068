@@ -3,18 +3,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive, List, Users, Info } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive, List, Users, Info, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-provider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { SIDEBAR_AWARDS_VISIBILITY_KEY } from "@/lib/constants";
 
-const menuItems = [
+const baseMenuItems = [
   { href: "/home", label: "Home", icon: Home, colorClass: "bg-nav-home" },
   { href: "/index", label: "Index", icon: List, colorClass: "bg-nav-index" },
   { href: "/issue-form", label: "Issue Packets", icon: FilePlus, colorClass: "bg-nav-issue" },
   { href: "/bill-form", label: "Bill Forms", icon: FileText, colorClass: "bg-nav-bill" },
   { href: "/teachers", label: "Teachers Data", icon: Users, colorClass: "bg-nav-teachers" },
+  { href: "/awards-dispatch", label: "Awards Dispatch Data", icon: Award, colorClass: "bg-nav-awards" },
   { 
       href: "/trash", 
       label: "Trash", 
@@ -37,6 +40,25 @@ const secondaryMenuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { setTheme } = useTheme();
+  const [menuItems, setMenuItems] = useState(baseMenuItems);
+
+  useEffect(() => {
+    const updateAwardsVisibility = () => {
+        const isVisible = JSON.parse(localStorage.getItem(SIDEBAR_AWARDS_VISIBILITY_KEY) ?? 'true');
+        if (isVisible) {
+            setMenuItems(baseMenuItems);
+        } else {
+            setMenuItems(baseMenuItems.filter(item => item.href !== '/awards-dispatch'));
+        }
+    };
+    
+    updateAwardsVisibility();
+
+    window.addEventListener('storage', updateAwardsVisibility);
+    return () => {
+        window.removeEventListener('storage', updateAwardsVisibility);
+    };
+  }, []);
   
   return (
     <aside className="w-64 bg-card text-card-foreground flex-shrink-0 flex-col border-r hidden md:flex">
@@ -142,3 +164,5 @@ export default function Sidebar() {
     </aside>
   );
 }
+
+    

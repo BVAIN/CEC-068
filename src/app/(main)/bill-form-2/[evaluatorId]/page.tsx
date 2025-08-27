@@ -145,7 +145,7 @@ export default function BillViewPage2() {
                 <p className="text-lg text-muted-foreground mt-2">Viewing details for {billDetails.evaluatorName}.</p>
             </div>
         </div>
-        <Button onClick={handlePrint}><Printer className="mr-2 h-4 w-4" /> Print Bill</Button>
+        <Button onClick={handlePrint} className="bg-purple-500 hover:bg-purple-600 text-white"><Printer className="mr-2 h-4 w-4" /> Print Bill</Button>
       </header>
       
       <div id="print-section">
@@ -341,3 +341,5 @@ export default function BillViewPage2() {
   );
 
 }
+
+    

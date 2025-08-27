@@ -1,6 +1,7 @@
 
 "use client";
 
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
 import { Loader2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { SIDEBAR_AWARDS_VISIBILITY_KEY } from "@/lib/constants";
 
 const passwordFormSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
@@ -26,6 +29,22 @@ const passwordFormSchema = z.object({
 export default function SettingsPage() {
     const { toast } = useToast();
     const { isConnected, isLoading, error, connect, disconnect } = useGoogleDrive();
+    const [showAwardsDispatch, setShowAwardsDispatch] = useState(true);
+
+    useEffect(() => {
+        const storedVisibility = localStorage.getItem(SIDEBAR_AWARDS_VISIBILITY_KEY);
+        if (storedVisibility) {
+            setShowAwardsDispatch(JSON.parse(storedVisibility));
+        }
+    }, []);
+
+    const handleAwardsVisibilityChange = (checked: boolean) => {
+        setShowAwardsDispatch(checked);
+        localStorage.setItem(SIDEBAR_AWARDS_VISIBILITY_KEY, JSON.stringify(checked));
+        // This is a simple way to trigger a re-render of the sidebar.
+        // In a more complex app, this might be handled by a global state manager.
+        window.dispatchEvent(new Event('storage'));
+    };
 
     const form = useForm<z.infer<typeof passwordFormSchema>>({
         resolver: zodResolver(passwordFormSchema),
@@ -120,6 +139,28 @@ export default function SettingsPage() {
         </Form>
       </Card>
 
+       <Card>
+        <CardHeader>
+          <CardTitle>UI Settings</CardTitle>
+          <CardDescription>Customize the user interface.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                    <Label className="text-base" htmlFor="awards-dispatch-visibility">Awards Dispatch Data</Label>
+                    <p className="text-sm text-muted-foreground">
+                        Show or hide the 'Awards Dispatch Data' button in the sidebar.
+                    </p>
+                </div>
+                <Switch
+                    id="awards-dispatch-visibility"
+                    checked={showAwardsDispatch}
+                    onCheckedChange={handleAwardsVisibilityChange}
+                />
+            </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Google Drive Integration</CardTitle>
@@ -148,3 +189,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    

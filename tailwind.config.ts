@@ -54,6 +54,7 @@ export default {
         'nav-issue': 'hsl(var(--nav-issue))',
         'nav-bill': 'hsl(var(--nav-bill))',
         'nav-teachers': 'hsl(var(--nav-teachers))',
+        'nav-awards': 'hsl(var(--nav-awards))',
         'nav-trash': 'hsl(var(--nav-trash))',
         'nav-settings': 'hsl(var(--nav-settings))',
         'nav-about': 'hsl(var(--nav-about))',
@@ -106,3 +107,5 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+
+    

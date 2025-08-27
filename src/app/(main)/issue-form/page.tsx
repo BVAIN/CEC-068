@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -681,7 +682,7 @@ export default function ScriptsIssueFormPage() {
                     </div>
                   </PopoverContent>
                 </Popover>
-                <Button onClick={handlePrint} className="bg-nav-issue text-primary-foreground hover:bg-nav-issue/90"><Printer className="mr-2 h-4 w-4" /> Print</Button>
+                <Button onClick={handlePrint} className="bg-purple-500 hover:bg-purple-600 text-white"><Printer className="mr-2 h-4 w-4" /> Print</Button>
                 {selectedIssues.length > 0 && (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -855,3 +856,5 @@ export default function ScriptsIssueFormPage() {
     </div>
   );
 }
+
+    

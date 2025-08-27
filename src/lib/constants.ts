@@ -13,3 +13,6 @@ export const DRIVE_STORAGE_KEY = "google_drive_files_placeholder";
 export const BILLS_FILE_NAME = 'DriveSync_Bills.json';
 export const ISSUES_FILE_NAME = 'DriveSync_Issues.json';
 export const GLOBAL_BILL_SETTINGS_KEY = 'cec068_global_bill_settings';
+export const SIDEBAR_AWARDS_VISIBILITY_KEY = 'cec068_sidebar_awards_visibility';
+
+    

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import type { BillFormValues } from "../page";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -316,7 +316,7 @@ export default function BillViewPage() {
             </Dialog>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button><Printer className="mr-2 h-4 w-4" /> Print</Button>
+                    <Button className="bg-purple-500 hover:bg-purple-600 text-white"><Printer className="mr-2 h-4 w-4" /> Print</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => handlePrint('bill')}>
@@ -561,3 +561,5 @@ export default function BillViewPage() {
   );
 
 }
+
+    
