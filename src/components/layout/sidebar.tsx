@@ -14,8 +14,15 @@ import {
     SIDEBAR_INDEX_VISIBILITY_KEY,
     SIDEBAR_ISSUE_VISIBILITY_KEY,
     SIDEBAR_BILL_VISIBILITY_KEY,
-    SIDEBAR_TEACHERS_VISIBILITY_KEY
+    SIDEBAR_TEACHERS_VISIBILITY_KEY,
+    CURRENT_SESSION_KEY,
+    SESSIONS_STORAGE_KEY
 } from "@/lib/constants";
+
+type Session = {
+  id: string;
+  name: string;
+};
 
 const allMenuItems = [
   { href: "/home", label: "Home", icon: Home, colorClass: "bg-nav-home", storageKey: null },
@@ -48,6 +55,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { setTheme } = useTheme();
   const [visibleItems, setVisibleItems] = useState(allMenuItems);
+  const [sessionName, setSessionName] = useState<string | null>(null);
 
   useEffect(() => {
     const updateVisibleItems = () => {
@@ -58,21 +66,40 @@ export default function Sidebar() {
         });
         setVisibleItems(filteredItems);
     };
+
+    const loadSessionName = () => {
+        const currentSessionId = localStorage.getItem(CURRENT_SESSION_KEY);
+        if (currentSessionId) {
+            const sessionsData = localStorage.getItem(SESSIONS_STORAGE_KEY);
+            if (sessionsData) {
+                const sessions: Session[] = JSON.parse(sessionsData);
+                const currentSession = sessions.find(s => s.id === currentSessionId);
+                setSessionName(currentSession?.name || null);
+            }
+        }
+    };
     
     updateVisibleItems();
+    loadSessionName();
 
     window.addEventListener('storage', updateVisibleItems);
+    window.addEventListener('storage', loadSessionName); // Also update session name on storage change
+    
     return () => {
         window.removeEventListener('storage', updateVisibleItems);
+        window.removeEventListener('storage', loadSessionName);
     };
-  }, []);
+  }, [pathname]); // Re-run when path changes to catch session switches
   
   return (
     <aside className="w-64 bg-card text-card-foreground flex-shrink-0 flex-col border-r hidden md:flex">
-      <Link href="/sessions">
-        <div className="p-4 border-b flex items-center gap-3 hover:bg-accent cursor-pointer transition-colors">
+      <Link href="/sessions" className="block p-4 border-b hover:bg-accent cursor-pointer transition-colors">
+        <div className="flex items-center gap-3">
           <Rocket className="w-8 h-8 text-primary" />
-          <h1 className="text-xl font-bold font-headline">CEC-068</h1>
+          <div>
+            <h1 className="text-xl font-bold font-headline">CEC-068</h1>
+             {sessionName && <p className="text-xs text-muted-foreground font-medium truncate" title={sessionName}>{sessionName}</p>}
+          </div>
         </div>
       </Link>
       <nav className="flex-1 p-4 space-y-2 flex flex-col justify-between">
