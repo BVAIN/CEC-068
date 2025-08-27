@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import React, { useState, useEffect, useCallback } from "react";
 import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive, List, Users, Info, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -54,6 +54,7 @@ const secondaryMenuItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { setTheme } = useTheme();
   const [visibleItems, setVisibleItems] = useState(allMenuItems);
@@ -98,10 +99,13 @@ export default function Sidebar() {
     return () => {
         window.removeEventListener('storage', handleStorageChange);
     };
-  }, [pathname]); // Re-run when path changes to catch session switches
+  }, [pathname, searchParams]); // Re-run on searchParams change as well for session switch
 
-  const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (!hasSession && !['/sessions', '/settings', '/about'].includes(href)) {
+  const handleLinkClick = useCallback((e: React.MouseEvent, href: string) => {
+    const isSessionActive = !!localStorage.getItem(CURRENT_SESSION_KEY);
+    const isAllowedPath = ['/sessions', '/settings', '/about'].some(p => href.startsWith(p));
+    
+    if (!isSessionActive && !isAllowedPath) {
       e.preventDefault();
       toast({
         variant: 'destructive',
@@ -109,11 +113,11 @@ export default function Sidebar() {
         description: "Please select a session before proceeding."
       });
     }
-  }, [hasSession, toast]);
+  }, [toast]);
   
   return (
     <aside className="w-64 bg-card text-card-foreground flex-shrink-0 flex-col border-r hidden md:flex">
-      <Link href="/sessions" className="block p-4 border-b hover:bg-accent cursor-pointer transition-colors">
+      <Link href="/sessions" className="block p-4 border-b hover:bg-accent cursor-pointer transition-colors" onClick={(e) => handleLinkClick(e, "/sessions")}>
         <div className="flex items-center gap-3">
           <Rocket className="w-8 h-8 text-primary" />
           <div>
@@ -164,12 +168,12 @@ export default function Sidebar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       {item.subItems.map(subItem => (
-                         <Link key={subItem.href} href={subItem.href} onClick={(e) => handleLinkClick(e, subItem.href)}>
-                            <DropdownMenuItem>
+                         <DropdownMenuItem key={subItem.href} asChild>
+                            <Link href={subItem.href} onClick={(e) => handleLinkClick(e, subItem.href)}>
                               <subItem.icon className="mr-2 h-4 w-4" />
                               <span>{subItem.label}</span>
-                            </DropdownMenuItem>
-                         </Link>
+                            </Link>
+                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -177,18 +181,12 @@ export default function Sidebar() {
               }
               
               return (
-                <Link key={item.href} href={item.href} onClick={(e) => handleLinkClick(e, item.href)}>
-                    <Button
-                        variant={isActive ? "default" : "ghost"}
-                        className={cn(
-                        'w-full justify-start text-base py-6',
-                        isActive && activeClasses
-                        )}
-                    >
+                <Button key={item.href} asChild variant={isActive ? "default" : "ghost"} className={cn('w-full justify-start text-base py-6', isActive && activeClasses)}>
+                    <Link href={item.href} onClick={(e) => handleLinkClick(e, item.href)}>
                         <item.icon className="mr-3 h-5 w-5" />
                         <span>{item.label}</span>
-                    </Button>
-                </Link>
+                    </Link>
+                </Button>
             );
             })}
              <DropdownMenu>
@@ -218,15 +216,12 @@ export default function Sidebar() {
                 const isActive = pathname.startsWith(item.href);
                 const activeClasses = isActive ? `${item.colorClass} text-primary-foreground hover:${item.colorClass}/90` : "ghost";
                 return (
-                    <Link key={item.href} href={item.href} onClick={(e) => handleLinkClick(e, item.href)}>
-                        <Button
-                            variant={isActive ? "default" : "ghost"}
-                            className={cn('w-full justify-start text-base py-6', isActive && activeClasses)}
-                        >
+                     <Button key={item.href} asChild variant={isActive ? "default" : "ghost"} className={cn('w-full justify-start text-base py-6', isActive && activeClasses)}>
+                        <Link href={item.href} onClick={(e) => handleLinkClick(e, item.href)}>
                             <item.icon className="mr-3 h-5 w-5" />
                             <span>{item.label}</span>
-                        </Button>
-                    </Link>
+                        </Link>
+                    </Button>
                 );
              })}
         </div>

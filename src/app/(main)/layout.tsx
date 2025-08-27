@@ -14,18 +14,20 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const sessionId = localStorage.getItem(CURRENT_SESSION_KEY);
-        // If there's no session ID and we are not already on an allowed page, redirect to sessions.
         const allowedPaths = ['/sessions', '/settings', '/about'];
+
+        // If there's no session ID, force redirect to sessions, unless on an allowed page.
         if (!sessionId && !allowedPaths.some(p => pathname.startsWith(p))) {
             router.replace('/sessions');
-            return; // Stop further execution in this render
+            return;
         }
 
-        if (sessionId) {
+        // If a session IS active, ensure the URL has the correct session query param,
+        // unless we are on the session selection page itself.
+        if (sessionId && pathname !== '/sessions') {
             const sessionQueryParam = searchParams.get('session');
             if (!sessionQueryParam || sessionQueryParam !== sessionId) {
-                // Preserve the current path but add the correct session ID to the URL
-                 const newSearchParams = new URLSearchParams(searchParams);
+                 const newSearchParams = new URLSearchParams(searchParams.toString());
                  newSearchParams.set('session', sessionId);
                  router.replace(`${pathname}?${newSearchParams.toString()}`);
             }
