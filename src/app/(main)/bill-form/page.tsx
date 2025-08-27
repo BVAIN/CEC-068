@@ -337,15 +337,16 @@ function BillFormPageComponent() {
     
     // Create a new worksheet with bold headers
     const worksheet = XLSX.utils.aoa_to_sheet([]);
-    const headers = Object.keys(dataToExport[0]);
+    const headers = Object.keys(dataToExport[0]).map(header => {
+        const capitalizedHeader = header.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        return {
+            v: capitalizedHeader,
+            t: 's',
+            s: { font: { bold: true } }
+        };
+    });
     
-    const headerRow = headers.map(header => ({
-        v: header,
-        t: 's',
-        s: { font: { bold: true } }
-    }));
-    
-    XLSX.utils.sheet_add_aoa(worksheet, [headerRow], { origin: 'A1' });
+    XLSX.utils.sheet_add_aoa(worksheet, [headers.map(h => h.v)], { origin: 'A1' });
     XLSX.utils.sheet_add_json(worksheet, dataToExport, { origin: 'A2', skipHeader: true });
 
     const workbook = XLSX.utils.book_new();
@@ -691,7 +692,7 @@ function BillFormPageComponent() {
                             />
                         </div>
                         <Button
-                            variant="outline"
+                            className="bg-nav-about text-primary-foreground hover:bg-nav-about/90"
                             onClick={() => setSortDirection(prev => prev === "asc" ? "desc" : "asc")}
                         >
                             {sortDirection === 'asc' ? <ArrowUpAZ className="mr-2 h-4 w-4"/> : <ArrowDownAZ className="mr-2 h-4 w-4" />}
@@ -942,5 +943,3 @@ export default function BillFormPage() {
         </React.Suspense>
     )
 }
-
-    

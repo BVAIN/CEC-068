@@ -445,19 +445,19 @@ export default function ScriptsIssueFormPage() {
     }
     
     const worksheet = XLSX.utils.aoa_to_sheet([]);
-    const headers = Object.keys(dataToExport[0]).map(header => ({
-      v: header,
-      t: 's',
-      s: { font: { bold: true } }
-    }));
+    const headers = Object.keys(dataToExport[0]).map(header => {
+      const capitalizedHeader = header.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      return {
+          v: capitalizedHeader,
+          t: 's',
+          s: { font: { bold: true } }
+      };
+    });
     
     XLSX.utils.sheet_add_aoa(worksheet, [headers.map(h => h.v)], { origin: 'A1' });
     worksheet['!cols'] = headers.map(() => ({ wch: 20 }));
     
-    dataToExport.forEach((row, rowIndex) => {
-        const rowData = headers.map(header => row[header.v as keyof typeof row]);
-        XLSX.utils.sheet_add_aoa(worksheet, [rowData], { origin: `A${rowIndex + 2}` });
-    });
+    XLSX.utils.sheet_add_json(worksheet, dataToExport, { origin: 'A2', skipHeader: true });
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Issues");
@@ -919,5 +919,3 @@ export default function ScriptsIssueFormPage() {
     </div>
   );
 }
-
-    
