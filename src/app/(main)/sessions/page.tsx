@@ -159,7 +159,7 @@ export default function SessionsPage() {
                   <DialogHeader>
                     <DialogTitle>{editingSession ? 'Edit Session' : 'Add New Session'}</DialogTitle>
                     <DialogDescription>
-                      {editingSession ? 'Update the name for this session.' : 'Enter a name for the new session (e.g., "May/June 2025").'}
+                      {editingSession ? 'Update the name for this session.' : 'Enter a name for the new session.'}
                     </DialogDescription>
                   </DialogHeader>
                   <Form {...form}>
@@ -171,7 +171,7 @@ export default function SessionsPage() {
                           <FormItem>
                             <FormLabel>Session Name</FormLabel>
                             <FormControl>
-                              <Input placeholder="e.g., May/June 2025" {...field} />
+                              <Input placeholder="" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
