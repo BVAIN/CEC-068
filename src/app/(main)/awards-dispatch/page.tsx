@@ -23,6 +23,7 @@ type AwardEntry = {
   dateOfExam: string;
   course: string;
   type: "Regular" | "NCWEB" | "SOL";
+  pageNo: number;
   northChallan: number;
   southChallan: number;
   totalChallan: number;
@@ -117,6 +118,7 @@ export default function AwardsDispatchPage() {
                         dateOfExam: issue.dateOfExam,
                         course: issue.course,
                         type: issue.type,
+                        pageNo: parseInt(issue.pageNo || '0', 10),
                         northChallan: 0,
                         southChallan: 0,
                     };
@@ -127,13 +129,18 @@ export default function AwardsDispatchPage() {
                 if (issue.campus === 'South') {
                     acc[key].southChallan += issue.asPerChallan || 0;
                 }
+                // If an entry for a different campus already set a page number, use the smaller one
+                const currentPageNo = parseInt(issue.pageNo || '0', 10);
+                if (currentPageNo < acc[key].pageNo) {
+                    acc[key].pageNo = currentPageNo;
+                }
                 return acc;
             }, {} as { [key: string]: Omit<AwardEntry, 'totalChallan'> });
 
             const processedEntries = Object.values(grouped).map(entry => ({
                 ...entry,
                 totalChallan: entry.northChallan + entry.southChallan
-            }));
+            })).sort((a, b) => a.pageNo - b.pageNo);
             
             setAllAwardEntries(processedEntries);
         }
@@ -350,6 +357,7 @@ export default function AwardsDispatchPage() {
                   <TableHead className="text-primary-foreground">QP No.</TableHead>
                   <TableHead className="text-primary-foreground">Course</TableHead>
                   <TableHead className="text-primary-foreground">Type</TableHead>
+                  <TableHead className="text-primary-foreground">Page No.</TableHead>
                   <TableHead className="text-primary-foreground">North</TableHead>
                   <TableHead className="text-primary-foreground">South</TableHead>
                   <TableHead className="text-primary-foreground">Total</TableHead>
@@ -377,6 +385,7 @@ export default function AwardsDispatchPage() {
                       <TableCell>{entry.qpNo}</TableCell>
                       <TableCell>{entry.course}</TableCell>
                       <TableCell>{entry.type}</TableCell>
+                      <TableCell>{entry.pageNo}</TableCell>
                       <TableCell className="text-blue-600 font-medium">{entry.northChallan}</TableCell>
                       <TableCell className="text-red-600 font-medium">{entry.southChallan}</TableCell>
                       <TableCell className="font-bold">{entry.totalChallan}</TableCell>
@@ -426,7 +435,7 @@ export default function AwardsDispatchPage() {
                   );
                 }) : (
                     <TableRow>
-                        <TableCell colSpan={12} className="text-center h-24 text-muted-foreground">
+                        <TableCell colSpan={13} className="text-center h-24 text-muted-foreground">
                             No index entries found. Please add entries in the Index page.
                         </TableCell>
                     </TableRow>
@@ -435,7 +444,7 @@ export default function AwardsDispatchPage() {
               {filteredAwards.length > 0 && (
                 <TableFooter>
                     <TableRow>
-                        <TableCell colSpan={6} className="text-right font-bold">Grand Totals</TableCell>
+                        <TableCell colSpan={7} className="text-right font-bold">Grand Totals</TableCell>
                         <TableCell className="font-bold text-blue-600">{totalNorth}</TableCell>
                         <TableCell className="font-bold text-red-600">{totalSouth}</TableCell>
                         <TableCell className="font-bold">{grandTotal}</TableCell>
