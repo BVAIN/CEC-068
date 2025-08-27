@@ -25,8 +25,8 @@ type AwardEntry = {
 };
 
 type AwardDispatchData = {
-  awardListCount?: number;
-  awardsCount?: number;
+  awardListCount?: string;
+  awardsCount?: string;
   dispatchDate?: string;
 };
 
@@ -134,7 +134,7 @@ export default function AwardsDispatchPage() {
     }
   }, [hydrated, toast]);
 
-  const handleInputChange = (key: string, field: keyof AwardDispatchData, value: string | number) => {
+  const handleInputChange = (key: string, field: keyof AwardDispatchData, value: string) => {
       setDispatchData(prev => ({
           ...prev,
           [key]: {
@@ -228,7 +228,7 @@ export default function AwardsDispatchPage() {
                   <TableHead className="text-primary-foreground">Total</TableHead>
                   <TableHead className="text-primary-foreground">No. of Award list</TableHead>
                   <TableHead className="text-primary-foreground">No. of Awards</TableHead>
-                  <TableHead className="text-primary-foreground">Date of dispatch</TableHead>
+                  <TableHead className="text-primary-foreground">Date of Dispatch</TableHead>
                   <TableHead className="text-primary-foreground">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -243,12 +243,12 @@ export default function AwardsDispatchPage() {
                       <TableCell>{entry.qpNo}</TableCell>
                       <TableCell>{entry.course}</TableCell>
                       <TableCell>{entry.type}</TableCell>
-                      <TableCell>{entry.northChallan}</TableCell>
-                      <TableCell>{entry.southChallan}</TableCell>
+                      <TableCell className="text-blue-600 font-medium">{entry.northChallan}</TableCell>
+                      <TableCell className="text-red-600 font-medium">{entry.southChallan}</TableCell>
                       <TableCell className="font-bold">{entry.totalChallan}</TableCell>
                       <TableCell>
                         <Input 
-                          type="number"
+                          type="text"
                           className="w-24"
                           value={currentData.awardListCount || ''}
                           onChange={(e) => handleInputChange(key, 'awardListCount', e.target.value)}
@@ -256,7 +256,7 @@ export default function AwardsDispatchPage() {
                       </TableCell>
                        <TableCell>
                         <Input
-                          type="number"
+                          type="text"
                           className="w-24"
                           value={currentData.awardsCount || ''}
                           onChange={(e) => handleInputChange(key, 'awardsCount', e.target.value)}
@@ -289,8 +289,8 @@ export default function AwardsDispatchPage() {
                 <TableFooter>
                     <TableRow>
                         <TableCell colSpan={5} className="text-right font-bold">Grand Totals</TableCell>
-                        <TableCell className="font-bold">{totalNorth}</TableCell>
-                        <TableCell className="font-bold">{totalSouth}</TableCell>
+                        <TableCell className="font-bold text-blue-600">{totalNorth}</TableCell>
+                        <TableCell className="font-bold text-red-600">{totalSouth}</TableCell>
                         <TableCell className="font-bold">{grandTotal}</TableCell>
                         <TableCell className="font-bold">{totalAwardLists}</TableCell>
                         <TableCell className="font-bold">{totalAwards}</TableCell>

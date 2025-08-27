@@ -84,6 +84,30 @@ type FilterValues = {
   receivedStatus: "all" | "received" | "not-received";
 };
 
+const initialFormValues: IssueFormValues = {
+      id: undefined,
+      dateOfIssue: "",
+      packetNo: "",
+      packetFrom: "",
+      packetTo: "",
+      noOfScripts: undefined,
+      qpNo: "",
+      upc: "",
+      teacherName: "",
+      mobileNo: "",
+      email: "",
+      teacherId: "",
+      college: "",
+      course: "",
+      campus: undefined,
+      schoolType: undefined,
+      received: false,
+      noOfAbsent: 0,
+      tokenNo: undefined,
+      noOfMissing: 0,
+      extraSheets: 0,
+};
+
 
 export default function ScriptsIssueFormPage() {
   const router = useRouter();
@@ -165,29 +189,7 @@ export default function ScriptsIssueFormPage() {
 
   const form = useForm<IssueFormValues>({
     resolver: zodResolver(issueFormSchema),
-    defaultValues: {
-      id: undefined,
-      dateOfIssue: "",
-      packetNo: "",
-      packetFrom: "",
-      packetTo: "",
-      noOfScripts: undefined,
-      qpNo: "",
-      upc: "",
-      teacherName: "",
-      mobileNo: "",
-      email: "",
-      teacherId: "",
-      college: "",
-      course: "",
-      campus: undefined,
-      schoolType: undefined,
-      received: false,
-      noOfAbsent: 0,
-      tokenNo: undefined,
-      noOfMissing: 0,
-      extraSheets: 0,
-    },
+    defaultValues: initialFormValues,
   });
 
   const { watch, setValue, getValues } = form;
@@ -337,29 +339,7 @@ export default function ScriptsIssueFormPage() {
       });
     }
     await updateIssuesStateAndStorage(newIssues);
-    form.reset({
-      id: undefined,
-      dateOfIssue: "",
-      packetNo: "",
-      packetFrom: "",
-      packetTo: "",
-      noOfScripts: undefined,
-      qpNo: "",
-      upc: "",
-      teacherName: "",
-      mobileNo: "",
-      email: "",
-      teacherId: "",
-      college: "",
-      course: "",
-      campus: undefined,
-      schoolType: undefined,
-      received: false,
-      noOfAbsent: 0,
-      tokenNo: undefined,
-      noOfMissing: 0,
-      extraSheets: 0,
-    });
+    form.reset(initialFormValues);
     setIsAutofilled(false);
   }
 
