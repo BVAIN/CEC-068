@@ -231,10 +231,37 @@ export default function IndexPage() {
   
   const handleExport = (data: PublicIssueFormValues[], filename: string) => {
     const dataToExport = data.map(({id, ...rest}) => ({
-        ...rest,
-        dateOfExam: formatDate(rest.dateOfExam)
+        "Date of Exam": formatDate(rest.dateOfExam),
+        "UPC": rest.upc,
+        "QP No.": rest.qpNo,
+        "Page No.": rest.pageNo,
+        "Course": rest.course,
+        "Type": rest.type,
+        "Campus": rest.campus,
+        "As Per Challan": rest.asPerChallan,
+        "Net Scripts": rest.netScripts,
+        "Difference": (rest.netScripts || 0) - (rest.asPerChallan || 0),
+        "Remarks": rest.remarks,
     }));
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+     if (dataToExport.length === 0) {
+        toast({ variant: 'destructive', title: 'No data to export' });
+        return;
+    }
+    
+    const worksheet = XLSX.utils.aoa_to_sheet([]);
+    
+    const headers = Object.keys(dataToExport[0]).map(header => {
+        const capitalizedHeader = header.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        return {
+            v: capitalizedHeader,
+            t: 's',
+            s: { font: { bold: true } }
+        };
+    });
+    
+    XLSX.utils.sheet_add_aoa(worksheet, [headers.map(h => h.v)], { origin: 'A1' });
+    XLSX.utils.sheet_add_json(worksheet, dataToExport, { origin: 'A2', skipHeader: true });
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Entries");
     XLSX.writeFile(workbook, filename);
@@ -569,5 +596,3 @@ export default function IndexPage() {
     </div>
   );
 }
-
-    

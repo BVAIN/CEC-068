@@ -335,8 +335,8 @@ function BillFormPageComponent() {
         return;
     }
     
-    // Create a new worksheet with bold headers
     const worksheet = XLSX.utils.aoa_to_sheet([]);
+    
     const headers = Object.keys(dataToExport[0]).map(header => {
         const capitalizedHeader = header.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         return {
