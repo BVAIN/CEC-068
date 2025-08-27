@@ -692,7 +692,7 @@ function BillFormPageComponent() {
                             />
                         </div>
                         <Button
-                            className="bg-nav-about text-primary-foreground hover:bg-nav-about/90"
+                            className="bg-nav-settings text-primary-foreground hover:bg-nav-settings/90"
                             onClick={() => setSortDirection(prev => prev === "asc" ? "desc" : "asc")}
                         >
                             {sortDirection === 'asc' ? <ArrowUpAZ className="mr-2 h-4 w-4"/> : <ArrowDownAZ className="mr-2 h-4 w-4" />}
@@ -943,3 +943,5 @@ export default function BillFormPage() {
         </React.Suspense>
     )
 }
+
+    

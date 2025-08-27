@@ -343,7 +343,7 @@ export default function IndexPage() {
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{title}</CardTitle>
                 <div className="flex items-center gap-2">
-                    <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-green-500 hover:bg-green-600 text-white">
+                    <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-blue-500 hover:bg-blue-600 text-white">
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Entry
                     </Button>
                     <Button size="sm" onClick={() => handleExport(data, `${title.replace(/"/g, '')}_Entries.xlsx`)} variant="default" className="bg-green-500 hover:bg-green-600 text-white">
@@ -535,7 +535,7 @@ export default function IndexPage() {
                 />
             </div>
             <Button
-            className="bg-green-500 hover:bg-green-600 text-white"
+            className="bg-blue-500 hover:bg-blue-600 text-white"
             onClick={() => handleNavigation('/entry')}
             >
             <PlusCircle className="mr-2 h-4 w-4" />
@@ -596,3 +596,5 @@ export default function IndexPage() {
     </div>
   );
 }
+
+    
