@@ -371,6 +371,78 @@ export default function BillViewPage() {
             </div>
         </div>
          <div className="flex items-center gap-2">
+            <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="outline" size="icon"><Settings className="h-4 w-4" /></Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Set Global Bill Fields</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="billName" className="text-right">Bill Name</Label>
+                            <Input
+                                id="billName"
+                                value={globalSettings.billName}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, billName: e.target.value }))}
+                                className="col-span-3"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="examinationName" className="text-right">Examination</Label>
+                            <Input
+                                id="examinationName"
+                                value={globalSettings.examinationName}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, examinationName: e.target.value }))}
+                                className="col-span-3"
+                            />
+                        </div>
+                         <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="coordinatorName" className="text-right">Coordinator</Label>
+                            <Input
+                                id="coordinatorName"
+                                value={globalSettings.coordinatorName}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, coordinatorName: e.target.value }))}
+                                className="col-span-3"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="twfText" className="text-right">TWF Text</Label>
+                            <Input
+                                id="twfText"
+                                value={globalSettings.twfText}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, twfText: e.target.value }))}
+                                className="col-span-3"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="conveyanceUnder30" className="text-right">Rate (≤30km)</Label>
+                            <Input
+                                id="conveyanceUnder30"
+                                type="number"
+                                value={globalSettings.conveyanceUnder30}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, conveyanceUnder30: Number(e.target.value) }))}
+                                className="col-span-3"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="conveyanceOver30" className="text-right">Rate (>30km)</Label>
+                            <Input
+                                id="conveyanceOver30"
+                                type="number"
+                                value={globalSettings.conveyanceOver30}
+                                onChange={(e) => setGlobalSettings(s => ({ ...s, conveyanceOver30: Number(e.target.value) }))}
+                                className="col-span-3"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button type="button" variant="outline" onClick={() => setIsSettingsOpen(false)}>Cancel</Button>
+                        <Button type="button" onClick={handleSaveSettings}>Save Changes</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
              <Dialog open={isCustomizeOpen} onOpenChange={setIsCustomizeOpen}>
                 <DialogTrigger asChild>
                     <Button variant="outline" className="bg-teal-500 hover:bg-teal-600 text-white"><Wand2 className="mr-2 h-4 w-4" /> Customize</Button>
@@ -400,87 +472,6 @@ export default function BillViewPage() {
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => setIsCustomizeOpen(false)}>Cancel</Button>
                         <Button type="button" onClick={handleSaveCustomization}>Save Customization</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-             <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-                <DialogTrigger asChild>
-                    <Button variant="outline" size="icon"><Settings className="h-4 w-4" /></Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Set Global Bill Fields</DialogTitle>
-                        <DialogDescription>
-                            These values will be saved and will appear on all bills.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="billName" className="text-right">Bill Name</Label>
-                            <Input
-                                id="billName"
-                                value={globalSettings.billName}
-                                onChange={(e) => setGlobalSettings(s => ({ ...s, billName: e.target.value }))}
-                                className="col-span-3"
-                                placeholder="e.g., Bill for Sem-I"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="examinationName" className="text-right">Examination</Label>
-                            <Input
-                                id="examinationName"
-                                value={globalSettings.examinationName}
-                                onChange={(e) => setGlobalSettings(s => ({ ...s, examinationName: e.target.value }))}
-                                className="col-span-3"
-                                placeholder="e.g., May/June 2024"
-                            />
-                        </div>
-                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="coordinatorName" className="text-right">Coordinator</Label>
-                            <Input
-                                id="coordinatorName"
-                                value={globalSettings.coordinatorName}
-                                onChange={(e) => setGlobalSettings(s => ({ ...s, coordinatorName: e.target.value }))}
-                                className="col-span-3"
-                                placeholder="e.g., Dr. ABC"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="twfText" className="text-right">TWF Text</Label>
-                            <Input
-                                id="twfText"
-                                value={globalSettings.twfText}
-                                onChange={(e) => setGlobalSettings(s => ({ ...s, twfText: e.target.value }))}
-                                className="col-span-3"
-                                placeholder="e.g., 5% TWF"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="conveyanceUnder30" className="text-right">Rate (≤30km)</Label>
-                            <Input
-                                id="conveyanceUnder30"
-                                type="number"
-                                value={globalSettings.conveyanceUnder30}
-                                onChange={(e) => setGlobalSettings(s => ({ ...s, conveyanceUnder30: Number(e.target.value) }))}
-                                className="col-span-3"
-                                placeholder="e.g., 450"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="conveyanceOver30" className="text-right">Rate (>30km)</Label>
-                            <Input
-                                id="conveyanceOver30"
-                                type="number"
-                                value={globalSettings.conveyanceOver30}
-                                onChange={(e) => setGlobalSettings(s => ({ ...s, conveyanceOver30: Number(e.target.value) }))}
-                                className="col-span-3"
-                                placeholder="e.g., 600"
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsSettingsOpen(false)}>Cancel</Button>
-                        <Button type="button" onClick={handleSaveSettings}>Save Changes</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -731,3 +722,5 @@ export default function BillViewPage() {
   );
 
 }
+
+    
