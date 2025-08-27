@@ -339,7 +339,11 @@ export default function ScriptsIssueFormPage() {
       });
     }
     await updateIssuesStateAndStorage(newIssues);
-    form.reset(initialFormValues);
+    form.reset({
+        ...initialFormValues,
+        campus: undefined,
+        schoolType: undefined,
+    });
     setIsAutofilled(false);
   }
 
