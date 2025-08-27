@@ -164,13 +164,11 @@ export default function Sidebar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       {item.subItems.map(subItem => (
-                         <Link key={subItem.href} href={subItem.href} passHref legacyBehavior>
-                           <a onClick={(e) => handleLinkClick(e, subItem.href)}>
+                         <Link key={subItem.href} href={subItem.href} onClick={(e) => handleLinkClick(e as any, subItem.href)}>
                             <DropdownMenuItem>
                               <subItem.icon className="mr-2 h-4 w-4" />
                               <span>{subItem.label}</span>
                             </DropdownMenuItem>
-                           </a>
                          </Link>
                       ))}
                     </DropdownMenuContent>
@@ -179,8 +177,7 @@ export default function Sidebar() {
               }
               
               return (
-                <Link key={item.href} href={item.href} passHref legacyBehavior>
-                  <a onClick={(e) => handleLinkClick(e, item.href)}>
+                <Link key={item.href} href={item.href} onClick={(e) => handleLinkClick(e as any, item.href)}>
                     <Button
                         variant={isActive ? "default" : "ghost"}
                         className={cn(
@@ -191,7 +188,6 @@ export default function Sidebar() {
                         <item.icon className="mr-3 h-5 w-5" />
                         <span>{item.label}</span>
                     </Button>
-                  </a>
                 </Link>
             );
             })}
@@ -222,8 +218,7 @@ export default function Sidebar() {
                 const isActive = pathname.startsWith(item.href);
                 const activeClasses = isActive ? `${item.colorClass} text-primary-foreground hover:${item.colorClass}/90` : "ghost";
                 return (
-                    <Link key={item.href} href={item.href} passHref legacyBehavior>
-                      <a onClick={(e) => handleLinkClick(e, item.href)}>
+                    <Link key={item.href} href={item.href} onClick={(e) => handleLinkClick(e as any, item.href)}>
                         <Button
                             variant={isActive ? "default" : "ghost"}
                             className={cn('w-full justify-start text-base py-6', isActive && activeClasses)}
@@ -231,7 +226,6 @@ export default function Sidebar() {
                             <item.icon className="mr-3 h-5 w-5" />
                             <span>{item.label}</span>
                         </Button>
-                      </a>
                     </Link>
                 );
              })}
