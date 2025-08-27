@@ -147,7 +147,7 @@ export default function LoginForm() {
                                                     <FormItem>
                                                         <FormLabel>Who Created This Web Application?</FormLabel>
                                                         <FormControl>
-                                                            <Input placeholder="Enter your answer" {...field} />
+                                                            <Input placeholder="" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -160,7 +160,7 @@ export default function LoginForm() {
                                                     <FormItem>
                                                         <FormLabel>New Password</FormLabel>
                                                         <FormControl>
-                                                            <Input type="password" placeholder="Enter new password" {...field} />
+                                                            <Input type="password" placeholder="" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -173,7 +173,7 @@ export default function LoginForm() {
                                                     <FormItem>
                                                         <FormLabel>Confirm New Password</FormLabel>
                                                         <FormControl>
-                                                            <Input type="password" placeholder="Confirm new password" {...field} />
+                                                            <Input type="password" placeholder="" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
