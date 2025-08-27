@@ -450,9 +450,6 @@ export default function BillViewPage() {
                 <DialogContent className="max-w-4xl">
                     <DialogHeader>
                         <DialogTitle>Customize Bill Layout</DialogTitle>
-                        <DialogDescription>
-                            Change the text labels that appear on the printable bill.
-                        </DialogDescription>
                     </DialogHeader>
                     <ScrollArea className="h-[60vh]">
                         <div className="grid grid-cols-2 gap-4 p-4">
