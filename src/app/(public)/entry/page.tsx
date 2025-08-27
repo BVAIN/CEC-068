@@ -58,8 +58,7 @@ export default function PublicIssueEntryPage() {
   });
 
   const { watch, setValue, getValues } = form;
-  const watchedCampus = watch('campus');
-  const watchedType = watch('type');
+  const watchedCourse = watch('course');
   
   useEffect(() => {
     const editId = searchParams.get('edit');
@@ -77,35 +76,27 @@ export default function PublicIssueEntryPage() {
   }, [searchParams, form]);
 
   useEffect(() => {
-    if (editingId) return; // Don't auto-update pageNo when editing an existing entry
+    if (editingId) return; 
 
     const calculateNextPageNo = () => {
-      const campus = getValues('campus');
-      const type = getValues('type');
+      const course = getValues('course');
       
-      if (!campus || !type) return;
+      if (!course) return;
 
       const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
       const entries: PublicIssueFormValues[] = storedEntries ? JSON.parse(storedEntries) : [];
 
+      const courseEntries = entries.filter(e => e.course === course && e.pageNo);
       let lastPageNo = 0;
-      if (type === 'SOL') {
-        const solEntries = entries.filter(e => e.campus === campus && e.type === 'SOL' && e.pageNo);
-        if (solEntries.length > 0) {
-          lastPageNo = Math.max(...solEntries.map(e => parseInt(e.pageNo!, 10) || 0));
-        }
-      } else { // Regular or NCWEB
-        const otherEntries = entries.filter(e => e.campus === campus && (e.type === 'Regular' || e.type === 'NCWEB') && e.pageNo);
-        if (otherEntries.length > 0) {
-          lastPageNo = Math.max(...otherEntries.map(e => parseInt(e.pageNo!, 10) || 0));
-        }
+      if (courseEntries.length > 0) {
+        lastPageNo = Math.max(...courseEntries.map(e => parseInt(e.pageNo!, 10) || 0));
       }
       
       setValue('pageNo', (lastPageNo + 1).toString());
     };
 
     calculateNextPageNo();
-  }, [watchedCampus, watchedType, setValue, getValues, editingId]);
+  }, [watchedCourse, setValue, getValues, editingId]);
 
   const onSubmit = (data: z.infer<typeof publicIssueFormSchema>) => {
     try {
@@ -133,8 +124,15 @@ export default function PublicIssueEntryPage() {
         } else {
             form.reset({
                 ...initialFormValues,
-                campus: undefined,
-                type: undefined
+                dateOfExam: data.dateOfExam, // retain date
+                campus: data.campus,
+                type: data.type,
+                course: "",
+                pageNo: "",
+                upc: "",
+                qpNo: "",
+                asPerChallan: undefined,
+                netScripts: undefined,
             });
         }
 
@@ -172,12 +170,13 @@ export default function PublicIssueEntryPage() {
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="dateOfExam" render={({ field }) => (<FormItem><FormLabel>Date of Exam</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="course" render={({ field }) => (<FormItem><FormLabel>Course</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="upc" render={({ field }) => (<FormItem><FormLabel>UPC</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="qpNo" render={({ field }) => (<FormItem><FormLabel>QP No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="pageNo" render={({ field }) => (<FormItem><FormLabel>Page No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="asPerChallan" render={({ field }) => (<FormItem><FormLabel>As per Challan</FormLabel><FormControl><Input type="number" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="netScripts" render={({ field }) => (<FormItem><FormLabel>Net Scripts</FormLabel><FormControl><Input type="number" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="course" render={({ field }) => (<FormItem><FormLabel>Course</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                     {/* Hidden Page No field, managed by logic */}
+                    <FormField control={form.control} name="pageNo" render={({ field }) => (<FormItem className="hidden"><FormLabel>Page No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </CardContent>
             </Card>
             <Card>
