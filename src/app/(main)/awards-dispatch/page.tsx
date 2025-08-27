@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type AwardEntry = {
   upc: string;
@@ -61,6 +62,9 @@ export default function AwardsDispatchPage() {
   const { toast } = useToast();
   const [hydrated, setHydrated] = useState(false);
   const [filters, setFilters] = useState<Partial<FilterValues>>({});
+  const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
+  
+  const getEntryKey = (entry: AwardEntry) => `${entry.dateOfExam}-${entry.upc}-${entry.qpNo}`;
 
   useEffect(() => {
     setHydrated(true);
@@ -68,7 +72,7 @@ export default function AwardsDispatchPage() {
   
   const { filteredAwards, totalNorth, totalSouth, grandTotal } = useMemo(() => {
     const filtered = allAwardEntries.filter(entry => {
-        const key = `${entry.dateOfExam}-${entry.upc}-${entry.qpNo}`;
+        const key = getEntryKey(entry);
         const currentDispatchData = dispatchData[key] || {};
         return Object.entries(filters).every(([filterKey, filterValue]) => {
             if (!filterValue) return true;
@@ -179,7 +183,7 @@ export default function AwardsDispatchPage() {
   };
 
   const handleDeleteRow = (entryToDelete: AwardEntry) => {
-    const keyToDelete = `${entryToDelete.dateOfExam}-${entryToDelete.upc}-${entryToDelete.qpNo}`;
+    const keyToDelete = getEntryKey(entryToDelete);
     
     const storedTrash = localStorage.getItem(getAwardsDispatchTrashStorageKey());
     const trash = storedTrash ? JSON.parse(storedTrash) : [];
@@ -190,7 +194,7 @@ export default function AwardsDispatchPage() {
     localStorage.setItem(getAwardsDispatchTrashStorageKey(), JSON.stringify([...trash, trashedItem]));
 
     const newAwardEntries = allAwardEntries.filter(entry => 
-        `${entry.dateOfExam}-${entry.upc}-${entry.qpNo}` !== keyToDelete
+        getEntryKey(entry) !== keyToDelete
     );
     const newDispatchData = { ...dispatchData };
     delete newDispatchData[keyToDelete];
@@ -203,7 +207,7 @@ export default function AwardsDispatchPage() {
 
   const handleExport = () => {
     const dataToExport = filteredAwards.map(entry => {
-        const key = `${entry.dateOfExam}-${entry.upc}-${entry.qpNo}`;
+        const key = getEntryKey(entry);
         const extraData = dispatchData[key] || {};
         return {
             "Date of Exam": formatDate(entry.dateOfExam),
@@ -229,6 +233,23 @@ export default function AwardsDispatchPage() {
   const handleFilterChange = (field: keyof FilterValues, value: string) => {
     setFilters(prev => ({ ...prev, [field]: value }));
   };
+  
+  const handleSelectEntry = (key: string, checked: boolean) => {
+      if (checked) {
+          setSelectedEntries(prev => [...prev, key]);
+      } else {
+          setSelectedEntries(prev => prev.filter(k => k !== key));
+      }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+      if (checked) {
+          setSelectedEntries(filteredAwards.map(getEntryKey));
+      } else {
+          setSelectedEntries([]);
+      }
+  };
+
 
   if (!hydrated) {
     return null; 
@@ -295,6 +316,14 @@ export default function AwardsDispatchPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-nav-awards hover:bg-nav-awards/90">
+                  <TableHead className="text-primary-foreground">
+                    <Checkbox
+                      onCheckedChange={handleSelectAll}
+                      checked={filteredAwards.length > 0 && selectedEntries.length === filteredAwards.length}
+                      aria-label="Select all"
+                      className="border-primary-foreground text-primary-foreground"
+                    />
+                  </TableHead>
                   <TableHead className="text-primary-foreground">Date of Exam</TableHead>
                   <TableHead className="text-primary-foreground">UPC</TableHead>
                   <TableHead className="text-primary-foreground">QP No.</TableHead>
@@ -311,10 +340,18 @@ export default function AwardsDispatchPage() {
               </TableHeader>
               <TableBody>
                 {filteredAwards.length > 0 ? filteredAwards.map((entry, index) => {
-                  const key = `${entry.dateOfExam}-${entry.upc}-${entry.qpNo}`;
+                  const key = getEntryKey(entry);
                   const currentData = dispatchData[key] || {};
+                  const isSelected = selectedEntries.includes(key);
                   return (
-                    <TableRow key={key} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")}>
+                    <TableRow key={key} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")} data-state={isSelected ? "selected" : ""}>
+                      <TableCell>
+                        <Checkbox
+                            onCheckedChange={(checked) => handleSelectEntry(key, !!checked)}
+                            checked={isSelected}
+                            aria-label={`Select entry for UPC ${entry.upc}`}
+                        />
+                      </TableCell>
                       <TableCell>{formatDate(entry.dateOfExam)}</TableCell>
                       <TableCell>{entry.upc}</TableCell>
                       <TableCell>{entry.qpNo}</TableCell>
@@ -377,7 +414,7 @@ export default function AwardsDispatchPage() {
                   );
                 }) : (
                     <TableRow>
-                        <TableCell colSpan={12} className="text-center h-24 text-muted-foreground">
+                        <TableCell colSpan={13} className="text-center h-24 text-muted-foreground">
                             No index entries found. Please add entries in the Index page.
                         </TableCell>
                     </TableRow>
@@ -386,7 +423,7 @@ export default function AwardsDispatchPage() {
               {filteredAwards.length > 0 && (
                 <TableFooter>
                     <TableRow>
-                        <TableCell colSpan={5} className="text-right font-bold">Grand Totals</TableCell>
+                        <TableCell colSpan={6} className="text-right font-bold">Grand Totals</TableCell>
                         <TableCell className="font-bold text-blue-600">{totalNorth}</TableCell>
                         <TableCell className="font-bold text-red-600">{totalSouth}</TableCell>
                         <TableCell className="font-bold">{grandTotal}</TableCell>
