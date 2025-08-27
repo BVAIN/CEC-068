@@ -103,7 +103,39 @@ export default function TeachersDataPage() {
   };
 
   const handleExport = () => {
-    const worksheet = XLSX.utils.json_to_sheet(filteredTeachers);
+    const dataToExport = filteredTeachers.map(teacher => {
+        return {
+            "Evaluator ID": teacher.evaluatorId,
+            "Evaluator Name": teacher.evaluatorName,
+            "College Name": teacher.collegeName,
+            "Course": teacher.course,
+            "Email": teacher.email,
+            "PAN No.": teacher.panNo,
+            "Address": teacher.address,
+            "Distance": teacher.distance,
+            "Mobile No.": teacher.mobileNo,
+            "Bank Name": teacher.bankName,
+            "Branch": teacher.branch,
+            "Bank Account No.": teacher.bankAccountNo,
+            "IFSC Code": teacher.ifscCode,
+        };
+    });
+    
+    if (dataToExport.length === 0) {
+        toast({ variant: 'destructive', title: 'No data to export' });
+        return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet([]);
+    const headers = Object.keys(dataToExport[0]).map(header => ({
+        v: header,
+        t: 's',
+        s: { font: { bold: true } }
+    }));
+    
+    XLSX.utils.sheet_add_aoa(worksheet, [headers.map(h => h.v)], { origin: 'A1' });
+    XLSX.utils.sheet_add_json(worksheet, dataToExport, { origin: 'A2', skipHeader: true });
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Teachers");
     XLSX.writeFile(workbook, "TeachersData.xlsx");

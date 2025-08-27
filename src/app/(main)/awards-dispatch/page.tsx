@@ -232,7 +232,21 @@ export default function AwardsDispatchPage() {
         };
     });
     
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    if (dataToExport.length === 0) {
+        toast({ variant: 'destructive', title: 'No data to export' });
+        return;
+    }
+    
+    const worksheet = XLSX.utils.aoa_to_sheet([]);
+    const headers = Object.keys(dataToExport[0]).map(header => ({
+        v: header,
+        t: 's',
+        s: { font: { bold: true } }
+    }));
+    
+    XLSX.utils.sheet_add_aoa(worksheet, [headers.map(h => h.v)], { origin: 'A1' });
+    XLSX.utils.sheet_add_json(worksheet, dataToExport, { origin: 'A2', skipHeader: true });
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "AwardsDispatch");
     XLSX.writeFile(workbook, "AwardsDispatchData.xlsx");
@@ -459,3 +473,5 @@ export default function AwardsDispatchPage() {
     </div>
   );
 }
+
+    

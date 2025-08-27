@@ -16,7 +16,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter, Share2, Copy, PencilRuler, Users, Printer } from "lucide-react";
+import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter, Share2, Copy, PencilRuler, Users, Printer, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -77,6 +77,7 @@ const editableFields = [
 ] as const;
 
 type EditableField = typeof editableFields[number]['value'];
+type SortDirection = "asc" | "desc";
 
 function BillFormPageComponent() {
   const router = useRouter();
@@ -93,6 +94,7 @@ function BillFormPageComponent() {
   const [bulkEditField, setBulkEditField] = useState<EditableField>('course');
   const [bulkFindValue, setBulkFindValue] = useState('');
   const [bulkReplaceValue, setBulkReplaceValue] = useState('');
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [globalSettings, setGlobalSettings] = useState<GlobalBillSettings>({
       billName: '',
       examinationName: '',
@@ -154,7 +156,18 @@ function BillFormPageComponent() {
 
   const filteredBills = useMemo(() => {
     const lowercasedTerm = searchTerm.toLowerCase();
-    return bills.filter(bill => {
+    
+    let sortedBills = [...bills].sort((a, b) => {
+        const nameA = a.evaluatorName.toLowerCase();
+        const nameB = b.evaluatorName.toLowerCase();
+        if (sortDirection === 'asc') {
+            return nameA.localeCompare(nameB);
+        } else {
+            return nameB.localeCompare(nameA);
+        }
+    });
+
+    return sortedBills.filter(bill => {
         const searchMatch =
             bill.evaluatorName.toLowerCase().includes(lowercasedTerm) ||
             bill.evaluatorId.toLowerCase().includes(lowercasedTerm) ||
@@ -175,7 +188,7 @@ function BillFormPageComponent() {
 
         return searchMatch && filterMatch;
     });
-  }, [bills, searchTerm, filters]);
+  }, [bills, searchTerm, filters, sortDirection]);
 
 
   const form = useForm<BillFormValues>({
@@ -300,9 +313,41 @@ function BillFormPageComponent() {
   const handleExport = () => {
     const dataToExport = bills.map(bill => {
         const { signature, ...rest } = bill;
-        return rest;
+        return {
+            "Evaluator ID": rest.evaluatorId,
+            "Evaluator Name": rest.evaluatorName,
+            "College Name": rest.collegeName,
+            "Course": rest.course,
+            "Email": rest.email,
+            "PAN No.": rest.panNo,
+            "Address": rest.address,
+            "Distance": rest.distance,
+            "Mobile No.": rest.mobileNo,
+            "Bank Name": rest.bankName,
+            "Branch": rest.branch,
+            "Bank Account No.": rest.bankAccountNo,
+            "IFSC Code": rest.ifscCode,
+        };
     });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    
+    if (dataToExport.length === 0) {
+        toast({ variant: 'destructive', title: 'No data to export' });
+        return;
+    }
+    
+    // Create a new worksheet with bold headers
+    const worksheet = XLSX.utils.aoa_to_sheet([]);
+    const headers = Object.keys(dataToExport[0]);
+    
+    const headerRow = headers.map(header => ({
+        v: header,
+        t: 's',
+        s: { font: { bold: true } }
+    }));
+    
+    XLSX.utils.sheet_add_aoa(worksheet, [headerRow], { origin: 'A1' });
+    XLSX.utils.sheet_add_json(worksheet, dataToExport, { origin: 'A2', skipHeader: true });
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Bills");
     XLSX.writeFile(workbook, "BillsData.xlsx");
@@ -436,7 +481,7 @@ function BillFormPageComponent() {
                 <div style="display: flex; justify-content: space-between; align-items: center;"><span>Balance :</span><span style="text-align: right;">Rs. ____________________________</span></div>
                 <div>
                   <div style="display: flex; justify-content: space-between; align-items: center;"><span>Conveyance @ Rs. _________ Per day</span><span style="text-align: right;">Rs. ____________________________</span></div>
-                  <div style="padding-left: 1rem;"><span>(Up to 30 Km Rs.${globalSettings.conveyanceUnder30}/- & above Rs. ${globalSettings.conveyanceOver30}/-)</span></div>
+                  <div style="padding-left: 1rem;"><span>(Up to 30 Km Rs. ${globalSettings.conveyanceUnder30}/- & above Rs. ${globalSettings.conveyanceOver30}/-)</span></div>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center;"><span>Refreshment (125x &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) :</span><span style="text-align: right;">Rs. ____________________________</span></div>
                 <div style="display: flex; justify-content: space-between; align-items: center;"><span>Net Payable :</span><span style="text-align: right;">Rs. ____________________________</span></div>
@@ -645,6 +690,13 @@ function BillFormPageComponent() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
+                        <Button
+                            variant="outline"
+                            onClick={() => setSortDirection(prev => prev === "asc" ? "desc" : "asc")}
+                        >
+                            {sortDirection === 'asc' ? <ArrowUpAZ className="mr-2 h-4 w-4"/> : <ArrowDownAZ className="mr-2 h-4 w-4" />}
+                            Sort
+                        </Button>
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button className="bg-pink-500 hover:bg-pink-600 text-white"><Filter className="mr-2 h-4 w-4"/> Filter</Button>

@@ -388,7 +388,6 @@ export default function ScriptsIssueFormPage() {
     const dataToExport = [];
     const groupedByTeacher: { [key: string]: IssueFormValues[] } = {};
 
-    // Group issues by teacherId
     for (const issue of issues) {
         if (!groupedByTeacher[issue.teacherId]) {
             groupedByTeacher[issue.teacherId] = [];
@@ -396,7 +395,6 @@ export default function ScriptsIssueFormPage() {
         groupedByTeacher[issue.teacherId].push(issue);
     }
     
-    // Create rows for each teacher
     for (const teacherId in groupedByTeacher) {
         const teacherIssues = groupedByTeacher[teacherId];
         const firstIssue = teacherIssues[0];
@@ -421,7 +419,6 @@ export default function ScriptsIssueFormPage() {
           "Visit Dates": visitDates,
         };
 
-        // Add a row for each packet
         for (const issue of teacherIssues) {
             dataToExport.push({
                 ...sharedData,
@@ -442,8 +439,26 @@ export default function ScriptsIssueFormPage() {
         }
     }
 
+    if (dataToExport.length === 0) {
+        toast({ variant: 'destructive', title: 'No data to export' });
+        return;
+    }
+    
+    const worksheet = XLSX.utils.aoa_to_sheet([]);
+    const headers = Object.keys(dataToExport[0]).map(header => ({
+      v: header,
+      t: 's',
+      s: { font: { bold: true } }
+    }));
+    
+    XLSX.utils.sheet_add_aoa(worksheet, [headers.map(h => h.v)], { origin: 'A1' });
+    worksheet['!cols'] = headers.map(() => ({ wch: 20 }));
+    
+    dataToExport.forEach((row, rowIndex) => {
+        const rowData = headers.map(header => row[header.v as keyof typeof row]);
+        XLSX.utils.sheet_add_aoa(worksheet, [rowData], { origin: `A${rowIndex + 2}` });
+    });
 
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Issues");
     XLSX.writeFile(workbook, "IssueData_Detailed.xlsx");
@@ -904,3 +919,5 @@ export default function ScriptsIssueFormPage() {
     </div>
   );
 }
+
+    
