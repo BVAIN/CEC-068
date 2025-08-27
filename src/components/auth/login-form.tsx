@@ -145,9 +145,9 @@ export default function LoginForm() {
                                                 name="securityAnswer"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Who Created This Web Application?</FormLabel>
+                                                        
                                                         <FormControl>
-                                                            <Input placeholder="" {...field} />
+                                                            <Input placeholder="Who Created This Web Application?" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -158,9 +158,9 @@ export default function LoginForm() {
                                                 name="newPassword"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>New Password</FormLabel>
+                                                        
                                                         <FormControl>
-                                                            <Input type="password" placeholder="" {...field} />
+                                                            <Input type="password" placeholder="New Password" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
