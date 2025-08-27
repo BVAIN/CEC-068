@@ -453,7 +453,7 @@ function BillFormPageComponent() {
             </div>
             <div style="margin-top: 2rem; font-size: 1rem; line-height: 1.5;">
                 <p>
-                    I certify that none of my relations (husband, wife, son, daughter, brother, sister nephew, niece, sister-in law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
+                    I certify that none of my relations (husband, wife, son, daughter, brother, sister, nephew, niece, sister-in-law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
                 </p>
                 <div style="display: flex; justify-content: flex-end; padding-top: 2rem;">
                     <div style="text-align: left; display: grid; gap: 4px;">
@@ -859,7 +859,7 @@ function BillFormPageComponent() {
                 <Button onClick={() => router.push('/teachers')}><Users className="mr-2 h-4 w-4" /> Teachers Data</Button>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                         <Button className="bg-purple-500 hover:bg-purple-600 text-white" disabled={selectedBills.length === 0}>
+                         <Button className="bg-violet-500 hover:bg-violet-600 text-white" disabled={selectedBills.length === 0}>
                             <Printer className="mr-2 h-4 w-4" />
                              Print Selected ({selectedBills.length})
                         </Button>

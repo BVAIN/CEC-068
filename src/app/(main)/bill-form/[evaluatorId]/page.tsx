@@ -316,7 +316,7 @@ export default function BillViewPage() {
             </Dialog>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button className="bg-purple-500 hover:bg-purple-600 text-white"><Printer className="mr-2 h-4 w-4" /> Print</Button>
+                    <Button className="bg-violet-500 hover:bg-violet-600 text-white"><Printer className="mr-2 h-4 w-4" /> Print</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => handlePrint('bill')}>
@@ -530,7 +530,7 @@ export default function BillViewPage() {
             </div>
             <div className="mt-8 space-y-4 text-base">
                 <p>
-                    I certify that none of my relations (husband, wife, son, daughter, brother, sister nephew, niece, sister-in law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
+                    I certify that none of my relations (husband, wife, son, daughter, brother, sister, nephew, niece, sister-in-law or daughter-in-law etc.) is a candidate at the Central Evaluation Center where evaluation is being done.
                 </p>
                 <div className="flex justify-end pt-8">
                     <div className="text-left space-y-1 undertaking-details">
