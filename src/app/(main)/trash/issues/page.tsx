@@ -15,6 +15,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
+const formatDate = (dateString: string) => {
+    if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+};
 
 export default function IssueTrashPage() {
   const [trashedIssues, setTrashedIssues] = useState<IssueFormValues[]>([]);
@@ -172,7 +177,7 @@ export default function IssueTrashPage() {
                       <TableCell>{issue.course}</TableCell>
                       <TableCell>{issue.campus}</TableCell>
                       <TableCell>{issue.schoolType}</TableCell>
-                      <TableCell>{issue.dateOfIssue}</TableCell>
+                      <TableCell>{formatDate(issue.dateOfIssue)}</TableCell>
                       <TableCell>{issue.packetNo}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
@@ -231,5 +236,3 @@ export default function IssueTrashPage() {
     </div>
   );
 }
-
-    

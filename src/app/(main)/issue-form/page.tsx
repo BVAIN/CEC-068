@@ -54,6 +54,12 @@ const issueFormSchema = z.object({
 
 export type IssueFormValues = z.infer<typeof issueFormSchema>;
 
+const formatDate = (dateString: string) => {
+    if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+};
+
 // Populate with some initial data for demonstration
 const seedQpUpcMap = () => {
     if (typeof window !== 'undefined' && !localStorage.getItem(getQpUpcMapKey())) {
@@ -282,7 +288,7 @@ export default function ScriptsIssueFormPage() {
     return `
       <h2>${title}</h2>
       <p><strong>Packet No:</strong> ${issue.packetNo}</p>
-      <p><strong>Date of Issue:</strong> ${issue.dateOfIssue}</p>
+      <p><strong>Date of Issue:</strong> ${formatDate(issue.dateOfIssue)}</p>
       <p><strong>Course:</strong> ${issue.course}</p>
       <p><strong>No. of Scripts:</strong> ${issue.noOfScripts}</p>
       <p>Thank you.</p>
@@ -415,7 +421,7 @@ export default function ScriptsIssueFormPage() {
         const totalAbsent = teacherIssues.reduce((acc, issue) => acc + (issue.noOfAbsent || 0), 0);
         const totalPresent = totalScripts - totalAbsent;
         const totalVisits = new Set(teacherIssues.map(issue => issue.dateOfIssue)).size;
-        const visitDates = Array.from(new Set(teacherIssues.map(issue => issue.dateOfIssue))).join(", ");
+        const visitDates = Array.from(new Set(teacherIssues.map(issue => formatDate(issue.dateOfIssue)))).join(", ");
 
         const sharedData = {
           "Token No.": firstIssue.tokenNo,
@@ -435,7 +441,7 @@ export default function ScriptsIssueFormPage() {
         for (const issue of teacherIssues) {
             dataToExport.push({
                 ...sharedData,
-                "Date of Issue": issue.dateOfIssue,
+                "Date of Issue": formatDate(issue.dateOfIssue),
                 "Packet No.": issue.packetNo,
                 "Packet Range": `${issue.packetFrom} - ${issue.packetTo}`,
                 "No of Scripts": issue.noOfScripts,
@@ -818,7 +824,7 @@ export default function ScriptsIssueFormPage() {
                     </TableCell>
                     <TableCell>{issue.tokenNo}</TableCell>
                     <TableCell>{issue.teacherName}<br/><span className="text-xs text-muted-foreground">{issue.teacherId}</span></TableCell>
-                    <TableCell>{issue.dateOfIssue}</TableCell>
+                    <TableCell>{formatDate(issue.dateOfIssue)}</TableCell>
                     <TableCell>{issue.packetNo}</TableCell>
                     <TableCell>{issue.qpNo}</TableCell>
                     <TableCell>{issue.course}</TableCell>

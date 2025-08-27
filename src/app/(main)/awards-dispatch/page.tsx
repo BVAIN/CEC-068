@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,16 +42,18 @@ const getAwardsDispatchStorageKey = () => {
     return 'awards_dispatch_data';
 };
 
+const formatDate = (dateString: string) => {
+    if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+};
+
 
 export default function AwardsDispatchPage() {
   const [awardEntries, setAwardEntries] = useState<AwardEntry[]>([]);
   const [dispatchData, setDispatchData] = useState<DispatchState>({});
   const { toast } = useToast();
   const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
 
   const { totalNorth, totalSouth, grandTotal, totalAwardLists, totalAwards } = useMemo(() => {
     let totalNorth = 0;
@@ -75,6 +77,10 @@ export default function AwardsDispatchPage() {
 
     return { totalNorth, totalSouth, grandTotal, totalAwardLists, totalAwards };
   }, [awardEntries, dispatchData]);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -137,6 +143,16 @@ export default function AwardsDispatchPage() {
           }
       }));
   };
+
+  const handleSaveRow = (key: string) => {
+    try {
+        localStorage.setItem(getAwardsDispatchStorageKey(), JSON.stringify(dispatchData));
+        toast({ title: "Entry Saved", description: `Changes for UPC ${key.split('-')[1]} have been saved.` });
+    } catch (error) {
+        console.error("Failed to save data for one entry:", error);
+        toast({ variant: "destructive", title: "Save Failed", description: "Could not save the entry." });
+    }
+  };
   
   const handleSaveAll = () => {
     try {
@@ -153,7 +169,7 @@ export default function AwardsDispatchPage() {
         const key = `${entry.dateOfExam}-${entry.upc}-${entry.qpNo}`;
         const extraData = dispatchData[key] || {};
         return {
-            "Date of Exam": entry.dateOfExam,
+            "Date of Exam": formatDate(entry.dateOfExam),
             "UPC": entry.upc,
             "QP No.": entry.qpNo,
             "Course": entry.course,
@@ -181,14 +197,12 @@ export default function AwardsDispatchPage() {
     <div className="space-y-8 animate-fade-in">
       <header>
         <h1 className="text-4xl font-bold tracking-tight font-headline lg:text-5xl">Awards Dispatch Data</h1>
-        <p className="text-lg text-muted-foreground mt-2">Combined view of North and South campus entries for dispatch tracking.</p>
       </header>
       
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>Dispatch Entries</CardTitle>
-              <CardDescription>Enter dispatch details for each paper.</CardDescription>
             </div>
             <div className="flex items-center gap-2">
                 <Button onClick={handleSaveAll} className="bg-blue-500 hover:bg-blue-600 text-white">
@@ -215,6 +229,7 @@ export default function AwardsDispatchPage() {
                   <TableHead className="text-primary-foreground">No. of Award list</TableHead>
                   <TableHead className="text-primary-foreground">No. of Awards</TableHead>
                   <TableHead className="text-primary-foreground">Date of dispatch</TableHead>
+                  <TableHead className="text-primary-foreground">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -223,7 +238,7 @@ export default function AwardsDispatchPage() {
                   const currentData = dispatchData[key] || {};
                   return (
                     <TableRow key={key} className={cn(index % 2 === 0 ? "bg-muted/50" : "bg-background")}>
-                      <TableCell>{entry.dateOfExam}</TableCell>
+                      <TableCell>{formatDate(entry.dateOfExam)}</TableCell>
                       <TableCell>{entry.upc}</TableCell>
                       <TableCell>{entry.qpNo}</TableCell>
                       <TableCell>{entry.course}</TableCell>
@@ -251,16 +266,20 @@ export default function AwardsDispatchPage() {
                         <Input
                           type="text"
                           className="w-48"
-                          placeholder="e.g., 2024-07-20, 2024-07-21"
                           value={currentData.dispatchDate || ''}
                           onChange={(e) => handleInputChange(key, 'dispatchDate', e.target.value)}
                         />
+                      </TableCell>
+                      <TableCell>
+                        <Button size="icon" variant="ghost" onClick={() => handleSaveRow(key)}>
+                            <Save className="h-4 w-4 text-blue-500" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   );
                 }) : (
                     <TableRow>
-                        <TableCell colSpan={11} className="text-center h-24 text-muted-foreground">
+                        <TableCell colSpan={12} className="text-center h-24 text-muted-foreground">
                             No index entries found. Please add entries in the Index page.
                         </TableCell>
                     </TableRow>
@@ -275,7 +294,7 @@ export default function AwardsDispatchPage() {
                         <TableCell className="font-bold">{grandTotal}</TableCell>
                         <TableCell className="font-bold">{totalAwardLists}</TableCell>
                         <TableCell className="font-bold">{totalAwards}</TableCell>
-                        <TableCell></TableCell>
+                        <TableCell colSpan={2}></TableCell>
                     </TableRow>
                 </TableFooter>
               )}

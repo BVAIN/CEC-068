@@ -11,6 +11,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { getIssuesStorageKey } from "@/lib/constants";
 
+const formatDate = (dateString: string) => {
+    if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+};
+
 export default function IssueViewPage() {
   const params = useParams();
   const router = useRouter();
@@ -97,7 +103,7 @@ export default function IssueViewPage() {
                             {teacherIssues.map((issue, index) => (
                                 <TableRow key={issue.id || index}>
                                     <TableCell>{issue.packetNo}</TableCell>
-                                    <TableCell>{issue.dateOfIssue}</TableCell>
+                                    <TableCell>{formatDate(issue.dateOfIssue)}</TableCell>
                                     <TableCell>{issue.course}</TableCell>
                                     <TableCell>{issue.packetFrom} - {issue.packetTo} ({issue.campus})</TableCell>
                                     <TableCell>{issue.schoolType}</TableCell>
@@ -168,5 +174,3 @@ export default function IssueViewPage() {
     </div>
   );
 }
-
-    

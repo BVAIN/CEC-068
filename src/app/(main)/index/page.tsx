@@ -43,6 +43,12 @@ type CampusStats = {
     allData: StatDetail,
 };
 
+const formatDate = (dateString: string) => {
+    if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+};
+
 export default function IndexPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -221,7 +227,10 @@ export default function IndexPage() {
   };
   
   const handleExport = (data: PublicIssueFormValues[], filename: string) => {
-    const dataToExport = data.map(({id, ...rest}) => rest);
+    const dataToExport = data.map(({id, ...rest}) => ({
+        ...rest,
+        dateOfExam: formatDate(rest.dateOfExam)
+    }));
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Entries");
@@ -410,7 +419,7 @@ export default function IndexPage() {
                                 disabled={!entry.id}
                             />
                         </TableCell>
-                        <TableCell>{entry.dateOfExam}</TableCell>
+                        <TableCell>{formatDate(entry.dateOfExam)}</TableCell>
                         {isSearch && <TableCell>{entry.course}</TableCell>}
                         {isSearch && <TableCell>{entry.type}</TableCell>}
                         <TableCell>{entry.upc}</TableCell>

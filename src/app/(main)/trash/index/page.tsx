@@ -15,6 +15,11 @@ import { Label } from "@/components/ui/label";
 import type { PublicIssueFormValues } from "@/app/(public)/entry/page";
 import { cn } from "@/lib/utils";
 
+const formatDate = (dateString: string) => {
+    if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+};
 
 export default function IndexTrashPage() {
   const [trashedEntries, setTrashedEntries] = useState<PublicIssueFormValues[]>([]);
@@ -193,7 +198,7 @@ export default function IndexTrashPage() {
                             aria-label={`Select entry from ${entry.dateOfExam}`}
                           />
                         </TableCell>
-                      <TableCell>{entry.dateOfExam}</TableCell>
+                      <TableCell>{formatDate(entry.dateOfExam)}</TableCell>
                       <TableCell>{entry.course}</TableCell>
                       <TableCell>{entry.campus}</TableCell>
                       <TableCell>{entry.type}</TableCell>
