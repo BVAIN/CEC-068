@@ -182,27 +182,29 @@ export default function AwardsDispatchPage() {
     }
   };
 
-  const handleDeleteRow = (entryToDelete: AwardEntry) => {
-    const keyToDelete = getEntryKey(entryToDelete);
-    
+  const handleDelete = (keysToDelete: string[]) => {
     const storedTrash = localStorage.getItem(getAwardsDispatchTrashStorageKey());
     const trash = storedTrash ? JSON.parse(storedTrash) : [];
-    const trashedItem = {
-        entry: entryToDelete,
-        dispatchData: dispatchData[keyToDelete] || {}
-    };
-    localStorage.setItem(getAwardsDispatchTrashStorageKey(), JSON.stringify([...trash, trashedItem]));
+
+    const entriesToTrash = allAwardEntries.filter(entry => keysToDelete.includes(getEntryKey(entry)));
+    const trashedItems = entriesToTrash.map(entry => ({
+        entry,
+        dispatchData: dispatchData[getEntryKey(entry)] || {}
+    }));
+
+    localStorage.setItem(getAwardsDispatchTrashStorageKey(), JSON.stringify([...trash, ...trashedItems]));
 
     const newAwardEntries = allAwardEntries.filter(entry => 
-        getEntryKey(entry) !== keyToDelete
+        !keysToDelete.includes(getEntryKey(entry))
     );
     const newDispatchData = { ...dispatchData };
-    delete newDispatchData[keyToDelete];
+    keysToDelete.forEach(key => delete newDispatchData[key]);
     
     setAllAwardEntries(newAwardEntries);
     setDispatchData(newDispatchData);
+    setSelectedEntries([]);
     
-    toast({ title: "Entry Moved to Trash", description: `Entry for UPC ${entryToDelete.upc} moved to trash.`});
+    toast({ title: "Entries Moved to Trash", description: `${keysToDelete.length} entries moved to trash.`});
   };
 
   const handleExport = () => {
@@ -218,7 +220,6 @@ export default function AwardsDispatchPage() {
             "North": entry.northChallan,
             "South": entry.southChallan,
             "Total": entry.totalChallan,
-            "No. of Awards": extraData.awardsCount || '',
             "No. of Pages": extraData.noOfPages || '',
             "Date of Dispatch": extraData.dispatchDate || '',
         };
@@ -261,7 +262,6 @@ export default function AwardsDispatchPage() {
       { name: 'qpNo', label: 'QP No.' },
       { name: 'course', label: 'Course' },
       { name: 'type', label: 'Type' },
-      { name: 'awardsCount', label: 'No. of Awards' },
       { name: 'noOfPages', label: 'No. of Pages' },
       { name: 'dispatchDate', label: 'Date of Dispatch' },
   ];
@@ -278,6 +278,27 @@ export default function AwardsDispatchPage() {
               <CardTitle>Dispatch Entries ({filteredAwards.length})</CardTitle>
             </div>
             <div className="flex items-center gap-2">
+                {selectedEntries.length > 0 && (
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive">
+                                <Trash2 className="mr-2 h-4 w-4" /> Delete Selected ({selectedEntries.length})
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action will move {selectedEntries.length} entries to the trash.
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(selectedEntries)}>Continue</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                )}
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button className="bg-pink-500 hover:bg-pink-600 text-white"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
@@ -293,8 +314,8 @@ export default function AwardsDispatchPage() {
                                     <Label htmlFor={`filter-${field.name}`}>{field.label}</Label>
                                     <Input
                                         id={`filter-${field.name}`}
-                                        value={filters[field.name] || ''}
-                                        onChange={(e) => handleFilterChange(field.name, e.target.value)}
+                                        value={filters[field.name as keyof typeof filters] || ''}
+                                        onChange={(e) => handleFilterChange(field.name as keyof FilterValues, e.target.value)}
                                         className="col-span-2 h-8"
                                     />
                                 </div>
@@ -332,7 +353,6 @@ export default function AwardsDispatchPage() {
                   <TableHead className="text-primary-foreground">North</TableHead>
                   <TableHead className="text-primary-foreground">South</TableHead>
                   <TableHead className="text-primary-foreground">Total</TableHead>
-                  <TableHead className="text-primary-foreground">No. of Awards</TableHead>
                   <TableHead className="text-primary-foreground">No. of Pages</TableHead>
                   <TableHead className="text-primary-foreground">Date of Dispatch</TableHead>
                   <TableHead className="text-primary-foreground">Action</TableHead>
@@ -360,14 +380,6 @@ export default function AwardsDispatchPage() {
                       <TableCell className="text-blue-600 font-medium">{entry.northChallan}</TableCell>
                       <TableCell className="text-red-600 font-medium">{entry.southChallan}</TableCell>
                       <TableCell className="font-bold">{entry.totalChallan}</TableCell>
-                       <TableCell>
-                        <Input
-                          type="text"
-                          className="w-24"
-                          value={currentData.awardsCount || ''}
-                          onChange={(e) => handleInputChange(key, 'awardsCount', e.target.value)}
-                        />
-                      </TableCell>
                        <TableCell>
                         <Input
                           type="text"
@@ -404,7 +416,7 @@ export default function AwardsDispatchPage() {
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteRow(entry)}>Continue</AlertDialogAction>
+                                    <AlertDialogAction onClick={() => handleDelete([key])}>Continue</AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
@@ -414,7 +426,7 @@ export default function AwardsDispatchPage() {
                   );
                 }) : (
                     <TableRow>
-                        <TableCell colSpan={13} className="text-center h-24 text-muted-foreground">
+                        <TableCell colSpan={12} className="text-center h-24 text-muted-foreground">
                             No index entries found. Please add entries in the Index page.
                         </TableCell>
                     </TableRow>
@@ -427,7 +439,7 @@ export default function AwardsDispatchPage() {
                         <TableCell className="font-bold text-blue-600">{totalNorth}</TableCell>
                         <TableCell className="font-bold text-red-600">{totalSouth}</TableCell>
                         <TableCell className="font-bold">{grandTotal}</TableCell>
-                        <TableCell colSpan={4}></TableCell>
+                        <TableCell colSpan={3}></TableCell>
                     </TableRow>
                 </TableFooter>
               )}
