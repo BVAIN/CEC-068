@@ -32,7 +32,7 @@ const publicIssueFormSchema = z.object({
 
 export type PublicIssueFormValues = z.infer<typeof publicIssueFormSchema>;
 
-const initialFormValues: PublicIssueFormValues = {
+const initialFormValues: Omit<PublicIssueFormValues, 'campus' | 'type'> & { campus?: "North" | "South", type?: "Regular" | "NCWEB" | "SOL" } = {
   dateOfExam: "",
   upc: "",
   qpNo: "",
@@ -96,7 +96,11 @@ export default function PublicIssueEntryPage() {
         if (editingId) {
             router.push('/index');
         } else {
-            form.reset(initialFormValues);
+            form.reset({
+                ...initialFormValues,
+                campus: undefined,
+                type: undefined
+            });
         }
 
     } catch (error) {
