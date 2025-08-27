@@ -3,12 +3,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Home, FilePlus, Settings, Rocket, Trash2, FileText, Sun, Moon, Laptop, FileArchive, List, Users, Info, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-provider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 import { 
     SIDEBAR_AWARDS_VISIBILITY_KEY,
     SIDEBAR_INDEX_VISIBILITY_KEY,
@@ -53,9 +54,11 @@ const secondaryMenuItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { toast } = useToast();
   const { setTheme } = useTheme();
   const [visibleItems, setVisibleItems] = useState(allMenuItems);
   const [sessionName, setSessionName] = useState<string | null>(null);
+  const [hasSession, setHasSession] = useState(false);
 
   useEffect(() => {
     const updateVisibleItems = () => {
@@ -67,8 +70,9 @@ export default function Sidebar() {
         setVisibleItems(filteredItems);
     };
 
-    const loadSessionName = () => {
+    const loadSessionInfo = () => {
         const currentSessionId = localStorage.getItem(CURRENT_SESSION_KEY);
+        setHasSession(!!currentSessionId);
         if (currentSessionId) {
             const sessionsData = localStorage.getItem(SESSIONS_STORAGE_KEY);
             if (sessionsData) {
@@ -76,20 +80,36 @@ export default function Sidebar() {
                 const currentSession = sessions.find(s => s.id === currentSessionId);
                 setSessionName(currentSession?.name || null);
             }
+        } else {
+          setSessionName(null);
         }
     };
     
     updateVisibleItems();
-    loadSessionName();
+    loadSessionInfo();
 
-    window.addEventListener('storage', updateVisibleItems);
-    window.addEventListener('storage', loadSessionName); // Also update session name on storage change
+    const handleStorageChange = () => {
+      updateVisibleItems();
+      loadSessionInfo();
+    }
+
+    window.addEventListener('storage', handleStorageChange);
     
     return () => {
-        window.removeEventListener('storage', updateVisibleItems);
-        window.removeEventListener('storage', loadSessionName);
+        window.removeEventListener('storage', handleStorageChange);
     };
   }, [pathname]); // Re-run when path changes to catch session switches
+
+  const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (!hasSession && href !== '/sessions') {
+      e.preventDefault();
+      toast({
+        variant: 'destructive',
+        title: "No Session Selected",
+        description: "Please select a session before proceeding."
+      });
+    }
+  }, [hasSession, toast]);
   
   return (
     <aside className="w-64 bg-card text-card-foreground flex-shrink-0 flex-col border-r hidden md:flex">
@@ -98,7 +118,11 @@ export default function Sidebar() {
           <Rocket className="w-8 h-8 text-primary" />
           <div>
             <h1 className="text-xl font-bold font-headline">CEC-068</h1>
-             {sessionName && <p className="text-xs text-muted-foreground font-medium truncate" title={sessionName}>{sessionName}</p>}
+             {pathname === '/sessions' ? (
+                <p className="text-xs text-muted-foreground font-medium">Select Session</p>
+             ) : (
+                sessionName && <p className="text-xs text-muted-foreground font-medium truncate" title={sessionName}>{sessionName}</p>
+             )}
           </div>
         </div>
       </Link>
@@ -123,6 +147,16 @@ export default function Sidebar() {
                             'w-full justify-start text-base py-6',
                             isActive && activeClasses
                           )}
+                          onClick={(e) => {
+                            if (!hasSession) {
+                              e.preventDefault();
+                               toast({
+                                variant: 'destructive',
+                                title: "No Session Selected",
+                                description: "Please select a session before proceeding."
+                              });
+                            }
+                          }}
                         >
                           <item.icon className="mr-3 h-5 w-5" />
                           <span>{item.label}</span>
@@ -130,11 +164,13 @@ export default function Sidebar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       {item.subItems.map(subItem => (
-                         <Link key={subItem.href} href={subItem.href} passHref>
-                          <DropdownMenuItem>
-                            <subItem.icon className="mr-2 h-4 w-4" />
-                            <span>{subItem.label}</span>
-                          </DropdownMenuItem>
+                         <Link key={subItem.href} href={subItem.href} passHref legacyBehavior>
+                           <a onClick={(e) => handleLinkClick(e, subItem.href)}>
+                            <DropdownMenuItem>
+                              <subItem.icon className="mr-2 h-4 w-4" />
+                              <span>{subItem.label}</span>
+                            </DropdownMenuItem>
+                           </a>
                          </Link>
                       ))}
                     </DropdownMenuContent>
@@ -143,17 +179,19 @@ export default function Sidebar() {
               }
               
               return (
-                <Link key={item.href} href={item.href} passHref>
-                <Button
-                    variant={isActive ? "default" : "ghost"}
-                    className={cn(
-                    'w-full justify-start text-base py-6',
-                     isActive && activeClasses
-                    )}
-                >
-                    <item.icon className="mr-3 h-5 w-5" />
-                    <span>{item.label}</span>
-                </Button>
+                <Link key={item.href} href={item.href} passHref legacyBehavior>
+                  <a onClick={(e) => handleLinkClick(e, item.href)}>
+                    <Button
+                        variant={isActive ? "default" : "ghost"}
+                        className={cn(
+                        'w-full justify-start text-base py-6',
+                        isActive && activeClasses
+                        )}
+                    >
+                        <item.icon className="mr-3 h-5 w-5" />
+                        <span>{item.label}</span>
+                    </Button>
+                  </a>
                 </Link>
             );
             })}
@@ -184,7 +222,8 @@ export default function Sidebar() {
                 const isActive = pathname.startsWith(item.href);
                 const activeClasses = isActive ? `${item.colorClass} text-primary-foreground hover:${item.colorClass}/90` : "ghost";
                 return (
-                    <Link key={item.href} href={item.href} passHref>
+                    <Link key={item.href} href={item.href} passHref legacyBehavior>
+                      <a onClick={(e) => handleLinkClick(e, item.href)}>
                         <Button
                             variant={isActive ? "default" : "ghost"}
                             className={cn('w-full justify-start text-base py-6', isActive && activeClasses)}
@@ -192,6 +231,7 @@ export default function Sidebar() {
                             <item.icon className="mr-3 h-5 w-5" />
                             <span>{item.label}</span>
                         </Button>
+                      </a>
                     </Link>
                 );
              })}

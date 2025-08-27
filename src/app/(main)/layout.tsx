@@ -2,33 +2,25 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Sidebar from "@/components/layout/sidebar";
-import { LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import LogoutButton from "@/components/auth/logout-button";
 import { CURRENT_SESSION_KEY } from '@/lib/constants';
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
     const router = useRouter();
+    const pathname = usePathname();
     const searchParams = useSearchParams();
 
     useEffect(() => {
         const sessionId = localStorage.getItem(CURRENT_SESSION_KEY);
-        if (!sessionId) {
+        // If there's no session ID and we are not already on the sessions page, redirect there.
+        if (!sessionId && pathname !== '/sessions') {
             router.replace('/sessions');
-        } else {
+            return; // Stop further execution in this render
+        }
+
+        if (sessionId) {
             const sessionQueryParam = searchParams.get('session');
             if (!sessionQueryParam || sessionQueryParam !== sessionId) {
                 // This preserves the current path but adds the correct session ID
@@ -36,7 +28,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
                 router.replace(`${currentPath}?session=${sessionId}`);
             }
         }
-    }, [router, searchParams]);
+    }, [router, pathname, searchParams]);
     
     return (
         <div className="flex min-h-screen bg-background">
