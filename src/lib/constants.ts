@@ -26,6 +26,7 @@ export const getAwardsDispatchTrashStorageKey = () => getSessionKey('awards_disp
 export const getQpUpcMapKey = () => getSessionKey('qp_upc_map');
 export const getTeacherCourseTokenMapKey = () => getSessionKey('teacher_course_token_map');
 export const getGlobalBillSettingsKey = () => getSessionKey('global_bill_settings');
+export const getBillCustomizationKey = () => getSessionKey('bill_customization');
 
 
 // Non-session-scoped keys
