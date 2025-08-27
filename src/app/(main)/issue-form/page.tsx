@@ -395,10 +395,68 @@ export default function ScriptsIssueFormPage() {
   };
 
   const handleExport = () => {
-    const worksheet = XLSX.utils.json_to_sheet(issues);
+    const dataToExport = [];
+    const groupedByTeacher: { [key: string]: IssueFormValues[] } = {};
+
+    // Group issues by teacherId
+    for (const issue of issues) {
+        if (!groupedByTeacher[issue.teacherId]) {
+            groupedByTeacher[issue.teacherId] = [];
+        }
+        groupedByTeacher[issue.teacherId].push(issue);
+    }
+    
+    // Create rows for each teacher
+    for (const teacherId in groupedByTeacher) {
+        const teacherIssues = groupedByTeacher[teacherId];
+        const firstIssue = teacherIssues[0];
+        
+        const totalScripts = teacherIssues.reduce((acc, issue) => acc + (issue.noOfScripts || 0), 0);
+        const totalAbsent = teacherIssues.reduce((acc, issue) => acc + (issue.noOfAbsent || 0), 0);
+        const totalPresent = totalScripts - totalAbsent;
+        const totalVisits = new Set(teacherIssues.map(issue => issue.dateOfIssue)).size;
+        const visitDates = Array.from(new Set(teacherIssues.map(issue => issue.dateOfIssue))).join(", ");
+
+        const sharedData = {
+          "Token No.": firstIssue.tokenNo,
+          "Teacher Name": firstIssue.teacherName,
+          "Teacher ID": firstIssue.teacherId,
+          "Mobile No.": firstIssue.mobileNo,
+          "Email": firstIssue.email,
+          "College": firstIssue.college,
+          "Total Scripts": totalScripts,
+          "Total Absent": totalAbsent,
+          "Total Present": totalPresent,
+          "Total Visits": totalVisits,
+          "Visit Dates": visitDates,
+        };
+
+        // Add a row for each packet
+        for (const issue of teacherIssues) {
+            dataToExport.push({
+                ...sharedData,
+                "Date of Issue": issue.dateOfIssue,
+                "Packet No.": issue.packetNo,
+                "Packet Range": `${issue.packetFrom} - ${issue.packetTo}`,
+                "No of Scripts": issue.noOfScripts,
+                "QP No.": issue.qpNo,
+                "UPC": issue.upc,
+                "Course": issue.course,
+                "Campus": issue.campus,
+                "Type": issue.schoolType,
+                "Received": issue.received ? "Yes" : "No",
+                "No of Absent": issue.noOfAbsent,
+                "No of Missing": issue.noOfMissing,
+                "Extra Sheets": issue.extraSheets,
+            });
+        }
+    }
+
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Issues");
-    XLSX.writeFile(workbook, "IssueData.xlsx");
+    XLSX.writeFile(workbook, "IssueData_Detailed.xlsx");
   };
 
   const handleRowDataChange = (index: number, field: keyof IssueFormValues, value: any) => {
@@ -682,7 +740,7 @@ export default function ScriptsIssueFormPage() {
                     </div>
                   </PopoverContent>
                 </Popover>
-                <Button onClick={handlePrint} className="bg-purple-500 hover:bg-purple-600 text-white"><Printer className="mr-2 h-4 w-4" /> Print</Button>
+                <Button onClick={handlePrint} className="bg-violet-500 hover:bg-violet-600 text-white"><Printer className="mr-2 h-4 w-4" /> Print</Button>
                 {selectedIssues.length > 0 && (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -856,5 +914,3 @@ export default function ScriptsIssueFormPage() {
     </div>
   );
 }
-
-    
