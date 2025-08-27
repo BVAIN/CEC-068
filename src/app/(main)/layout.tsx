@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Sidebar from "@/components/layout/sidebar";
 import LogoutButton from "@/components/auth/logout-button";
@@ -11,19 +11,29 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
-        const sessionId = localStorage.getItem(CURRENT_SESSION_KEY);
-        const allowedPaths = ['/sessions', '/settings', '/about'];
+        setIsClient(true);
+    }, []);
+    
+    useEffect(() => {
+        if (!isClient) return;
 
-        // If there's no session ID, force redirect to sessions, unless on an allowed page.
-        if (!sessionId && !allowedPaths.some(p => pathname.startsWith(p))) {
+        const isLoggedIn = true; // Placeholder, replace with real auth check
+        if (!isLoggedIn) {
+            router.replace('/login');
+            return;
+        }
+
+        const sessionId = localStorage.getItem(CURRENT_SESSION_KEY);
+        const isAllowedWithoutSession = ['/sessions', '/settings', '/about'].some(p => pathname.startsWith(p));
+
+        if (!sessionId && !isAllowedWithoutSession) {
             router.replace('/sessions');
             return;
         }
 
-        // If a session IS active, ensure the URL has the correct session query param,
-        // unless we are on the session selection page itself.
         if (sessionId && pathname !== '/sessions') {
             const sessionQueryParam = searchParams.get('session');
             if (!sessionQueryParam || sessionQueryParam !== sessionId) {
@@ -32,16 +42,17 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
                  router.replace(`${pathname}?${newSearchParams.toString()}`);
             }
         }
-    }, [router, pathname, searchParams]);
+    }, [router, pathname, searchParams, isClient]);
     
-    const showLogoutButton = pathname === '/sessions' || pathname === '/home';
+    // Only show sidebar if we are not on the sessions page.
+    const showSidebar = isClient && pathname !== '/sessions';
     
     return (
         <div className="flex min-h-screen bg-background">
-          <Sidebar />
+          {showSidebar && <Sidebar />}
           <div className="flex flex-1 flex-col">
             <header className="flex h-16 items-center justify-end border-b bg-card px-4 sm:px-6 lg:px-8">
-              {showLogoutButton && <LogoutButton />}
+              <LogoutButton />
             </header>
             <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto animate-fade-in">
               {children}
@@ -63,5 +74,3 @@ export default function MainLayout({
     </React.Suspense>
   );
 }
-
-    
