@@ -76,7 +76,7 @@ export default function LoginForm() {
   }
   
   function onForgotPasswordSubmit(values: z.infer<typeof forgotPasswordSchema>) {
-    if (values.securityAnswer.toLowerCase() === "prabhjeet singh") {
+    if (values.securityAnswer.toLowerCase() === "2022") {
         // In a real app, you would now call an API to update the password.
         // For this demo, we'll just show a success message.
         toast({
@@ -147,7 +147,7 @@ export default function LoginForm() {
                                                     <FormItem>
                                                         
                                                         <FormControl>
-                                                            <Input placeholder="Who Created This Web Application?" {...field} />
+                                                            <Input placeholder="When was he come at CEC" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -160,7 +160,7 @@ export default function LoginForm() {
                                                     <FormItem>
                                                         
                                                         <FormControl>
-                                                            <Input type="password" placeholder="New Password" {...field} />
+                                                            <Input type="password" placeholder="" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
