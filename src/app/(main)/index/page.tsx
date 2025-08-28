@@ -1,5 +1,5 @@
 
-"use client";
+      "use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -327,6 +327,8 @@ export default function IndexPage() {
   const renderTable = (title: string, data: PublicIssueFormValues[], totals: {totalChallan: number, totalNetScripts: number, totalDifference: number}, stats?: CampusStats) => {
     const isAllSelected = data.length > 0 && selectedEntries.length === data.filter(e => data.map(d => d.id).includes(e.id)).length;
     const isSearch = activeView === 'Search';
+    const isNorth = activeView === 'North';
+    const isSouth = activeView === 'South';
 
     return (
      <>
@@ -410,7 +412,12 @@ export default function IndexPage() {
             <CardContent>
                 <Table>
                 <TableHeader>
-                    <TableRow className="bg-nav-index hover:bg-nav-index/90">
+                    <TableRow className={cn(
+                        "hover:bg-muted/50",
+                        isNorth && "bg-blue-500 hover:bg-blue-500/90",
+                        isSouth && "bg-red-500 hover:bg-red-500/90",
+                        !isNorth && !isSouth && "bg-nav-index hover:bg-nav-index/90"
+                    )}>
                     <TableHead className="w-12 text-primary-foreground">
                         <Checkbox
                             onCheckedChange={handleSelectAll(data)}
@@ -591,3 +598,5 @@ export default function IndexPage() {
     </div>
   );
 }
+
+    

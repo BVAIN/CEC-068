@@ -1,5 +1,5 @@
 
-"use client";
+      "use client";
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -134,7 +134,7 @@ export default function TeacherTrashPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-nav-trash hover:bg-nav-trash/90">
+                  <TableRow className="bg-nav-teachers hover:bg-nav-teachers/90">
                      <TableHead className="text-primary-foreground">
                         <Checkbox
                           onCheckedChange={handleSelectAll}
@@ -223,4 +223,5 @@ export default function TeacherTrashPage() {
     </div>
   );
 }
+
     
