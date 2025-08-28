@@ -1,5 +1,5 @@
 
-      "use client";
+"use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -21,12 +21,16 @@ import { Dialog, DialogHeader, DialogFooter, DialogContent, DialogTitle, DialogD
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-type FilterValues = Partial<Omit<PublicIssueFormValues, "id" | "asPerChallan" | "netScripts" | "difference" | "type" | "pageNo">> & {
-    asPerChallan: string;
-    netScripts: string;
-    difference: string;
-    pageNo: string;
+type FilterValues = {
+    [key in keyof Omit<PublicIssueFormValues, 'id' | 'asPerChallan' | 'netScripts' | 'difference' | 'pageNo' | 'type'>]: string[];
+} & {
+    asPerChallan: string[];
+    netScripts: string[];
+    difference: string[];
+    pageNo: string[];
     type: ("Regular" | "NCWEB" | "SOL")[];
 };
 
@@ -57,7 +61,7 @@ export default function IndexPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeView, setActiveView] = useState<"North" | "South" | "Search" | null>(null);
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
-  const [filters, setFilters] = useState<FilterValues>({ type: [] } as FilterValues);
+  const [filters, setFilters] = useState<Partial<FilterValues>>({ type: [] });
   const [remarksModalOpen, setRemarksModalOpen] = useState(false);
   const [currentRemarks, setCurrentRemarks] = useState<{ id: string; text?: string }>({ id: '' });
   const [isEditingRemarks, setIsEditingRemarks] = useState(false);
@@ -84,7 +88,7 @@ export default function IndexPage() {
   useEffect(() => {
     // Clear selections and filters when changing views
     setSelectedEntries([]);
-    setFilters({ type: [] } as FilterValues);
+    setFilters({ type: [] });
   }, [activeView]);
   
   useEffect(() => {
@@ -132,12 +136,13 @@ export default function IndexPage() {
 
     return baseEntries.filter(entry => {
         return Object.entries(filters).every(([key, value]) => {
-          if (!value || (Array.isArray(value) && value.length === 0)) return true;
-          if (key === 'type' && Array.isArray(value)) {
-              return value.includes(entry.type);
-          }
-          const entryValue = entry[key as keyof PublicIssueFormValues];
-          return String(entryValue).toLowerCase().includes(String(value).toLowerCase());
+            if (!value || value.length === 0) return true;
+            const entryValue = entry[key as keyof PublicIssueFormValues];
+            if (key === 'difference') {
+                const diff = (entry.netScripts || 0) - (entry.asPerChallan || 0);
+                return value.includes(String(diff));
+            }
+            return value.includes(String(entryValue));
         });
       });
   }, [entries, searchTerm, filters, activeView]);
@@ -215,12 +220,19 @@ export default function IndexPage() {
   };
   
   const handleFilterChange = (field: keyof FilterValues, value: any) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
+    setFilters(prev => {
+        const currentValues = prev[field] || [];
+        if (currentValues.includes(value)) {
+            return { ...prev, [field]: currentValues.filter(v => v !== value) };
+        } else {
+            return { ...prev, [field]: [...currentValues, value] };
+        }
+    });
   };
 
   const handleCheckboxFilterChange = (field: 'type', value: string, checked: boolean) => {
     setFilters(prev => {
-        const currentValues = prev[field] as string[];
+        const currentValues = prev[field] as string[] || [];
         if (checked) {
             return { ...prev, [field]: [...currentValues, value] };
         } else {
@@ -296,6 +308,55 @@ export default function IndexPage() {
       { name: 'netScripts', label: 'Net Scripts' },
       { name: 'difference', label: 'Difference' },
   ];
+  
+  const getUniqueValuesForFilter = (field: keyof FilterValues) => {
+      let values: (string | number | undefined)[];
+      if (field === 'difference') {
+          values = entries.map(e => (e.netScripts || 0) - (e.asPerChallan || 0));
+      } else {
+          values = entries.map(e => e[field as keyof PublicIssueFormValues]);
+      }
+      return [...new Set(values.map(String))];
+  }
+  
+  const MultiSelectFilter = ({ field, label }: { field: keyof FilterValues, label: string }) => {
+      const [searchTerm, setSearchTerm] = useState("");
+      const options = useMemo(() => getUniqueValuesForFilter(field), [field]);
+      const filteredOptions = options.filter(option => option.toLowerCase().includes(searchTerm.toLowerCase()));
+      const selectedValues = filters[field] || [];
+
+      return (
+          <Accordion type="single" collapsible>
+              <AccordionItem value={field}>
+                  <AccordionTrigger>{label} ({selectedValues.length})</AccordionTrigger>
+                  <AccordionContent>
+                      <div className="p-2 space-y-2">
+                          <Input
+                              placeholder="Search..."
+                              value={searchTerm}
+                              onChange={e => setSearchTerm(e.target.value)}
+                          />
+                          <ScrollArea className="h-48">
+                              <div className="space-y-1">
+                                  {filteredOptions.map(option => (
+                                      <div key={option} className="flex items-center space-x-2">
+                                          <Checkbox
+                                              id={`filter-${field}-${option}`}
+                                              checked={selectedValues.includes(option)}
+                                              onCheckedChange={() => handleFilterChange(field, option)}
+                                          />
+                                          <Label htmlFor={`filter-${field}-${option}`} className="font-normal">{option}</Label>
+                                      </div>
+                                  ))}
+                              </div>
+                          </ScrollArea>
+                      </div>
+                  </AccordionContent>
+              </AccordionItem>
+          </Accordion>
+      );
+  };
+
 
   const StatCard = ({ title, stats, className }: { title: string, stats: StatDetail, className?: string }) => (
     <Card className={cn("flex flex-col", className)}>
@@ -383,26 +444,22 @@ export default function IndexPage() {
                                 <div className="space-y-2">
                                     <h4 className="font-medium leading-none">Filters</h4>
                                 </div>
-                                <div className="grid gap-2">
+                                <div className="grid gap-1">
                                     {filterFields.map(field => (
-                                        <div key={field.name} className="grid grid-cols-3 items-center gap-4">
-                                            <Label htmlFor={`filter-${field.name}`}>{field.label}</Label>
-                                            <Input
-                                                id={`filter-${field.name}`}
-                                                value={filters[field.name as keyof Omit<FilterValues, 'type'>] || ''}
-                                                onChange={(e) => handleFilterChange(field.name, e.target.value)}
-                                                className="col-span-2 h-8"
-                                            />
-                                        </div>
+                                       <MultiSelectFilter key={field.name} field={field.name as keyof FilterValues} label={field.label} />
                                     ))}
-                                    <div className="grid grid-cols-3 items-start gap-4">
-                                        <Label>Type</Label>
-                                        <div className="col-span-2 flex flex-col gap-2">
-                                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-regular" checked={filters.type.includes('Regular')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'Regular', !!c)} /><Label htmlFor="filter-type-regular" className="font-normal">Regular</Label></div>
-                                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-ncweb" checked={filters.type.includes('NCWEB')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'NCWEB', !!c)} /><Label htmlFor="filter-type-ncweb" className="font-normal">NCWEB</Label></div>
-                                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-sol" checked={filters.type.includes('SOL')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'SOL', !!c)} /><Label htmlFor="filter-type-sol" className="font-normal">SOL</Label></div>
-                                        </div>
-                                    </div>
+                                    <Accordion type="single" collapsible>
+                                        <AccordionItem value="type">
+                                            <AccordionTrigger>Type ({filters.type?.length || 0})</AccordionTrigger>
+                                            <AccordionContent>
+                                                <div className="p-2 space-y-1">
+                                                    <div className="flex items-center space-x-2"><Checkbox id="filter-type-regular" checked={filters.type?.includes('Regular')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'Regular', !!c)} /><Label htmlFor="filter-type-regular" className="font-normal">Regular</Label></div>
+                                                    <div className="flex items-center space-x-2"><Checkbox id="filter-type-ncweb" checked={filters.type?.includes('NCWEB')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'NCWEB', !!c)} /><Label htmlFor="filter-type-ncweb" className="font-normal">NCWEB</Label></div>
+                                                    <div className="flex items-center space-x-2"><Checkbox id="filter-type-sol" checked={filters.type?.includes('SOL')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'SOL', !!c)} /><Label htmlFor="filter-type-sol" className="font-normal">SOL</Label></div>
+                                                </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    </Accordion>
                                 </div>
                             </div>
                         </PopoverContent>
@@ -598,5 +655,3 @@ export default function IndexPage() {
     </div>
   );
 }
-
-    

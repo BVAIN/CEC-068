@@ -16,6 +16,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 
 type AwardEntry = {
   upc: string;
@@ -40,14 +43,7 @@ type DispatchState = {
 };
 
 type FilterValues = {
-  dateOfExam: string;
-  upc: string;
-  qpNo: string;
-  course: string;
-  type: string;
-  awardsCount: string;
-  noOfPages: string;
-  dispatchDate: string;
+    [key in keyof (AwardEntry & AwardDispatchData)]: string[];
 };
 
 const formatDate = (dateString: string) => {
@@ -75,15 +71,15 @@ export default function AwardsDispatchPage() {
     const filtered = allAwardEntries.filter(entry => {
         const key = getEntryKey(entry);
         const currentDispatchData = dispatchData[key] || {};
-        return Object.entries(filters).every(([filterKey, filterValue]) => {
-            if (!filterValue) return true;
+        return Object.entries(filters).every(([filterKey, filterValues]) => {
+            if (!filterValues || filterValues.length === 0) return true;
+            let entryValue: string | number | undefined;
             if (filterKey in entry) {
-                return String(entry[filterKey as keyof AwardEntry]).toLowerCase().includes(filterValue.toLowerCase());
+                entryValue = entry[filterKey as keyof AwardEntry];
+            } else if (filterKey in currentDispatchData) {
+                entryValue = currentDispatchData[filterKey as keyof AwardDispatchData];
             }
-            if (filterKey in currentDispatchData) {
-                return String(currentDispatchData[filterKey as keyof AwardDispatchData]).toLowerCase().includes(filterValue.toLowerCase());
-            }
-            return true;
+            return filterValues.includes(String(entryValue));
         });
     });
 
@@ -257,7 +253,14 @@ export default function AwardsDispatchPage() {
   };
 
   const handleFilterChange = (field: keyof FilterValues, value: string) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
+    setFilters(prev => {
+        const currentValues = prev[field] || [];
+        if (currentValues.includes(value)) {
+            return { ...prev, [field]: currentValues.filter(v => v !== value) };
+        } else {
+            return { ...prev, [field]: [...currentValues, value] };
+        }
+    });
   };
   
   const handleSelectEntry = (key: string, checked: boolean) => {
@@ -276,7 +279,6 @@ export default function AwardsDispatchPage() {
       }
   };
 
-
   if (!hydrated) {
     return null; 
   }
@@ -290,6 +292,59 @@ export default function AwardsDispatchPage() {
       { name: 'noOfPages', label: 'No. of Pages' },
       { name: 'dispatchDate', label: 'Date of Dispatch' },
   ];
+
+  const getUniqueValues = (field: keyof FilterValues): string[] => {
+      const allValues = allAwardEntries.map(entry => {
+          if (field in entry) {
+              return String(entry[field as keyof AwardEntry]);
+          }
+          const key = getEntryKey(entry);
+          const currentDispatchData = dispatchData[key] || {};
+          if (field in currentDispatchData) {
+              return String(currentDispatchData[field as keyof AwardDispatchData]);
+          }
+          return '';
+      }).filter(Boolean);
+      return [...new Set(allValues)];
+  };
+
+  const MultiSelectFilter = ({ field, label }: { field: keyof FilterValues; label: string }) => {
+      const [searchTerm, setSearchTerm] = useState("");
+      const options = useMemo(() => getUniqueValues(field), [field]);
+      const filteredOptions = options.filter(option => option.toLowerCase().includes(searchTerm.toLowerCase()));
+      const selectedValues = filters[field] || [];
+
+      return (
+          <Accordion type="single" collapsible>
+              <AccordionItem value={field}>
+                  <AccordionTrigger>{label} ({selectedValues.length})</AccordionTrigger>
+                  <AccordionContent>
+                      <div className="p-2 space-y-2">
+                           <Input
+                              placeholder="Search..."
+                              value={searchTerm}
+                              onChange={e => setSearchTerm(e.target.value)}
+                          />
+                          <ScrollArea className="h-48">
+                              <div className="space-y-1">
+                                  {filteredOptions.map(option => (
+                                      <div key={option} className="flex items-center space-x-2">
+                                          <Checkbox
+                                              id={`filter-${field}-${option}`}
+                                              checked={selectedValues.includes(option)}
+                                              onCheckedChange={() => handleFilterChange(field, option)}
+                                          />
+                                          <Label htmlFor={`filter-${field}-${option}`} className="font-normal">{option}</Label>
+                                      </div>
+                                  ))}
+                              </div>
+                          </ScrollArea>
+                      </div>
+                  </AccordionContent>
+              </AccordionItem>
+          </Accordion>
+      );
+  };
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -330,22 +385,14 @@ export default function AwardsDispatchPage() {
                     </PopoverTrigger>
                     <PopoverContent className="w-96 max-h-[80vh] overflow-y-auto">
                         <div className="grid gap-4">
-                        <div className="space-y-2">
-                            <h4 className="font-medium leading-none">Filters</h4>
-                        </div>
-                        <div className="grid gap-2">
-                            {filterFields.map(field => (
-                                <div key={field.name} className="grid grid-cols-3 items-center gap-4">
-                                    <Label htmlFor={`filter-${field.name}`}>{field.label}</Label>
-                                    <Input
-                                        id={`filter-${field.name}`}
-                                        value={filters[field.name as keyof typeof filters] || ''}
-                                        onChange={(e) => handleFilterChange(field.name as keyof FilterValues, e.target.value)}
-                                        className="col-span-2 h-8"
-                                    />
-                                </div>
-                            ))}
-                        </div>
+                            <div className="space-y-2">
+                                <h4 className="font-medium leading-none">Filters</h4>
+                            </div>
+                             <div className="grid gap-1">
+                                {filterFields.map(field => (
+                                    <MultiSelectFilter key={field.name} field={field.name as keyof FilterValues} label={field.label} />
+                                ))}
+                            </div>
                         </div>
                     </PopoverContent>
                 </Popover>

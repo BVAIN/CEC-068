@@ -25,6 +25,8 @@ import { getIssuesStorageKey, getTrashStorageKey, getQpUpcMapKey, getTeacherCour
 import { useGoogleDrive } from "@/hooks/use-google-drive";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 
 const issueFormSchema = z.object({
@@ -73,14 +75,14 @@ const seedQpUpcMap = () => {
 };
 
 type FilterValues = {
-  dateOfIssue: string;
-  qpNo: string;
-  upc: string;
-  course: string;
+  dateOfIssue: string[];
+  qpNo: string[];
+  upc: string[];
+  course: string[];
   campus: ("North" | "South")[];
   type: ("Regular" | "NCWEB" | "SOL")[];
-  teacherId: string;
-  teacherName: string;
+  teacherId: string[];
+  teacherName: string[];
   receivedStatus: "all" | "received" | "not-received";
 };
 
@@ -119,15 +121,9 @@ export default function ScriptsIssueFormPage() {
   const [qpUpcMap, setQpUpcMap] = useState<Record<string, string>>({});
   const [teacherCourseTokenMap, setTeacherCourseTokenMap] = useState<Record<string, Record<string, number>>>({});
   const [isAutofilled, setIsAutofilled] = useState(false);
-  const [filters, setFilters] = useState<FilterValues>({
-    dateOfIssue: "",
-    qpNo: "",
-    upc: "",
-    course: "",
+  const [filters, setFilters] = useState<Partial<FilterValues>>({
     campus: [],
     type: [],
-    teacherId: "",
-    teacherName: "",
     receivedStatus: "all",
   });
   const { isConnected, readFile, writeFile } = useGoogleDrive();
@@ -248,16 +244,15 @@ export default function ScriptsIssueFormPage() {
             issue.mobileNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (issue.course && issue.course.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        const filterMatch = 
-            (filters.dateOfIssue ? issue.dateOfIssue === filters.dateOfIssue : true) &&
-            (filters.qpNo && issue.qpNo ? issue.qpNo.toLowerCase().includes(filters.qpNo.toLowerCase()) : !filters.qpNo) &&
-            (filters.upc && issue.upc ? issue.upc.toLowerCase().includes(filters.upc.toLowerCase()) : !filters.upc) &&
-            (filters.course ? issue.course.toLowerCase().includes(filters.course.toLowerCase()) : true) &&
-            (filters.campus.length > 0 ? issue.campus && filters.campus.includes(issue.campus) : true) &&
-            (filters.type.length > 0 ? issue.schoolType && filters.type.includes(issue.schoolType) : true) &&
-            (filters.teacherId ? issue.teacherId.toLowerCase().includes(filters.teacherId.toLowerCase()) : true) &&
-            (filters.teacherName ? issue.teacherName.toLowerCase().includes(filters.teacherName.toLowerCase()) : true) &&
-            (filters.receivedStatus === 'all' || (filters.receivedStatus === 'received' && issue.received) || (filters.receivedStatus === 'not-received' && !issue.received));
+        const filterMatch = Object.entries(filters).every(([key, value]) => {
+            if (!value || value.length === 0) return true;
+            if (key === 'receivedStatus') {
+                if (value === 'all') return true;
+                return (value === 'received' && issue.received) || (value === 'not-received' && !issue.received);
+            }
+            const issueValue = issue[key as keyof IssueFormValues];
+            return value.includes(String(issueValue));
+        });
             
         return searchMatch && filterMatch;
     });
@@ -500,12 +495,23 @@ export default function ScriptsIssueFormPage() {
   };
   
   const handleFilterChange = (field: keyof FilterValues, value: any) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
+      setFilters(prev => {
+          const currentValues = prev[field as keyof typeof prev] || [];
+          if ((currentValues as string[]).includes(value)) {
+              return { ...prev, [field]: (currentValues as string[]).filter(v => v !== value) };
+          } else {
+              return { ...prev, [field]: [...currentValues as string[], value] };
+          }
+      });
   };
+
+  const handleRadioFilterChange = (field: 'receivedStatus', value: string) => {
+      setFilters(prev => ({...prev, [field]: value}))
+  }
 
   const handleCheckboxFilterChange = (field: 'campus' | 'type', value: string, checked: boolean) => {
     setFilters(prev => {
-        const currentValues = prev[field] as string[];
+        const currentValues = prev[field] as string[] || [];
         if (checked) {
             return { ...prev, [field]: [...currentValues, value] };
         } else {
@@ -513,6 +519,59 @@ export default function ScriptsIssueFormPage() {
         }
     });
   };
+
+  const filterFields: { name: keyof Omit<FilterValues, 'campus' | 'type' | 'receivedStatus'>, label: string }[] = [
+    { name: 'dateOfIssue', label: 'Date of Issue' },
+    { name: 'qpNo', label: 'QP No.' },
+    { name: 'upc', label: 'UPC' },
+    { name: 'course', label: 'Course' },
+    { name: 'teacherId', label: 'Teacher ID' },
+    { name: 'teacherName', label: 'Teacher Name' },
+  ];
+
+  const getUniqueValuesForFilter = (field: keyof Omit<FilterValues, 'campus' | 'type' | 'receivedStatus'>) => {
+      const values = issues.map(issue => String(issue[field]));
+      return [...new Set(values)];
+  }
+
+  const MultiSelectFilter = ({ field, label }: { field: keyof Omit<FilterValues, 'campus' | 'type' | 'receivedStatus'>, label: string }) => {
+      const [searchTerm, setSearchTerm] = useState("");
+      const options = useMemo(() => getUniqueValuesForFilter(field), [field, issues]);
+      const filteredOptions = options.filter(option => option.toLowerCase().includes(searchTerm.toLowerCase()));
+      const selectedValues = filters[field] || [];
+
+      return (
+          <Accordion type="single" collapsible>
+              <AccordionItem value={field}>
+                  <AccordionTrigger>{label} ({selectedValues.length})</AccordionTrigger>
+                  <AccordionContent>
+                      <div className="p-2 space-y-2">
+                          <Input
+                              placeholder="Search..."
+                              value={searchTerm}
+                              onChange={e => setSearchTerm(e.target.value)}
+                          />
+                          <ScrollArea className="h-48">
+                              <div className="space-y-1">
+                                  {filteredOptions.map(option => (
+                                      <div key={option} className="flex items-center space-x-2">
+                                          <Checkbox
+                                              id={`filter-${field}-${option}`}
+                                              checked={selectedValues.includes(option)}
+                                              onCheckedChange={() => handleFilterChange(field, option)}
+                                          />
+                                          <Label htmlFor={`filter-${field}-${option}`} className="font-normal">{option}</Label>
+                                      </div>
+                                  ))}
+                              </div>
+                          </ScrollArea>
+                      </div>
+                  </AccordionContent>
+              </AccordionItem>
+          </Accordion>
+      );
+  };
+
 
   return (
     <div className="space-y-8">
@@ -674,7 +733,7 @@ export default function ScriptsIssueFormPage() {
                   <PopoverTrigger asChild>
                     <Button className="bg-pink-500 hover:bg-pink-600 text-white"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-80">
+                  <PopoverContent className="w-96 max-h-[80vh] overflow-y-auto">
                     <div className="grid gap-4">
                       <div className="space-y-2">
                         <h4 className="font-medium leading-none">Filters</h4>
@@ -682,65 +741,54 @@ export default function ScriptsIssueFormPage() {
                           Filter the issues by the following criteria.
                         </p>
                       </div>
-                      <div className="grid gap-2">
-                        <div className="grid grid-cols-3 items-center gap-4">
-                          <Label htmlFor="dateOfIssue">Date of Issue</Label>
-                          <Input id="dateOfIssue" type="date" value={filters.dateOfIssue} onChange={e => handleFilterChange('dateOfIssue', e.target.value)} className="col-span-2 h-8" />
-                        </div>
-                        <div className="grid grid-cols-3 items-center gap-4">
-                          <Label htmlFor="qpNo">QP No.</Label>
-                          <Input id="qpNo" value={filters.qpNo} onChange={e => handleFilterChange('qpNo', e.target.value)} className="col-span-2 h-8" />
-                        </div>
-                        <div className="grid grid-cols-3 items-center gap-4">
-                          <Label htmlFor="upc">UPC</Label>
-                          <Input id="upc" value={filters.upc} onChange={e => handleFilterChange('upc', e.target.value)} className="col-span-2 h-8" />
-                        </div>
-                        <div className="grid grid-cols-3 items-center gap-4">
-                          <Label htmlFor="course">Course</Label>
-                          <Input id="course" value={filters.course} onChange={e => handleFilterChange('course', e.target.value)} className="col-span-2 h-8" />
-                        </div>
-                         <div className="grid grid-cols-3 items-center gap-4">
-                          <Label htmlFor="teacherName">Teacher Name</Label>
-                          <Input id="teacherName" value={filters.teacherName} onChange={e => handleFilterChange('teacherName', e.target.value)} className="col-span-2 h-8" />
-                        </div>
-                         <div className="grid grid-cols-3 items-center gap-4">
-                          <Label htmlFor="teacherId">Teacher ID</Label>
-                          <Input id="teacherId" value={filters.teacherId} onChange={e => handleFilterChange('teacherId', e.target.value)} className="col-span-2 h-8" />
-                        </div>
-                        <div className="grid grid-cols-3 items-center gap-4">
-                          <Label>Campus</Label>
-                          <div className="col-span-2 flex gap-4">
-                            <div className="flex items-center space-x-2"><Checkbox id="filter-campus-north" checked={filters.campus.includes('North')} onCheckedChange={(c) => handleCheckboxFilterChange('campus', 'North', !!c)} /><Label htmlFor="filter-campus-north" className="font-normal">North</Label></div>
-                            <div className="flex items-center space-x-2"><Checkbox id="filter-campus-south" checked={filters.campus.includes('South')} onCheckedChange={(c) => handleCheckboxFilterChange('campus', 'South', !!c)} /><Label htmlFor="filter-campus-south" className="font-normal">South</Label></div>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-3 items-start gap-4">
-                          <Label>Type</Label>
-                           <div className="col-span-2 flex flex-col gap-2">
-                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-regular" checked={filters.type.includes('Regular')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'Regular', !!c)} /><Label htmlFor="filter-type-regular" className="font-normal">Regular</Label></div>
-                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-ncweb" checked={filters.type.includes('NCWEB')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'NCWEB', !!c)} /><Label htmlFor="filter-type-ncweb" className="font-normal">NCWEB</Label></div>
-                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-sol" checked={filters.type.includes('SOL')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'SOL', !!c)} /><Label htmlFor="filter-type-sol" className="font-normal">SOL</Label></div>
-                          </div>
-                        </div>
-                         <div className="grid grid-cols-3 items-start gap-4">
-                            <Label>Packet Status</Label>
-                            <div className="col-span-2">
-                                <RadioGroup value={filters.receivedStatus} onValueChange={(value) => handleFilterChange('receivedStatus', value)}>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="all" id="filter-status-all" />
-                                        <Label htmlFor="filter-status-all" className="font-normal">All</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="received" id="filter-status-received" />
-                                        <Label htmlFor="filter-status-received" className="font-normal">Received Packets</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="not-received" id="filter-status-not-received" />
-                                        <Label htmlFor="filter-status-not-received" className="font-normal">Not Received Packets</Label>
-                                    </div>
-                                </RadioGroup>
-                            </div>
-                        </div>
+                       <div className="grid gap-1">
+                            {filterFields.map(field => (
+                                <MultiSelectFilter key={field.name} field={field.name} label={field.label} />
+                            ))}
+                            <Accordion type="single" collapsible>
+                                <AccordionItem value="campus">
+                                    <AccordionTrigger>Campus ({(filters.campus || []).length})</AccordionTrigger>
+                                    <AccordionContent>
+                                        <div className="p-2 space-y-1">
+                                            <div className="flex items-center space-x-2"><Checkbox id="filter-campus-north" checked={filters.campus?.includes('North')} onCheckedChange={(c) => handleCheckboxFilterChange('campus', 'North', !!c)} /><Label htmlFor="filter-campus-north" className="font-normal">North</Label></div>
+                                            <div className="flex items-center space-x-2"><Checkbox id="filter-campus-south" checked={filters.campus?.includes('South')} onCheckedChange={(c) => handleCheckboxFilterChange('campus', 'South', !!c)} /><Label htmlFor="filter-campus-south" className="font-normal">South</Label></div>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                            <Accordion type="single" collapsible>
+                                <AccordionItem value="type">
+                                    <AccordionTrigger>Type ({(filters.type || []).length})</AccordionTrigger>
+                                    <AccordionContent>
+                                        <div className="p-2 space-y-1">
+                                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-regular" checked={filters.type?.includes('Regular')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'Regular', !!c)} /><Label htmlFor="filter-type-regular" className="font-normal">Regular</Label></div>
+                                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-ncweb" checked={filters.type?.includes('NCWEB')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'NCWEB', !!c)} /><Label htmlFor="filter-type-ncweb" className="font-normal">NCWEB</Label></div>
+                                            <div className="flex items-center space-x-2"><Checkbox id="filter-type-sol" checked={filters.type?.includes('SOL')} onCheckedChange={(c) => handleCheckboxFilterChange('type', 'SOL', !!c)} /><Label htmlFor="filter-type-sol" className="font-normal">SOL</Label></div>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                             <Accordion type="single" collapsible>
+                                <AccordionItem value="receivedStatus">
+                                    <AccordionTrigger>Packet Status</AccordionTrigger>
+                                    <AccordionContent>
+                                        <RadioGroup value={filters.receivedStatus} onValueChange={(value) => handleRadioFilterChange('receivedStatus', value)} className="p-2 space-y-1">
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="all" id="filter-status-all" />
+                                                <Label htmlFor="filter-status-all" className="font-normal">All</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="received" id="filter-status-received" />
+                                                <Label htmlFor="filter-status-received" className="font-normal">Received Packets</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="not-received" id="filter-status-not-received" />
+                                                <Label htmlFor="filter-status-not-received" className="font-normal">Not Received Packets</Label>
+                                            </div>
+                                        </RadioGroup>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
                       </div>
                     </div>
                   </PopoverContent>

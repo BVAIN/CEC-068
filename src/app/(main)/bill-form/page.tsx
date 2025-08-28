@@ -28,6 +28,8 @@ import { getBillsStorageKey, getBillsFileName, getBillTrashStorageKey, getGlobal
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 
 const billFormSchema = z.object({
@@ -50,7 +52,9 @@ const billFormSchema = z.object({
 
 export type BillFormValues = z.infer<typeof billFormSchema>;
 
-type FilterValues = Partial<Omit<BillFormValues, 'id' | 'signature' | 'distance'>> & { distance: string };
+type FilterValues = {
+    [key in keyof Omit<BillFormValues, 'id' | 'signature' | 'distance'>]: string[];
+} & { distance: string[] };
 
 type GlobalBillSettings = {
     billName: string;
@@ -88,7 +92,7 @@ function BillFormPageComponent() {
   const [selectedBills, setSelectedBills] = useState<string[]>([]);
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filters, setFilters] = useState<FilterValues>({});
+  const [filters, setFilters] = useState<Partial<FilterValues>>({});
   const [publicFormUrl, setPublicFormUrl] = useState("");
   const [isBulkEditOpen, setIsBulkEditOpen] = useState(false);
   const [bulkEditField, setBulkEditField] = useState<EditableField>('course');
@@ -175,15 +179,9 @@ function BillFormPageComponent() {
             bill.email.toLowerCase().includes(lowercasedTerm);
 
         const filterMatch = Object.entries(filters).every(([key, value]) => {
-            if (!value) return true;
+            if (!value || value.length === 0) return true;
             const billValue = bill[key as keyof BillFormValues];
-            if (typeof billValue === 'string') {
-                return billValue.toLowerCase().includes((value as string).toLowerCase());
-            }
-            if (typeof billValue === 'number') {
-                return billValue.toString().includes(value as string);
-            }
-            return true;
+            return value.includes(String(billValue));
         });
 
         return searchMatch && filterMatch;
@@ -355,7 +353,14 @@ function BillFormPageComponent() {
   };
 
   const handleFilterChange = (field: keyof FilterValues, value: string) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
+    setFilters(prev => {
+        const currentValues = prev[field] || [];
+        if (currentValues.includes(value)) {
+            return { ...prev, [field]: currentValues.filter(v => v !== value) };
+        } else {
+            return { ...prev, [field]: [...currentValues, value] };
+        }
+    });
   };
 
   const handleCopyToClipboard = () => {
@@ -387,21 +392,65 @@ function BillFormPageComponent() {
   };
 
 
-  const filterFields: { name: keyof FilterValues, label: string, type: string }[] = [
-    { name: 'evaluatorId', label: 'Evaluator ID', type: 'text' },
-    { name: 'evaluatorName', label: 'Evaluator Name', type: 'text' },
-    { name: 'collegeName', label: 'College Name', type: 'text' },
-    { name: 'course', label: 'Course', type: 'text' },
-    { name: 'email', label: 'Email ID', type: 'email' },
-    { name: 'mobileNo', label: 'Mobile No.', type: 'text' },
-    { name: 'address', label: 'Address', type: 'text' },
-    { name: 'distance', label: 'Distance (Km)', type: 'number' },
-    { name: 'bankName', label: 'Bank Name', type: 'text' },
-    { name: 'branch', label: 'Branch', type: 'text' },
-    { name: 'bankAccountNo', label: 'Bank Account No.', type: 'text' },
-    { name: 'ifscCode', label: 'IFSC Code', type: 'text' },
-    { name: 'panNo', label: 'PAN No.', type: 'text' },
+  const filterFields: { name: keyof FilterValues, label: string }[] = [
+    { name: 'evaluatorId', label: 'Evaluator ID' },
+    { name: 'evaluatorName', label: 'Evaluator Name' },
+    { name: 'collegeName', label: 'College Name' },
+    { name: 'course', label: 'Course' },
+    { name: 'email', label: 'Email ID' },
+    { name: 'mobileNo', label: 'Mobile No.' },
+    { name: 'address', label: 'Address' },
+    { name: 'distance', label: 'Distance (Km)' },
+    { name: 'bankName', label: 'Bank Name' },
+    { name: 'branch', label: 'Branch' },
+    { name: 'bankAccountNo', label: 'Bank Account No.' },
+    { name: 'ifscCode', label: 'IFSC Code' },
+    { name: 'panNo', label: 'PAN No.' },
   ];
+  
+  const getUniqueValuesForFilter = (field: keyof FilterValues) => {
+      const values = bills.map(bill => String(bill[field as keyof BillFormValues]));
+      return [...new Set(values)];
+  }
+
+  const MultiSelectFilter = ({ field, label }: { field: keyof FilterValues, label: string }) => {
+      const [searchTerm, setSearchTerm] = useState("");
+      const options = useMemo(() => getUniqueValuesForFilter(field), [field]);
+      const filteredOptions = options.filter(option => option.toLowerCase().includes(searchTerm.toLowerCase()));
+      const selectedValues = filters[field] || [];
+
+      return (
+          <Accordion type="single" collapsible>
+              <AccordionItem value={field}>
+                  <AccordionTrigger>{label} ({selectedValues.length})</AccordionTrigger>
+                  <AccordionContent>
+                      <div className="p-2 space-y-2">
+                          <Input
+                              placeholder="Search..."
+                              value={searchTerm}
+                              onChange={e => setSearchTerm(e.target.value)}
+                          />
+                          <ScrollArea className="h-48">
+                              <div className="space-y-1">
+                                  {filteredOptions.map(option => (
+                                      <div key={option} className="flex items-center space-x-2">
+                                          <Checkbox
+                                              id={`filter-${field}-${option}`}
+                                              checked={selectedValues.includes(option)}
+                                              onCheckedChange={() => handleFilterChange(field, option)}
+                                          />
+                                          <Label htmlFor={`filter-${field}-${option}`} className="font-normal">{option}</Label>
+                                      </div>
+                                  ))}
+                              </div>
+                          </ScrollArea>
+                      </div>
+                  </AccordionContent>
+              </AccordionItem>
+          </Accordion>
+      );
+  };
+
 
   const generateBillPreviewHTML = (billDetails: BillFormValues) => {
     const signatureImage = billDetails.signature ? `<img src="${billDetails.signature}" alt="Evaluator's Signature" class="signature-image" style="max-height: 48px;" />` : '';
@@ -710,18 +759,9 @@ function BillFormPageComponent() {
                                     Filter bills by the following criteria.
                                     </p>
                                 </div>
-                                <div className="grid gap-2">
+                                <div className="grid gap-1">
                                     {filterFields.map(field => (
-                                        <div key={field.name} className="grid grid-cols-3 items-center gap-4">
-                                            <Label htmlFor={`filter-${field.name}`}>{field.label}</Label>
-                                            <Input
-                                                id={`filter-${field.name}`}
-                                                type={field.type}
-                                                value={filters[field.name] || ''}
-                                                onChange={(e) => handleFilterChange(field.name, e.target.value)}
-                                                className="col-span-2 h-8"
-                                            />
-                                        </div>
+                                       <MultiSelectFilter key={field.name} field={field.name as keyof FilterValues} label={field.label} />
                                     ))}
                                 </div>
                                 </div>

@@ -17,14 +17,13 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type TeacherData = Omit<BillFormValues, 'id' | 'signature'>;
 
 type FilterValues = {
-    evaluatorName: string;
-    evaluatorId: string;
-    course: string;
-    collegeName: string;
+    [key in keyof TeacherData]?: string[];
 };
 
 export default function TeachersDataPage() {
@@ -33,7 +32,7 @@ export default function TeachersDataPage() {
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [filters, setFilters] = useState<FilterValues>({ evaluatorName: '', evaluatorId: '', course: '', collegeName: '' });
+  const [filters, setFilters] = useState<FilterValues>({});
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -65,11 +64,11 @@ export default function TeachersDataPage() {
             teacher.mobileNo.toLowerCase().includes(lowercasedTerm)
         );
 
-        const filterMatch = 
-            (filters.evaluatorName ? teacher.evaluatorName.toLowerCase().includes(filters.evaluatorName.toLowerCase()) : true) &&
-            (filters.evaluatorId ? teacher.evaluatorId.toLowerCase().includes(filters.evaluatorId.toLowerCase()) : true) &&
-            (filters.course ? teacher.course.toLowerCase().includes(filters.course.toLowerCase()) : true) &&
-            (filters.collegeName ? teacher.collegeName.toLowerCase().includes(filters.collegeName.toLowerCase()) : true);
+        const filterMatch = Object.entries(filters).every(([key, value]) => {
+            if (!value || value.length === 0) return true;
+            const teacherValue = teacher[key as keyof TeacherData];
+            return value.includes(String(teacherValue));
+        });
 
         return searchMatch && filterMatch;
     });
@@ -157,7 +156,14 @@ export default function TeachersDataPage() {
   };
 
   const handleFilterChange = (field: keyof FilterValues, value: string) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
+    setFilters(prev => {
+        const currentValues = prev[field] || [];
+        if (currentValues.includes(value)) {
+            return { ...prev, [field]: currentValues.filter(v => v !== value) };
+        } else {
+            return { ...prev, [field]: [...currentValues, value] };
+        }
+    });
   };
 
   const handleEdit = (teacher: TeacherData) => {
@@ -165,6 +171,57 @@ export default function TeachersDataPage() {
       // to show all bills for that teacher, allowing the user to edit them.
       router.push(`/bill-form?search=${encodeURIComponent(teacher.evaluatorId)}`);
   };
+
+  const filterFields: { name: keyof FilterValues, label: string }[] = [
+    { name: 'evaluatorName', label: 'Evaluator Name' },
+    { name: 'evaluatorId', label: 'Evaluator ID' },
+    { name: 'course', label: 'Course' },
+    { name: 'collegeName', label: 'College Name' },
+  ];
+
+  const getUniqueValuesForFilter = (field: keyof FilterValues) => {
+      const values = teachers.map(teacher => String(teacher[field]));
+      return [...new Set(values)];
+  }
+
+  const MultiSelectFilter = ({ field, label }: { field: keyof FilterValues, label: string }) => {
+      const [searchTerm, setSearchTerm] = useState("");
+      const options = useMemo(() => getUniqueValuesForFilter(field), [field]);
+      const filteredOptions = options.filter(option => option.toLowerCase().includes(searchTerm.toLowerCase()));
+      const selectedValues = filters[field] || [];
+
+      return (
+          <Accordion type="single" collapsible>
+              <AccordionItem value={field}>
+                  <AccordionTrigger>{label} ({selectedValues.length})</AccordionTrigger>
+                  <AccordionContent>
+                      <div className="p-2 space-y-2">
+                          <Input
+                              placeholder="Search..."
+                              value={searchTerm}
+                              onChange={e => setSearchTerm(e.target.value)}
+                          />
+                          <ScrollArea className="h-48">
+                              <div className="space-y-1">
+                                  {filteredOptions.map(option => (
+                                      <div key={option} className="flex items-center space-x-2">
+                                          <Checkbox
+                                              id={`filter-${field}-${option}`}
+                                              checked={selectedValues.includes(option)}
+                                              onCheckedChange={() => handleFilterChange(field, option)}
+                                          />
+                                          <Label htmlFor={`filter-${field}-${option}`} className="font-normal">{option}</Label>
+                                      </div>
+                                  ))}
+                              </div>
+                          </ScrollArea>
+                      </div>
+                  </AccordionContent>
+              </AccordionItem>
+          </Accordion>
+      );
+  };
+
 
   return (
     <div className="space-y-8">
@@ -199,43 +256,10 @@ export default function TeachersDataPage() {
                                 <div className="space-y-2">
                                     <h4 className="font-medium leading-none">Filters</h4>
                                 </div>
-                                <div className="grid gap-2">
-                                    <div className="grid grid-cols-3 items-center gap-4">
-                                        <Label htmlFor="filter-name">Name</Label>
-                                        <Input
-                                            id="filter-name"
-                                            value={filters.evaluatorName}
-                                            onChange={(e) => handleFilterChange('evaluatorName', e.target.value)}
-                                            className="col-span-2 h-8"
-                                        />
-                                    </div>
-                                     <div className="grid grid-cols-3 items-center gap-4">
-                                        <Label htmlFor="filter-id">Teacher ID</Label>
-                                        <Input
-                                            id="filter-id"
-                                            value={filters.evaluatorId}
-                                            onChange={(e) => handleFilterChange('evaluatorId', e.target.value)}
-                                            className="col-span-2 h-8"
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-3 items-center gap-4">
-                                        <Label htmlFor="filter-course">Course</Label>
-                                        <Input
-                                            id="filter-course"
-                                            value={filters.course}
-                                            onChange={(e) => handleFilterChange('course', e.target.value)}
-                                            className="col-span-2 h-8"
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-3 items-center gap-4">
-                                        <Label htmlFor="filter-college">College</Label>
-                                        <Input
-                                            id="filter-college"
-                                            value={filters.collegeName}
-                                            onChange={(e) => handleFilterChange('collegeName', e.target.value)}
-                                            className="col-span-2 h-8"
-                                        />
-                                    </div>
+                                <div className="grid gap-1">
+                                    {filterFields.map(field => (
+                                       <MultiSelectFilter key={field.name} field={field.name} label={field.label} />
+                                    ))}
                                 </div>
                              </div>
                         </PopoverContent>
