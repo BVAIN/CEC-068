@@ -45,7 +45,7 @@ const billFormSchema = z.object({
   mobileNo: z.string().regex(/^\d+$/, "Mobile No. must contain only digits.").min(1, "Mobile No. is required"),
   bankName: z.string().min(1, "Bank Name is required"),
   branch: z.string().min(1, "Branch is required"),
-  bankAccountNo: z.string().regex(/^\d+$/, "Bank Account No. must contain only digits.").min(1, "Bank Account No. is required"),
+  bankAccountNo: z.string().min(1, "Bank Account No. is required"),
   ifscCode: z.string().min(1, "IFSC Code is required"),
   signature: z.string().min(1, "Signature is required"),
 });
