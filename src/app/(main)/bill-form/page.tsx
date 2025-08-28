@@ -951,8 +951,7 @@ function BillFormPageComponent() {
                     </Table>
                  </div>
             </CardContent>
-            <CardFooter className="justify-between">
-                <Button onClick={() => router.push('/teachers')}><Users className="mr-2 h-4 w-4" /> Teachers Data</Button>
+            <CardFooter className="justify-end">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                          <Button className="bg-violet-500 hover:bg-violet-600 text-white" disabled={selectedBills.length === 0}>

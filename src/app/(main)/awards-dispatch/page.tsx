@@ -36,6 +36,7 @@ type AwardDispatchData = {
   awardsCount?: string;
   dispatchDate?: string;
   noOfPages?: string;
+  noOfAwards?: string;
 };
 
 type DispatchState = {
@@ -223,6 +224,7 @@ export default function AwardsDispatchPage() {
             "North": entry.northChallan,
             "South": entry.southChallan,
             "Total": entry.totalChallan,
+            "No. of Awards": extraData.noOfAwards || '',
             "No. of Pages": extraData.noOfPages || '',
             "Date of Dispatch": extraData.dispatchDate || '',
         };
@@ -290,6 +292,7 @@ export default function AwardsDispatchPage() {
       { name: 'course', label: 'Course' },
       { name: 'type', label: 'Type' },
       { name: 'noOfPages', label: 'No. of Pages' },
+      { name: 'noOfAwards', label: 'No. of Awards' },
       { name: 'dispatchDate', label: 'Date of Dispatch' },
   ];
 
@@ -426,6 +429,7 @@ export default function AwardsDispatchPage() {
                   <TableHead className="text-primary-foreground">North</TableHead>
                   <TableHead className="text-primary-foreground">South</TableHead>
                   <TableHead className="text-primary-foreground">Total</TableHead>
+                  <TableHead className="text-primary-foreground">No. of Awards</TableHead>
                   <TableHead className="text-primary-foreground">No. of Pages</TableHead>
                   <TableHead className="text-primary-foreground">Date of Dispatch</TableHead>
                   <TableHead className="text-primary-foreground">Action</TableHead>
@@ -454,6 +458,14 @@ export default function AwardsDispatchPage() {
                       <TableCell className="text-blue-600 font-medium">{entry.northChallan}</TableCell>
                       <TableCell className="text-red-600 font-medium">{entry.southChallan}</TableCell>
                       <TableCell className="font-bold">{entry.totalChallan}</TableCell>
+                       <TableCell>
+                        <Input
+                          type="text"
+                          className="w-24"
+                          value={currentData.noOfAwards || ''}
+                          onChange={(e) => handleInputChange(key, 'noOfAwards', e.target.value)}
+                        />
+                      </TableCell>
                        <TableCell>
                         <Input
                           type="text"
@@ -500,7 +512,7 @@ export default function AwardsDispatchPage() {
                   );
                 }) : (
                     <TableRow>
-                        <TableCell colSpan={13} className="text-center h-24 text-muted-foreground">
+                        <TableCell colSpan={14} className="text-center h-24 text-muted-foreground">
                             No index entries found. Please add entries in the Index page.
                         </TableCell>
                     </TableRow>
@@ -513,7 +525,7 @@ export default function AwardsDispatchPage() {
                         <TableCell className="font-bold text-blue-600">{totalNorth}</TableCell>
                         <TableCell className="font-bold text-red-600">{totalSouth}</TableCell>
                         <TableCell className="font-bold">{grandTotal}</TableCell>
-                        <TableCell colSpan={3}></TableCell>
+                        <TableCell colSpan={4}></TableCell>
                     </TableRow>
                 </TableFooter>
               )}
