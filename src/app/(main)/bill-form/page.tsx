@@ -765,7 +765,7 @@ function BillFormPageComponent() {
                         </div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button className="bg-yellow-400 text-white hover:bg-yellow-500">
+                                <Button className="bg-yellow-400 text-black hover:bg-yellow-500">
                                     {sortDirection === 'asc' ? <ArrowUp className="mr-2 h-4 w-4"/> : <ArrowDown className="mr-2 h-4 w-4" />}
                                     Sort by {sortOptions.find(o => o.key === sortKey)?.label}
                                 </Button>
