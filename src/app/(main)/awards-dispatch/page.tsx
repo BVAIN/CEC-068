@@ -508,8 +508,8 @@ export default function AwardsDispatchPage() {
                       <TableCell>{entry.course}</TableCell>
                       <TableCell>{entry.type}</TableCell>
                       <TableCell>{entry.pageNo}</TableCell>
-                      <TableCell className="font-medium text-blue-600 dark:text-blue-400">{entry.northChallan}</TableCell>
-                      <TableCell className="font-medium text-red-600 dark:text-red-400">{entry.southChallan}</TableCell>
+                      <TableCell className="font-bold text-blue-600 dark:text-blue-400">{entry.northChallan}</TableCell>
+                      <TableCell className="font-bold text-red-600 dark:text-red-400">{entry.southChallan}</TableCell>
                       <TableCell className="font-bold">{entry.totalChallan}</TableCell>
                        <TableCell>
                         <Input
