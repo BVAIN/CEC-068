@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Search, ArrowLeft, Filter, Edit, Trash2, FileDown, MessageSquare } from "lucide-react";
+import { PlusCircle, Search, ArrowLeft, Filter, Edit, Trash2, FileDown, MessageSquare, ArrowUp, ArrowDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type FilterValues = {
     [key in keyof Omit<PublicIssueFormValues, 'id' | 'asPerChallan' | 'netScripts' | 'difference' | 'pageNo' | 'type'>]: string[];
@@ -48,6 +49,9 @@ type CampusStats = {
     allData: StatDetail,
 };
 
+type SortKey = keyof PublicIssueFormValues;
+type SortDirection = "asc" | "desc";
+
 const formatDate = (dateString: string) => {
     if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
     const [year, month, day] = dateString.split('-');
@@ -68,6 +72,8 @@ export default function IndexPage() {
   const [northEntriesCount, setNorthEntriesCount] = useState(0);
   const [southEntriesCount, setSouthEntriesCount] = useState(0);
   const [hydrated, setHydrated] = useState(false);
+  const [sortKey, setSortKey] = useState<SortKey>("pageNo");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   useEffect(() => {
     setHydrated(true);
@@ -115,12 +121,10 @@ export default function IndexPage() {
 
     switch(activeView) {
         case 'North':
-            baseEntries = entries.filter(e => e.campus === 'North')
-                .sort((a, b) => (parseInt(a.pageNo || '0', 10)) - (parseInt(b.pageNo || '0', 10)));
+            baseEntries = entries.filter(e => e.campus === 'North');
             break;
         case 'South':
-            baseEntries = entries.filter(e => e.campus === 'South')
-                .sort((a, b) => (parseInt(a.pageNo || '0', 10)) - (parseInt(b.pageNo || '0', 10)));
+            baseEntries = entries.filter(e => e.campus === 'South');
             break;
         case 'Search':
             const lowercasedTerm = searchTerm.toLowerCase();
@@ -134,7 +138,21 @@ export default function IndexPage() {
             baseEntries = []; // Show nothing if no view is active
     }
 
-    return baseEntries.filter(entry => {
+    const sortedEntries = [...baseEntries].sort((a, b) => {
+        const aVal = a[sortKey];
+        const bVal = b[sortKey];
+
+        let result = 0;
+        if (sortKey === 'pageNo' || sortKey === 'asPerChallan' || sortKey === 'netScripts') {
+            result = (Number(aVal) || 0) - (Number(bVal) || 0);
+        } else if (aVal && bVal) {
+            result = String(aVal).localeCompare(String(bVal));
+        }
+
+        return sortDirection === 'asc' ? result : -result;
+    });
+
+    return sortedEntries.filter(entry => {
         return Object.entries(filters).every(([key, value]) => {
             if (!value || value.length === 0) return true;
             const entryValue = entry[key as keyof PublicIssueFormValues];
@@ -145,7 +163,7 @@ export default function IndexPage() {
             return value.includes(String(entryValue));
         });
       });
-  }, [entries, searchTerm, filters, activeView]);
+  }, [entries, searchTerm, filters, activeView, sortKey, sortDirection]);
   
 
   const calculateTotals = (campusEntries: PublicIssueFormValues[]) => {
@@ -297,6 +315,15 @@ export default function IndexPage() {
     toast({ title: "Remarks Saved", description: "Your remarks have been updated." });
   };
 
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+        setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+        setSortKey(key);
+        setSortDirection('asc');
+    }
+  };
+
 
   const filterFields: { name: keyof FilterValues, label: string }[] = [
       { name: 'dateOfExam', label: 'Date of Exam' },
@@ -385,6 +412,14 @@ export default function IndexPage() {
     </Card>
   );
 
+  const sortOptions: { key: SortKey; label: string }[] = [
+    { key: "pageNo", label: "Page No." },
+    { key: "dateOfExam", label: "Date" },
+    { key: "course", label: "Course (A-Z)" },
+    { key: "upc", label: "UPC" },
+    { key: "netScripts", label: "Net Scripts" },
+  ];
+
   const renderTable = (title: string, data: PublicIssueFormValues[], totals: {totalChallan: number, totalNetScripts: number, totalDifference: number}, stats?: CampusStats) => {
     const isAllSelected = data.length > 0 && selectedEntries.length === data.filter(e => data.map(d => d.id).includes(e.id)).length;
     const isSearch = activeView === 'Search';
@@ -406,6 +441,21 @@ export default function IndexPage() {
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{title}</CardTitle>
                 <div className="flex items-center gap-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button className="bg-yellow-400 text-black hover:bg-yellow-500">
+                                {sortDirection === 'asc' ? <ArrowUp className="mr-2 h-4 w-4"/> : <ArrowDown className="mr-2 h-4 w-4" />}
+                                Sort by {sortOptions.find(o => o.key === sortKey)?.label}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            {sortOptions.map(option => (
+                                <DropdownMenuItem key={option.key} onClick={() => handleSort(option.key)}>
+                                    {option.label}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button size="sm" onClick={() => handleNavigation('/entry')} className="bg-blue-500 hover:bg-blue-600 text-white">
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Entry
                     </Button>

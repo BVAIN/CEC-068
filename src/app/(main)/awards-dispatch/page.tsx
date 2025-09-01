@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { getPublicIssuesStorageKey, getAwardsDispatchStorageKey, getAwardsDispatchTrashStorageKey } from "@/lib/constants";
 import type { PublicIssueFormValues } from "@/app/(public)/entry/page";
 import { useToast } from "@/hooks/use-toast";
-import { FileDown, Save, Trash2, Filter } from "lucide-react";
+import { FileDown, Save, Trash2, Filter, ArrowUp, ArrowDown } from "lucide-react";
 import * as XLSX from "xlsx";
 import { cn } from "@/lib/utils";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 
 type AwardEntry = {
@@ -47,6 +48,9 @@ type FilterValues = {
     [key in keyof (AwardEntry & AwardDispatchData)]: string[];
 };
 
+type SortKey = keyof AwardEntry;
+type SortDirection = "asc" | "desc";
+
 const formatDate = (dateString: string) => {
     if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
     const [year, month, day] = dateString.split('-');
@@ -61,6 +65,8 @@ export default function AwardsDispatchPage() {
   const [hydrated, setHydrated] = useState(false);
   const [filters, setFilters] = useState<Partial<FilterValues>>({});
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
+  const [sortKey, setSortKey] = useState<SortKey>("pageNo");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   
   const getEntryKey = (entry: AwardEntry) => `${entry.dateOfExam}-${entry.upc}-${entry.qpNo}`;
 
@@ -69,7 +75,21 @@ export default function AwardsDispatchPage() {
   }, []);
   
   const { filteredAwards, totalNorth, totalSouth, grandTotal } = useMemo(() => {
-    const filtered = allAwardEntries.filter(entry => {
+    let sorted = [...allAwardEntries].sort((a, b) => {
+        const aValue = a[sortKey];
+        const bValue = b[sortKey];
+
+        let result = 0;
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+            result = aValue.localeCompare(bValue);
+        } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+            result = aValue - bValue;
+        }
+
+        return sortDirection === 'asc' ? result : -result;
+    });
+    
+    const filtered = sorted.filter(entry => {
         const key = getEntryKey(entry);
         const currentDispatchData = dispatchData[key] || {};
         return Object.entries(filters).every(([filterKey, filterValues]) => {
@@ -95,7 +115,7 @@ export default function AwardsDispatchPage() {
     });
 
     return { filteredAwards: filtered, totalNorth, totalSouth, grandTotal };
-  }, [allAwardEntries, dispatchData, filters]);
+  }, [allAwardEntries, dispatchData, filters, sortKey, sortDirection]);
 
 
   useEffect(() => {
@@ -281,6 +301,16 @@ export default function AwardsDispatchPage() {
       }
   };
 
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+        setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+        setSortKey(key);
+        setSortDirection('asc');
+    }
+  };
+
+
   if (!hydrated) {
     return null; 
   }
@@ -349,6 +379,14 @@ export default function AwardsDispatchPage() {
       );
   };
 
+  const sortOptions: { key: SortKey; label: string }[] = [
+    { key: "pageNo", label: "Page No." },
+    { key: "dateOfExam", label: "Date" },
+    { key: "course", label: "Course (A-Z)" },
+    { key: "upc", label: "UPC" },
+    { key: "totalChallan", label: "Total Scripts" },
+  ];
+
   return (
     <div className="space-y-8 animate-fade-in">
       <header>
@@ -382,6 +420,21 @@ export default function AwardsDispatchPage() {
                         </AlertDialogContent>
                     </AlertDialog>
                 )}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button className="bg-yellow-400 text-black hover:bg-yellow-500">
+                             {sortDirection === 'asc' ? <ArrowUp className="mr-2 h-4 w-4"/> : <ArrowDown className="mr-2 h-4 w-4" />}
+                            Sort by {sortOptions.find(o => o.key === sortKey)?.label}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        {sortOptions.map(option => (
+                             <DropdownMenuItem key={option.key} onClick={() => handleSort(option.key)}>
+                                {option.label}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button className="bg-pink-500 hover:bg-pink-600 text-white"><Filter className="mr-2 h-4 w-4"/> Filter</Button>

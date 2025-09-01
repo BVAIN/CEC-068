@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FileDown, Trash2, Search, Filter, Edit } from "lucide-react";
+import { FileDown, Trash2, Search, Filter, Edit, ArrowUp, ArrowDown } from "lucide-react";
 import { getBillsStorageKey, getTeacherTrashStorageKey } from "@/lib/constants";
 import type { BillFormValues } from "../bill-form/page";
 import * as XLSX from "xlsx";
@@ -19,12 +19,16 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type TeacherData = Omit<BillFormValues, 'id' | 'signature'>;
 
 type FilterValues = {
     [key in keyof TeacherData]?: string[];
 };
+
+type SortKey = keyof TeacherData;
+type SortDirection = "asc" | "desc";
 
 export default function TeachersDataPage() {
   const router = useRouter();
@@ -33,6 +37,8 @@ export default function TeachersDataPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<FilterValues>({});
+  const [sortKey, setSortKey] = useState<SortKey>("evaluatorName");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -55,8 +61,22 @@ export default function TeachersDataPage() {
   }, []);
 
   const filteredTeachers = useMemo(() => {
-    const lowercasedTerm = searchTerm.toLowerCase();
-    return teachers.filter(teacher => {
+    let sorted = [...teachers].sort((a, b) => {
+        const aValue = a[sortKey];
+        const bValue = b[sortKey];
+
+        let result = 0;
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+            result = aValue.localeCompare(bValue);
+        } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+            result = aValue - bValue;
+        }
+
+        return sortDirection === 'asc' ? result : -result;
+    });
+
+    return sorted.filter(teacher => {
+        const lowercasedTerm = searchTerm.toLowerCase();
         const searchMatch = !lowercasedTerm || (
             teacher.evaluatorName.toLowerCase().includes(lowercasedTerm) ||
             teacher.evaluatorId.toLowerCase().includes(lowercasedTerm) ||
@@ -72,7 +92,7 @@ export default function TeachersDataPage() {
 
         return searchMatch && filterMatch;
     });
-  }, [teachers, searchTerm, filters]);
+  }, [teachers, searchTerm, filters, sortKey, sortDirection]);
   
   const updateTeachersStateAndStorage = (updatedTeachers: TeacherData[]) => {
       setTeachers(updatedTeachers);
@@ -172,6 +192,15 @@ export default function TeachersDataPage() {
       router.push(`/bill-form?search=${encodeURIComponent(teacher.evaluatorId)}`);
   };
 
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+        setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+        setSortKey(key);
+        setSortDirection('asc');
+    }
+  };
+
   const filterFields: { name: keyof FilterValues, label: string }[] = [
     { name: 'evaluatorName', label: 'Evaluator Name' },
     { name: 'evaluatorId', label: 'Evaluator ID' },
@@ -221,6 +250,13 @@ export default function TeachersDataPage() {
           </Accordion>
       );
   };
+  
+  const sortOptions: { key: SortKey; label: string }[] = [
+    { key: "evaluatorName", label: "Name (A-Z)" },
+    { key: "course", label: "Course (A-Z)" },
+    { key: "collegeName", label: "College (A-Z)" },
+    { key: "distance", label: "Distance" },
+  ];
 
 
   return (
@@ -247,6 +283,21 @@ export default function TeachersDataPage() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
+                     <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button className="bg-yellow-400 text-black hover:bg-yellow-500">
+                                {sortDirection === 'asc' ? <ArrowUp className="mr-2 h-4 w-4"/> : <ArrowDown className="mr-2 h-4 w-4" />}
+                                Sort by {sortOptions.find(o => o.key === sortKey)?.label}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            {sortOptions.map(option => (
+                                <DropdownMenuItem key={option.key} onClick={() => handleSort(option.key)}>
+                                    {option.label}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <Popover>
                         <PopoverTrigger asChild>
                             <Button className="bg-pink-500 hover:bg-pink-600 text-white"><Filter className="mr-2 h-4 w-4"/> Filter</Button>

@@ -14,7 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
-import { Edit, Trash2, Printer, FileDown, Search, Save, Eye, Filter, ShieldX } from "lucide-react";
+import { Edit, Trash2, Printer, FileDown, Search, Save, Eye, Filter, ShieldX, ArrowUp, ArrowDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 
 const issueFormSchema = z.object({
@@ -55,6 +56,8 @@ const issueFormSchema = z.object({
 });
 
 export type IssueFormValues = z.infer<typeof issueFormSchema>;
+type SortKey = keyof IssueFormValues;
+type SortDirection = "asc" | "desc";
 
 const formatDate = (dateString: string) => {
     if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
@@ -127,6 +130,8 @@ export default function ScriptsIssueFormPage() {
     receivedStatus: "all",
   });
   const { isConnected, readFile, writeFile } = useGoogleDrive();
+  const [sortKey, setSortKey] = useState<SortKey>("dateOfIssue");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
 
   useEffect(() => {
@@ -177,7 +182,7 @@ export default function ScriptsIssueFormPage() {
             ...issue,
             id: issue.id || `${Date.now()}-${issue.packetNo}-${Math.random()}`
         }));
-        setIssues(issuesWithIds.sort((a, b) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime()));
+        setIssues(issuesWithIds);
     };
     loadData();
   }, [isConnected, readFile]);
@@ -237,7 +242,25 @@ export default function ScriptsIssueFormPage() {
   }, [watchedQpNo, qpUpcMap, setValue]);
   
   const { filteredIssues, totalScripts, totalMissing, totalExtra, totalEvaluatedScripts, totalAbsent } = useMemo(() => {
-    const filtered = issues.filter(issue => {
+    let sortedIssues = [...issues].sort((a, b) => {
+        const aValue = a[sortKey];
+        const bValue = b[sortKey];
+
+        let result = 0;
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+            if (sortKey === 'dateOfIssue') {
+                result = new Date(bValue).getTime() - new Date(aValue).getTime(); // default desc for date
+                 return sortDirection === 'asc' ? -result : result;
+            }
+            result = aValue.localeCompare(bValue);
+        } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+            result = aValue - bValue;
+        }
+
+        return sortDirection === 'asc' ? result : -result;
+    });
+
+    const filtered = sortedIssues.filter(issue => {
         const searchMatch = 
             issue.teacherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             issue.teacherId.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -264,16 +287,15 @@ export default function ScriptsIssueFormPage() {
     const totalEvaluatedScripts = filtered.filter(issue => issue.received).reduce((acc, issue) => acc + (issue.noOfScripts || 0) + (issue.extraSheets || 0), 0);
 
     return { filteredIssues: filtered, totalScripts, totalMissing, totalExtra, totalEvaluatedScripts, totalAbsent };
-  }, [issues, searchTerm, filters]);
+  }, [issues, searchTerm, filters, sortKey, sortDirection]);
 
 
   const updateIssuesStateAndStorage = async (newIssues: IssueFormValues[]) => {
-    const sortedIssues = newIssues.sort((a, b) => new Date(b.dateOfIssue).getTime() - new Date(a.dateOfIssue).getTime());
-    setIssues(sortedIssues);
-    localStorage.setItem(getIssuesStorageKey(), JSON.stringify(sortedIssues));
+    setIssues(newIssues);
+    localStorage.setItem(getIssuesStorageKey(), JSON.stringify(newIssues));
     if (isConnected) {
         try {
-            await writeFile(getIssuesFileName(), JSON.stringify(sortedIssues, null, 2));
+            await writeFile(getIssuesFileName(), JSON.stringify(newIssues, null, 2));
         } catch (e) {
             console.error("Failed to save issues to drive", e);
             toast({ variant: "destructive", title: "Sync Error", description: "Could not save issues to Google Drive."});
@@ -520,6 +542,15 @@ export default function ScriptsIssueFormPage() {
     });
   };
 
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+        setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+        setSortKey(key);
+        setSortDirection('asc');
+    }
+  };
+
   const filterFields: { name: keyof Omit<FilterValues, 'campus' | 'type' | 'receivedStatus'>, label: string }[] = [
     { name: 'dateOfIssue', label: 'Date of Issue' },
     { name: 'qpNo', label: 'QP No.' },
@@ -571,6 +602,14 @@ export default function ScriptsIssueFormPage() {
           </Accordion>
       );
   };
+  
+  const sortOptions: { key: SortKey; label: string }[] = [
+    { key: "dateOfIssue", label: "Date" },
+    { key: "teacherName", label: "Teacher Name (A-Z)" },
+    { key: "course", label: "Course (A-Z)" },
+    { key: "tokenNo", label: "Token No." },
+    { key: "noOfScripts", label: "No. of Scripts" },
+  ];
 
 
   return (
@@ -729,6 +768,21 @@ export default function ScriptsIssueFormPage() {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button className="bg-yellow-400 text-black hover:bg-yellow-500">
+                             {sortDirection === 'asc' ? <ArrowUp className="mr-2 h-4 w-4"/> : <ArrowDown className="mr-2 h-4 w-4" />}
+                             Sort by {sortOptions.find(o => o.key === sortKey)?.label}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        {sortOptions.map(option => (
+                             <DropdownMenuItem key={option.key} onClick={() => handleSort(option.key)}>
+                                {option.label}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button className="bg-pink-500 hover:bg-pink-600 text-white"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
