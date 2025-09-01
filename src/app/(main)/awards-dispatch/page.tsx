@@ -508,8 +508,8 @@ export default function AwardsDispatchPage() {
                       <TableCell>{entry.course}</TableCell>
                       <TableCell>{entry.type}</TableCell>
                       <TableCell>{entry.pageNo}</TableCell>
-                      <TableCell className="font-bold text-blue-700 dark:text-blue-400">{entry.northChallan}</TableCell>
-                      <TableCell className="font-bold text-red-700 dark:text-red-400">{entry.southChallan}</TableCell>
+                      <TableCell className="font-bold text-blue-500 dark:text-blue-400">{entry.northChallan}</TableCell>
+                      <TableCell className="font-bold text-red-600 dark:text-red-500">{entry.southChallan}</TableCell>
                       <TableCell className="font-bold">{entry.totalChallan}</TableCell>
                        <TableCell>
                         <Input
@@ -575,8 +575,8 @@ export default function AwardsDispatchPage() {
                 <TableFooter>
                     <TableRow>
                         <TableCell colSpan={7} className="text-right font-bold">Grand Totals</TableCell>
-                        <TableCell className="font-bold text-blue-700 dark:text-blue-400">{totalNorth}</TableCell>
-                        <TableCell className="font-bold text-red-700 dark:text-red-400">{totalSouth}</TableCell>
+                        <TableCell className="font-bold text-blue-500 dark:text-blue-400">{totalNorth}</TableCell>
+                        <TableCell className="font-bold text-red-600 dark:text-red-500">{totalSouth}</TableCell>
                         <TableCell className="font-bold">{grandTotal}</TableCell>
                         <TableCell colSpan={4}></TableCell>
                     </TableRow>
