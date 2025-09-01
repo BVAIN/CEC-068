@@ -5,7 +5,7 @@
 
 @layer base {
   :root, .light {
-    --background: 40 33% 97%;
+    --background: 40 50% 98%;
     --foreground: 220 10% 10%;
     --card: 40 33% 98%;
     --card-foreground: 220 10% 10%;
@@ -157,5 +157,3 @@
     color: black !important;
   }
 }
-
-    
