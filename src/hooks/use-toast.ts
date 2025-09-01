@@ -1,3 +1,4 @@
+
 "use client"
 
 // Inspired by react-hot-toast library
@@ -7,15 +8,21 @@ import type {
   ToastActionElement,
   ToastProps,
 } from "@/components/ui/toast"
+import { TOAST_SETTINGS_KEY } from "@/lib/constants"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const DURATION_FALLBACK = 1000;
 
 type ToasterToast = ToastProps & {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+}
+
+type ToastSettings = {
+    enabled: boolean;
+    duration: number;
 }
 
 const actionTypes = {
@@ -58,10 +65,23 @@ interface State {
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
 
+const getToastSettings = (): ToastSettings => {
+    if (typeof window === 'undefined') {
+        return { enabled: true, duration: DURATION_FALLBACK };
+    }
+    const settingsStr = localStorage.getItem(TOAST_SETTINGS_KEY);
+    if (settingsStr) {
+        return JSON.parse(settingsStr);
+    }
+    return { enabled: true, duration: DURATION_FALLBACK };
+};
+
+
 const addToRemoveQueue = (toastId: string) => {
   if (toastTimeouts.has(toastId)) {
     return
   }
+  const settings = getToastSettings();
 
   const timeout = setTimeout(() => {
     toastTimeouts.delete(toastId)
@@ -69,7 +89,7 @@ const addToRemoveQueue = (toastId: string) => {
       type: "REMOVE_TOAST",
       toastId: toastId,
     })
-  }, TOAST_REMOVE_DELAY)
+  }, settings.duration);
 
   toastTimeouts.set(toastId, timeout)
 }
@@ -143,6 +163,9 @@ function dispatch(action: Action) {
 type Toast = Omit<ToasterToast, "id">
 
 function toast({ ...props }: Toast) {
+  const settings = getToastSettings();
+  if (!settings.enabled) return { id: '', dismiss: () => {}, update: () => {} };
+
   const id = genId()
 
   const update = (props: ToasterToast) =>
@@ -163,6 +186,12 @@ function toast({ ...props }: Toast) {
       },
     },
   })
+
+  // Auto-dismiss after the configured duration
+  setTimeout(() => {
+    dismiss();
+  }, settings.duration);
+
 
   return {
     id: id,

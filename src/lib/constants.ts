@@ -33,6 +33,7 @@ export const getBillCustomizationKey = () => getSessionKey('bill_customization')
 export const DRIVE_TOKEN_KEY = "google_drive_token_placeholder";
 export const DRIVE_STORAGE_KEY = "google_drive_files_placeholder";
 export const SESSION_TRASH_STORAGE_KEY = 'cec068_session_trash';
+export const TOAST_SETTINGS_KEY = 'cec068_toast_settings';
 
 
 // File names for Google Drive sync should probably also be session-scoped

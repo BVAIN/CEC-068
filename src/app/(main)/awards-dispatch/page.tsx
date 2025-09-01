@@ -186,10 +186,10 @@ export default function AwardsDispatchPage() {
       }));
   };
 
-  const handleSaveRow = (key: string) => {
+  const handleSaveRow = (entry: AwardEntry) => {
     try {
         localStorage.setItem(getAwardsDispatchStorageKey(), JSON.stringify(dispatchData));
-        toast({ title: "Entry Saved", description: `Changes for UPC ${key.split('-')[1]} have been saved.` });
+        toast({ title: "Entry Saved", description: `Changes for UPC ${entry.upc} have been saved.` });
     } catch (error) {
         console.error("Failed to save data for one entry:", error);
         toast({ variant: "destructive", title: "Save Failed", description: "Could not save the entry." });
@@ -508,8 +508,8 @@ export default function AwardsDispatchPage() {
                       <TableCell>{entry.course}</TableCell>
                       <TableCell>{entry.type}</TableCell>
                       <TableCell>{entry.pageNo}</TableCell>
-                      <TableCell className="font-bold text-blue-700 dark:text-blue-500">{entry.northChallan}</TableCell>
-                      <TableCell className="font-bold text-red-700 dark:text-red-500">{entry.southChallan}</TableCell>
+                      <TableCell className="font-bold text-blue-700 dark:text-blue-400">{entry.northChallan}</TableCell>
+                      <TableCell className="font-bold text-red-700 dark:text-red-400">{entry.southChallan}</TableCell>
                       <TableCell className="font-bold">{entry.totalChallan}</TableCell>
                        <TableCell>
                         <Input
@@ -537,7 +537,7 @@ export default function AwardsDispatchPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                            <Button size="icon" variant="ghost" onClick={() => handleSaveRow(key)}>
+                            <Button size="icon" variant="ghost" onClick={() => handleSaveRow(entry)}>
                                 <Save className="h-4 w-4 text-blue-500" />
                             </Button>
                              <AlertDialog>
@@ -575,8 +575,8 @@ export default function AwardsDispatchPage() {
                 <TableFooter>
                     <TableRow>
                         <TableCell colSpan={7} className="text-right font-bold">Grand Totals</TableCell>
-                        <TableCell className="font-bold text-blue-700 dark:text-blue-500">{totalNorth}</TableCell>
-                        <TableCell className="font-bold text-red-700 dark:text-red-500">{totalSouth}</TableCell>
+                        <TableCell className="font-bold text-blue-700 dark:text-blue-400">{totalNorth}</TableCell>
+                        <TableCell className="font-bold text-red-700 dark:text-red-400">{totalSouth}</TableCell>
                         <TableCell className="font-bold">{grandTotal}</TableCell>
                         <TableCell colSpan={4}></TableCell>
                     </TableRow>

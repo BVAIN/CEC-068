@@ -12,14 +12,16 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
-import { Loader2 } from "lucide-react";
+import { Loader2, BellOff, Bell } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 import { 
     SIDEBAR_AWARDS_VISIBILITY_KEY,
     SIDEBAR_INDEX_VISIBILITY_KEY,
     SIDEBAR_ISSUE_VISIBILITY_KEY,
     SIDEBAR_BILL_VISIBILITY_KEY,
-    SIDEBAR_TEACHERS_VISIBILITY_KEY
+    SIDEBAR_TEACHERS_VISIBILITY_KEY,
+    TOAST_SETTINGS_KEY
 } from "@/lib/constants";
 
 const passwordFormSchema = z.object({
@@ -36,6 +38,11 @@ type VisibilitySwitchProps = {
     label: string;
     description: string;
     storageKey: string;
+}
+
+type ToastSettings = {
+    enabled: boolean;
+    duration: number;
 }
 
 const VisibilitySwitch = ({ id, label, description, storageKey }: VisibilitySwitchProps) => {
@@ -75,6 +82,20 @@ const VisibilitySwitch = ({ id, label, description, storageKey }: VisibilitySwit
 export default function SettingsPage() {
     const { toast } = useToast();
     const { isConnected, isLoading, error, connect, disconnect } = useGoogleDrive();
+    const [toastSettings, setToastSettings] = useState<ToastSettings>({ enabled: true, duration: 1000 });
+
+    useEffect(() => {
+        const storedSettings = localStorage.getItem(TOAST_SETTINGS_KEY);
+        if (storedSettings) {
+            setToastSettings(JSON.parse(storedSettings));
+        }
+    }, []);
+
+    const handleToastSettingsChange = (newSettings: Partial<ToastSettings>) => {
+        const updatedSettings = { ...toastSettings, ...newSettings };
+        setToastSettings(updatedSettings);
+        localStorage.setItem(TOAST_SETTINGS_KEY, JSON.stringify(updatedSettings));
+    };
 
     const form = useForm<z.infer<typeof passwordFormSchema>>({
         resolver: zodResolver(passwordFormSchema),
@@ -167,6 +188,44 @@ export default function SettingsPage() {
                 </CardFooter>
             </form>
         </Form>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+          <CardDescription>Customize how notifications appear in the app.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+            <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                    <Label className="text-base" htmlFor="notifications-enabled">Show Notifications</Label>
+                    <p className="text-sm text-muted-foreground">Enable or disable all pop-up notifications.</p>
+                </div>
+                <Switch
+                    id="notifications-enabled"
+                    checked={toastSettings.enabled}
+                    onCheckedChange={(checked) => handleToastSettingsChange({ enabled: checked })}
+                />
+            </div>
+            <div className="space-y-4 rounded-lg border p-4">
+                <div className="flex justify-between items-center">
+                     <div className="space-y-0.5">
+                        <Label className="text-base" htmlFor="notifications-duration">Auto-Dismiss Duration</Label>
+                        <p className="text-sm text-muted-foreground">Set how long notifications stay on screen.</p>
+                    </div>
+                    <span className="font-mono text-lg">{toastSettings.duration / 1000}s</span>
+                </div>
+                <Slider
+                    id="notifications-duration"
+                    min={1000}
+                    max={10000}
+                    step={500}
+                    value={[toastSettings.duration]}
+                    onValueChange={(value) => handleToastSettingsChange({ duration: value[0] })}
+                    disabled={!toastSettings.enabled}
+                />
+            </div>
+        </CardContent>
       </Card>
 
        <Card>
