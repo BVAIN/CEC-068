@@ -16,7 +16,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter, Share2, Copy, PencilRuler, Users, Printer, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
+import { Eye, Trash2, Upload, Edit, Search, FileDown, Filter, Share2, Copy, PencilRuler, Users, Printer, ArrowUp, ArrowDown } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -81,6 +81,8 @@ const editableFields = [
 ] as const;
 
 type EditableField = typeof editableFields[number]['value'];
+
+type SortKey = keyof BillFormValues;
 type SortDirection = "asc" | "desc";
 
 function BillFormPageComponent() {
@@ -98,6 +100,7 @@ function BillFormPageComponent() {
   const [bulkEditField, setBulkEditField] = useState<EditableField>('course');
   const [bulkFindValue, setBulkFindValue] = useState('');
   const [bulkReplaceValue, setBulkReplaceValue] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>("evaluatorName");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [globalSettings, setGlobalSettings] = useState<GlobalBillSettings>({
       billName: '',
@@ -162,13 +165,17 @@ function BillFormPageComponent() {
     const lowercasedTerm = searchTerm.toLowerCase();
     
     let sortedBills = [...bills].sort((a, b) => {
-        const nameA = a.evaluatorName.toLowerCase();
-        const nameB = b.evaluatorName.toLowerCase();
-        if (sortDirection === 'asc') {
-            return nameA.localeCompare(nameB);
-        } else {
-            return nameB.localeCompare(nameA);
+        const aValue = a[sortKey];
+        const bValue = b[sortKey];
+        
+        let result = 0;
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+            result = aValue.localeCompare(bValue, undefined, { numeric: true });
+        } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+            result = aValue - bValue;
         }
+
+        return sortDirection === 'asc' ? result : -result;
     });
 
     return sortedBills.filter(bill => {
@@ -186,7 +193,7 @@ function BillFormPageComponent() {
 
         return searchMatch && filterMatch;
     });
-  }, [bills, searchTerm, filters, sortDirection]);
+  }, [bills, searchTerm, filters, sortKey, sortDirection]);
 
 
   const form = useForm<BillFormValues>({
@@ -412,6 +419,16 @@ function BillFormPageComponent() {
       const values = bills.map(bill => String(bill[field as keyof BillFormValues]));
       return [...new Set(values)];
   }
+  
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+        setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+        setSortKey(key);
+        setSortDirection('asc');
+    }
+  };
+
 
   const MultiSelectFilter = ({ field, label }: { field: keyof FilterValues, label: string }) => {
       const [searchTerm, setSearchTerm] = useState("");
@@ -450,6 +467,12 @@ function BillFormPageComponent() {
           </Accordion>
       );
   };
+  
+  const sortOptions: { key: SortKey; label: string }[] = [
+    { key: "evaluatorName", label: "Name (A-Z)" },
+    { key: "course", label: "Course (A-Z)" },
+    { key: "distance", label: "Distance" },
+  ];
 
 
   const generateBillPreviewHTML = (billDetails: BillFormValues) => {
@@ -740,13 +763,21 @@ function BillFormPageComponent() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <Button
-                            className="bg-yellow-400 text-black hover:bg-yellow-500"
-                            onClick={() => setSortDirection(prev => prev === "asc" ? "desc" : "asc")}
-                        >
-                            {sortDirection === 'asc' ? <ArrowUpAZ className="mr-2 h-4 w-4"/> : <ArrowDownAZ className="mr-2 h-4 w-4" />}
-                            Sort
-                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button className="bg-yellow-400 text-white hover:bg-yellow-500">
+                                    {sortDirection === 'asc' ? <ArrowUp className="mr-2 h-4 w-4"/> : <ArrowDown className="mr-2 h-4 w-4" />}
+                                    Sort by {sortOptions.find(o => o.key === sortKey)?.label}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                {sortOptions.map(option => (
+                                    <DropdownMenuItem key={option.key} onClick={() => handleSort(option.key)}>
+                                        {option.label}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button className="bg-pink-500 hover:bg-pink-600 text-white"><Filter className="mr-2 h-4 w-4"/> Filter</Button>
@@ -982,3 +1013,5 @@ export default function BillFormPage() {
         </React.Suspense>
     )
 }
+
+    
