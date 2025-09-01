@@ -68,7 +68,7 @@ export default function IndexPage() {
   const [filters, setFilters] = useState<Partial<FilterValues>>({ type: [] });
   const [remarksModalOpen, setRemarksModalOpen] = useState(false);
   const [currentRemarks, setCurrentRemarks] = useState<{ id: string; text?: string }>({ id: '' });
-  const [isEditingRemarks, setIsEditingRemarks] = useState(isEditingRemarks);
+  const [isEditingRemarks, setIsEditingRemarks] = useState(false);
   const [northEntriesCount, setNorthEntriesCount] = useState(0);
   const [southEntriesCount, setSouthEntriesCount] = useState(0);
   const [hydrated, setHydrated] = useState(false);
@@ -705,5 +705,3 @@ export default function IndexPage() {
     </div>
   );
 }
-
-    
