@@ -31,7 +31,7 @@ const publicIssueFormSchema = z.object({
 
 export type PublicIssueFormValues = z.infer<typeof publicIssueFormSchema>;
 
-const initialFormValues: Omit<PublicIssueFormValues, 'campus' | 'type'> & {
+const initialFormValues: Omit<PublicIssueFormValues, "campus" | "type"> & {
   campus?: "North" | "South";
   type?: "Regular" | "NCWEB" | "SOL";
 } = {
@@ -54,16 +54,22 @@ const getNextPageNo = (course: string, campus: "North" | "South", type: "Regular
   let relevantEntries: PublicIssueFormValues[];
 
   if (type === "SOL") {
-    relevantEntries = entries.filter(e => e.course === course && e.campus === campus && e.type === "SOL" && e.pageNo);
+    relevantEntries = entries.filter(
+      (e) => e.course === course && e.campus === campus && e.type === "SOL" && e.pageNo
+    );
   } else {
     relevantEntries = entries.filter(
-      e => e.course === course && e.campus === campus && (e.type === "Regular" || e.type === "NCWEB") && e.pageNo
+      (e) =>
+        e.course === course &&
+        e.campus === campus &&
+        (e.type === "Regular" || e.type === "NCWEB") &&
+        e.pageNo
     );
   }
 
   let lastPageNo = 0;
   if (relevantEntries.length > 0) {
-    lastPageNo = Math.max(0, ...relevantEntries.map(e => parseInt(e.pageNo!, 10) || 0));
+    lastPageNo = Math.max(0, ...relevantEntries.map((e) => parseInt(e.pageNo!, 10) || 0));
   }
   return (lastPageNo + 1).toString();
 };
@@ -88,7 +94,7 @@ export default function PublicIssueEntryPageContent() {
       const storedEntries = localStorage.getItem(getPublicIssuesStorageKey());
       if (storedEntries) {
         const entries: PublicIssueFormValues[] = JSON.parse(storedEntries);
-        const entryToEdit = entries.find(e => e.id === editId);
+        const entryToEdit = entries.find((e) => e.id === editId);
         if (entryToEdit) {
           form.reset(entryToEdit);
         }
@@ -120,8 +126,11 @@ export default function PublicIssueEntryPageContent() {
       let entries = storedEntries ? JSON.parse(storedEntries) : [];
 
       if (editingId) {
-        entries = entries.map((entry: PublicIssueFormValues) => (entry.id === editingId ? { ...entry, ...data } : entry));
+        entries = entries.map((entry: PublicIssueFormValues) =>
+          entry.id === editingId ? { ...entry, ...data } : entry
+        );
         toast({ title: "Entry Updated!", description: "Your entry has been updated." });
+        // ❌ Redirect removed, stay on same page
       } else {
         const finalPageNo = getNextPageNo(data.course, data.campus, data.type);
         const newEntry = { ...data, pageNo: finalPageNo, id: `${Date.now()}-${finalPageNo}` };
@@ -134,9 +143,7 @@ export default function PublicIssueEntryPageContent() {
 
       localStorage.setItem(getPublicIssuesStorageKey(), JSON.stringify(entries));
 
-      if (editingId) {
-        router.push("/index");
-      } else {
+      if (!editingId) {
         const keptValues = {
           dateOfExam: data.dateOfExam,
           campus: data.campus,
@@ -170,7 +177,9 @@ export default function PublicIssueEntryPageContent() {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-3xl">{editingId ? "Edit Index Entry" : "Index Entry"}</CardTitle>
+                  <CardTitle className="text-3xl">
+                    {editingId ? "Edit Index Entry" : "Index Entry"}
+                  </CardTitle>
                   <Button type="button" variant="outline" onClick={() => router.back()}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back
@@ -184,6 +193,7 @@ export default function PublicIssueEntryPageContent() {
                 <CardTitle>Paper Details</CardTitle>
               </CardHeader>
               <CardContent className="grid md:grid-cols-2 gap-6">
+                {/* Form Fields */}
                 <FormField
                   control={form.control}
                   name="dateOfExam"
@@ -206,7 +216,7 @@ export default function PublicIssueEntryPageContent() {
                       <FormControl>
                         <Input
                           {...field}
-                          onChange={e => {
+                          onChange={(e) => {
                             const value = e.target.value;
                             const capitalized = value.charAt(0).toUpperCase() + value.slice(1);
                             field.onChange(capitalized);
@@ -297,7 +307,11 @@ export default function PublicIssueEntryPageContent() {
                     <FormItem>
                       <FormLabel>Campus</FormLabel>
                       <FormControl>
-                        <RadioGroup onValueChange={field.onChange} value={field.value} className="flex gap-4 pt-2">
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          className="flex gap-4 pt-2"
+                        >
                           <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
                               <RadioGroupItem value="North" />
@@ -323,7 +337,11 @@ export default function PublicIssueEntryPageContent() {
                     <FormItem>
                       <FormLabel>Type</FormLabel>
                       <FormControl>
-                        <RadioGroup onValueChange={field.onChange} value={field.value} className="flex gap-4 pt-2">
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          className="flex gap-4 pt-2"
+                        >
                           <FormItem className="flex items-center space-x-2 space-y-0">
                             <FormControl>
                               <RadioGroupItem value="Regular" />
