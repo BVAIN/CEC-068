@@ -1,4 +1,5 @@
-
+export const BILLS_STORAGE_KEY_2 = "bill_key_2";
+export const BILLS_FILE_NAME_2 = "bill_file_2.json";
 
 // Session management keys
 export const SESSIONS_STORAGE_KEY = 'cec068_sessions';
