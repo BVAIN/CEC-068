@@ -231,6 +231,46 @@ export default function SettingsPage() {
         XLSX.writeFile(workbook, `CEC068_Complete_Backup_${today}.xlsx`);
     };
 
+    const handleGenerateSampleCSV = () => {
+        const headers = "Data Type,ID,Date,Course,UPC,Scripts,Campus,Teacher Name,Teacher ID\n";
+        let csvContent = headers;
+
+        const courses = ["B.Com (H)", "Pol Sc (H)", "History (H)", "B.A. (Prog)", "B.Sc Physics"];
+        const campuses = ["North", "South"];
+        const names = ["Amit Kumar", "Sunita Sharma", "Rajesh Verma", "Priya Singh", "Deepak Gupta"];
+        const colleges = ["KMC", "Hansraj", "Hindu", "Ramjas", "LSR"];
+
+        for (let i = 1; i <= 2000; i++) {
+            const typeIndex = Math.floor(Math.random() * 3);
+            const dataType = ["Index", "Issue", "Bill"][typeIndex];
+            const id = `${dataType.toLowerCase()}_${i}`;
+            const date = `2024-07-${(Math.floor(Math.random() * 30) + 1).toString().padStart(2, '0')}`;
+            const course = courses[Math.floor(Math.random() * courses.length)];
+            const upc = `UPC${10000 + i}`;
+            const scripts = Math.floor(Math.random() * 50) + 10;
+            const campus = campuses[Math.floor(Math.random() * campuses.length)];
+            const teacherName = names[Math.floor(Math.random() * names.length)];
+            const teacherId = `T${2000 + i}`;
+            
+            csvContent += `"${dataType}","${id}","${date}","${course}","${upc}",${scripts},"${campus}","${teacherName}","${teacherId}"\n`;
+        }
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "sample_cec_data_2000.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        toast({
+            title: "Sample File Generated",
+            description: "A CSV file with 2000 rows has been downloaded."
+        });
+    };
+
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       <header>
@@ -388,10 +428,14 @@ export default function SettingsPage() {
           <CardTitle>Data Management</CardTitle>
           <CardDescription>Export all your application data into a single file for backup or external use.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-wrap gap-4">
             <Button onClick={handleDownloadAllData}>
                 <Download className="mr-2 h-4 w-4" />
                 Download All Data (XLSX)
+            </Button>
+            <Button onClick={handleGenerateSampleCSV} variant="secondary">
+                <Download className="mr-2 h-4 w-4" />
+                Download Sample CSV (2000 Rows)
             </Button>
         </CardContent>
       </Card>
