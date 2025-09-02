@@ -12,17 +12,24 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { useGoogleDrive } from "@/hooks/use-google-drive";
-import { Loader2, BellOff, Bell } from "lucide-react";
+import { Loader2, BellOff, Bell, Download } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import * as XLSX from "xlsx";
 import { 
     SIDEBAR_AWARDS_VISIBILITY_KEY,
     SIDEBAR_INDEX_VISIBILITY_KEY,
     SIDEBAR_ISSUE_VISIBILITY_KEY,
     SIDEBAR_BILL_VISIBILITY_KEY,
     SIDEBAR_TEACHERS_VISIBILITY_KEY,
-    TOAST_SETTINGS_KEY
+    TOAST_SETTINGS_KEY,
+    getPublicIssuesStorageKey,
+    getIssuesStorageKey,
+    getBillsStorageKey,
 } from "@/lib/constants";
+import type { PublicIssueFormValues } from "@/app/(public)/entry/page";
+import type { IssueFormValues } from "../issue-form/page";
+import type { BillFormValues } from "../bill-form/page";
 
 const passwordFormSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
@@ -44,6 +51,12 @@ type ToastSettings = {
     enabled: boolean;
     duration: number;
 }
+
+const formatDate = (dateString: string) => {
+    if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+};
 
 const VisibilitySwitch = ({ id, label, description, storageKey }: VisibilitySwitchProps) => {
     const [isVisible, setIsVisible] = useState(true);
@@ -114,6 +127,109 @@ export default function SettingsPage() {
         });
         form.reset();
     }
+    
+    const handleDownloadAllData = () => {
+        const workbook = XLSX.utils.book_new();
+
+        // 1. Index Data
+        const indexDataRaw = localStorage.getItem(getPublicIssuesStorageKey());
+        if (indexDataRaw) {
+            const indexData: PublicIssueFormValues[] = JSON.parse(indexDataRaw);
+            const formattedIndexData = indexData.map(d => ({
+                "Date of Exam": formatDate(d.dateOfExam),
+                "UPC": d.upc,
+                "QP No.": d.qpNo,
+                "Page No.": d.pageNo,
+                "Course": d.course,
+                "Type": d.type,
+                "Campus": d.campus,
+                "As Per Challan": d.asPerChallan,
+                "Net Scripts": d.netScripts,
+                "Difference": (d.netScripts || 0) - (d.asPerChallan || 0),
+                "Remarks": d.remarks,
+            }));
+            const indexWorksheet = XLSX.utils.json_to_sheet(formattedIndexData);
+            XLSX.utils.book_append_sheet(workbook, indexWorksheet, "Index Data");
+        }
+
+        // 2. Issue Packets Data
+        const issuesDataRaw = localStorage.getItem(getIssuesStorageKey());
+        if (issuesDataRaw) {
+            const issuesData: IssueFormValues[] = JSON.parse(issuesDataRaw);
+            const formattedIssuesData = issuesData.map(d => ({
+                "Date of Issue": formatDate(d.dateOfIssue),
+                "Packet No.": d.packetNo,
+                "Range": `${d.packetFrom} - ${d.packetTo}`,
+                "No. of Scripts": d.noOfScripts,
+                "QP No.": d.qpNo,
+                "UPC": d.upc,
+                "Teacher Name": d.teacherName,
+                "Teacher ID": d.teacherId,
+                "Course": d.course,
+                "Campus": d.campus,
+                "Type": d.schoolType,
+            }));
+            const issuesWorksheet = XLSX.utils.json_to_sheet(formattedIssuesData);
+            XLSX.utils.book_append_sheet(workbook, issuesWorksheet, "Issued Packets");
+        }
+
+        // 3. Bills Data
+        const billsDataRaw = localStorage.getItem(getBillsStorageKey());
+        if (billsDataRaw) {
+            const billsData: BillFormValues[] = JSON.parse(billsDataRaw);
+            const formattedBillsData = billsData.map(d => ({
+                "Evaluator ID": d.evaluatorId,
+                "Evaluator Name": d.evaluatorName,
+                "College Name": d.collegeName,
+                "Course": d.course,
+                "Email": d.email,
+                "Mobile No.": d.mobileNo,
+                "PAN No.": d.panNo,
+                "Address": d.address,
+                "Distance (Km)": d.distance,
+                "Bank Name": d.bankName,
+                "Branch": d.branch,
+                "Bank Account No.": d.bankAccountNo,
+                "IFSC Code": d.ifscCode,
+            }));
+            const billsWorksheet = XLSX.utils.json_to_sheet(formattedBillsData);
+            XLSX.utils.book_append_sheet(workbook, billsWorksheet, "Bill Forms");
+        }
+        
+        // 4. Teacher Data
+        if (billsDataRaw) { // Teachers are derived from bills
+             const billsData: BillFormValues[] = JSON.parse(billsDataRaw);
+             const uniqueTeachers = new Map();
+             billsData.forEach(bill => {
+                 if (!uniqueTeachers.has(bill.evaluatorId)) {
+                     const { id, signature, ...teacherData } = bill;
+                     uniqueTeachers.set(bill.evaluatorId, teacherData);
+                 }
+             });
+             const teachersData = Array.from(uniqueTeachers.values());
+             const formattedTeachersData = teachersData.map(d => ({
+                "Evaluator ID": d.evaluatorId,
+                "Evaluator Name": d.evaluatorName,
+                "College Name": d.collegeName,
+                "Course": d.course,
+                "Email": d.email,
+             }));
+             const teachersWorksheet = XLSX.utils.json_to_sheet(formattedTeachersData);
+             XLSX.utils.book_append_sheet(workbook, teachersWorksheet, "Teachers Data");
+        }
+        
+        if (workbook.SheetNames.length === 0) {
+            toast({
+                variant: 'destructive',
+                title: 'No Data to Export',
+                description: 'There is no data in the application to download.',
+            });
+            return;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        XLSX.writeFile(workbook, `CEC068_Complete_Backup_${today}.xlsx`);
+    };
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
@@ -264,6 +380,19 @@ export default function SettingsPage() {
                 description="Show or hide the 'Awards Dispatch Data' button in the sidebar."
                 storageKey={SIDEBAR_AWARDS_VISIBILITY_KEY}
             />
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Data Management</CardTitle>
+          <CardDescription>Export all your application data into a single file for backup or external use.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Button onClick={handleDownloadAllData}>
+                <Download className="mr-2 h-4 w-4" />
+                Download All Data (XLSX)
+            </Button>
         </CardContent>
       </Card>
 
